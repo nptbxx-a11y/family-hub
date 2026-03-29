@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "./Home.css";
 import coupleImg from "../assets/couple.png";
 
@@ -14,9 +14,27 @@ function getDaysTogether() {
 
 export default function Home() {
   const days = getDaysTogether();
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const iframeRef = useRef(null);
 
-  const srcUrl = `https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_ID}&controls=0&modestbranding=1`;
+  const srcUrl = `https://www.youtube.com/embed/${YOUTUBE_ID}?enablejsapi=1&loop=1&playlist=${YOUTUBE_ID}&controls=0&modestbranding=1`;
+
+  const sendCommand = (func) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func }),
+      "*"
+    );
+  };
+
+  const togglePlay = () => {
+    if (playing) {
+      sendCommand("pauseVideo");
+      setPlaying(false);
+    } else {
+      sendCommand("playVideo");
+      setPlaying(true);
+    }
+  };
 
   return (
     <div className="home-container">
@@ -34,21 +52,20 @@ export default function Home() {
       </div>
 
       <div className="music-bar">
-        <span className="music-note">♪</span>
+        <span className="music-note" style={{ opacity: playing ? 1 : 0.4 }}>♪</span>
         <span className="music-title">You Gotta Be — Des'ree</span>
-        <button className="music-toggle" onClick={() => setPlaying(p => !p)}>
+        <button className="music-toggle" onClick={togglePlay}>
           {playing ? "⏸" : "▶"}
         </button>
       </div>
 
-      {playing && (
-        <iframe
-          className="youtube-hidden"
-          src={srcUrl}
-          allow="autoplay"
-          title="background music"
-        />
-      )}
+      <iframe
+        ref={iframeRef}
+        className="youtube-hidden"
+        src={srcUrl}
+        allow="autoplay"
+        title="background music"
+      />
     </div>
   );
 }
