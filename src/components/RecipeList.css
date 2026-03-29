@@ -1,7 +1,8 @@
 .recipe-container {
   max-width: 600px;
-  margin: 40px auto;
-  padding: 24px 20px;
+  width: 100%;
+  margin: 24px auto;
+  padding: 20px 16px;
   background: rgba(255, 255, 255, 0.82);
   border-radius: 20px;
 }
