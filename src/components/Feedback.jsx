@@ -51,6 +51,21 @@ export default function Feedback() {
 
   return (
     <div className="page-bg">
+
+      {notes.length > 0 && (
+        <div className="ribbon-wrapper">
+          <div className="ribbon-track">
+            {[...notes, ...notes].map((note, i) => (
+              <span key={i} className="ribbon-item">
+                <span className="ribbon-author">{note.author}:</span>
+                {" "}{note.message}
+                <span className="ribbon-dot">✦</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="feedback-container">
         <h1 className="feedback-title">Feedback Box</h1>
         <p className="feedback-subtitle">Post ideas and thoughts for improving the app</p>

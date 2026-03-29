@@ -1,3 +1,49 @@
+/* ---- Scrolling ribbon ---- */
+.ribbon-wrapper {
+  width: 100%;
+  background: var(--purple);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 10px 0;
+  border-bottom: 3px solid var(--yellow);
+}
+
+.ribbon-track {
+  display: inline-flex;
+  animation: ribbon-scroll 30s linear infinite;
+}
+
+.ribbon-wrapper:hover .ribbon-track {
+  animation-play-state: paused;
+}
+
+@keyframes ribbon-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.ribbon-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--cream);
+  padding: 0 32px;
+  white-space: nowrap;
+}
+
+.ribbon-author {
+  color: var(--yellow);
+  font-weight: 800;
+}
+
+.ribbon-dot {
+  color: var(--yellow);
+  font-size: 0.6rem;
+  margin-left: 20px;
+}
+
 .feedback-container {
   max-width: 500px;
   width: 100%;
