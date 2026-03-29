@@ -1,0 +1,265 @@
+.feedback-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 24px auto;
+  padding: 20px 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 20px;
+}
+
+.feedback-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin-bottom: 4px;
+}
+
+.feedback-subtitle {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+}
+
+/* ---- Letterbox ---- */
+.letterbox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto 28px;
+  width: 120px;
+}
+
+.letterbox-top {
+  width: 100px;
+  background: #cc2200;
+  border-radius: 50% 50% 0 0;
+  padding: 10px 0 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  border: 3px solid #991a00;
+  border-bottom: none;
+}
+
+.letterbox-crown {
+  width: 32px;
+  height: 18px;
+  background: #ffd700;
+  clip-path: polygon(0% 100%, 20% 0%, 40% 60%, 60% 0%, 80% 60%, 100% 0%, 100% 100%);
+}
+
+.letterbox-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ffd700;
+  letter-spacing: 0.15em;
+}
+
+.letterbox-body {
+  width: 100px;
+  height: 80px;
+  background: #cc2200;
+  border-left: 3px solid #991a00;
+  border-right: 3px solid #991a00;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.letterbox-slot {
+  width: 60px;
+  height: 10px;
+  background: #1a1a1a;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+  transition: transform 0.15s;
+}
+
+.letterbox-slot.posting {
+  transform: scaleY(1.4);
+}
+
+.slot-line {
+  width: 40px;
+  height: 1px;
+  background: rgba(255,255,255,0.15);
+}
+
+.posted-message {
+  position: absolute;
+  bottom: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffd700;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.letterbox-base {
+  width: 110px;
+  height: 14px;
+  background: #991a00;
+  border-radius: 0 0 8px 8px;
+}
+
+/* ---- Write a note ---- */
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fffdf5;
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 28px;
+  position: relative;
+}
+
+.note-form::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 40px;
+  right: 40px;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, var(--yellow) 0px, var(--yellow) 8px, transparent 8px, transparent 14px);
+  border-radius: 2px;
+}
+
+.author-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.author-btn {
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--brown);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.author-btn.selected {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: var(--white);
+}
+
+.note-input {
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--brown);
+  background: var(--white);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+}
+
+.note-input:focus {
+  border-color: var(--green-dark);
+}
+
+.post-button {
+  padding: 12px;
+  background: #cc2200;
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.post-button:hover {
+  background: #991a00;
+}
+
+.post-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---- Posted notes ---- */
+.notes-heading {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin: 0 0 12px;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.note-card {
+  background: #fffdf5;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  border-left: 4px solid var(--purple);
+}
+
+.note-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.note-author {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--purple);
+}
+
+.note-date {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+  flex: 1;
+}
+
+.note-delete {
+  background: none;
+  border: none;
+  color: #c8b8a8;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.note-delete:hover {
+  color: var(--purple);
+}
+
+.note-message {
+  font-size: 0.95rem;
+  color: var(--brown);
+  margin: 0;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

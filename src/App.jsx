@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import GroceryList from "./components/GroceryList";
 import RecipeList from "./components/RecipeList";
 import MealPlan from "./components/MealPlan";
+import Feedback from "./components/Feedback";
 import Login from "./components/Login";
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
         <Route path="/groceries" element={<GroceryList />} />
         <Route path="/recipes" element={<RecipeList />} />
         <Route path="/meals" element={<MealPlan />} />
+        <Route path="/feedback" element={<Feedback />} />
       </Routes>
     </BrowserRouter>
   );
