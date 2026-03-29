@@ -50,6 +50,58 @@
   margin: 0;
 }
 
+.music-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 16px;
+  max-width: 420px;
+  width: 100%;
+}
+
+.music-note {
+  font-size: 1.1rem;
+  color: var(--green-dark);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.music-title {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--brown);
+}
+
+.music-toggle {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.music-toggle:hover {
+  background: var(--cream);
+}
+
+.youtube-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .days-widget {
   display: flex;
   flex-direction: row;
