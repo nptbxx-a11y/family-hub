@@ -86,14 +86,23 @@ export default function RecipeList() {
     if (!form.link.trim()) return;
     setFetchingIngredients(true);
     setFetchMessage("");
+    const isInstagram = form.link.includes("instagram.com");
     try {
       const res = await fetch(`/api/parse-recipe?url=${encodeURIComponent(form.link.trim())}`);
       const data = await res.json();
       if (data.ingredients) {
         setForm((f) => ({ ...f, ingredients: data.ingredients }));
-        setFetchMessage("✓ Ingredients imported!");
+        setFetchMessage(data.source === "instagram_caption"
+          ? "✓ Ingredients found in the caption — check and edit if needed!"
+          : "✓ Ingredients imported!");
+      } else if (data.message === "instagram_no_caption") {
+        setFetchMessage("Instagram blocked access to this reel. Try making the post is public, or add ingredients manually.");
+      } else if (data.message === "instagram_no_ingredients") {
+        setFetchMessage("Caption found but no ingredient list detected — this reel may be voiceover only. Add ingredients manually.");
       } else {
-        setFetchMessage("Couldn't find ingredients on that page — try adding them manually.");
+        setFetchMessage(isInstagram
+          ? "No ingredient list found in the caption — this reel may be voiceover only. Add ingredients manually."
+          : "Couldn't find ingredients on that page — try adding them manually.");
       }
     } catch {
       setFetchMessage("Something went wrong — try adding ingredients manually.");
@@ -179,7 +188,7 @@ export default function RecipeList() {
             />
             {form.link.trim() && (
               <button type="button" className="fetch-btn" onClick={fetchIngredients} disabled={fetchingIngredients}>
-                {fetchingIngredients ? "..." : "🔍 Get ingredients"}
+                {fetchingIngredients ? "..." : form.link.includes("instagram.com") ? "📸 Scan reel" : "🔍 Get ingredients"}
               </button>
             )}
           </div>
