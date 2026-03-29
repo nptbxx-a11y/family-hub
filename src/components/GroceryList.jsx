@@ -51,6 +51,11 @@ export default function GroceryList() {
     await supabase.from("groceries").delete().eq("id", id);
   };
 
+  const togglePriority = async (item) => {
+    const next = item.priority === "urgent" ? "later" : "urgent";
+    await supabase.from("groceries").update({ priority: next }).eq("id", item.id);
+  };
+
   const unchecked = items
     .filter((item) => !item.checked)
     .sort((a, b) => (a.priority === "urgent" ? -1 : 1));
@@ -94,7 +99,9 @@ export default function GroceryList() {
               onClick={() => toggleItem(item)}
               aria-label="Mark as got"
             />
-            <span className="item-priority">{item.priority === "urgent" ? "⚡" : "💤"}</span>
+            <button className="item-priority" onClick={() => togglePriority(item)} title="Change priority">
+              {item.priority === "urgent" ? "⚡" : "💤"}
+            </button>
             <span className="item-name">{item.name}</span>
             <button
               className="delete-button"

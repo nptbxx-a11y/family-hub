@@ -67,6 +67,17 @@
 .item-priority {
   font-size: 0.95rem;
   flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+
+.item-priority:hover {
+  background: rgba(0,0,0,0.06);
 }
 
 .add-button {
