@@ -1,10 +1,10 @@
 .home-container {
   min-height: calc(100vh - 60px);
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 24px 20px;
-  gap: 20px;
+  position: relative;
 }
 
 .home-card {
@@ -39,7 +39,9 @@
   background: var(--purple);
   border-radius: 16px;
   padding: 20px 24px;
-  flex-shrink: 0;
+  position: absolute;
+  top: 24px;
+  right: 24px;
   width: 140px;
 }
 
@@ -57,11 +59,6 @@
   margin-top: 4px;
 }
 
-.days-since {
-  font-size: 0.8rem;
-  color: rgba(245, 240, 232, 0.6);
-  margin-top: 4px;
-}
 
 .home-links {
   display: flex;

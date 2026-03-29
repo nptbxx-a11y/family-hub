@@ -18,7 +18,6 @@ export default function Home() {
       <div className="days-widget">
         <span className="days-number">{days}</span>
         <span className="days-label">days together</span>
-        <span className="days-since">since 9 July 2025</span>
       </div>
 
       <div className="home-card">
