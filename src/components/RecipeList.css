@@ -229,6 +229,37 @@
   cursor: not-allowed;
 }
 
+.form-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  margin: 0 0 4px;
+}
+
+.recipe-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-recipe-button {
+  padding: 6px 12px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--green-dark);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-recipe-button:hover {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
+}
+
 .delete-recipe-button {
   align-self: flex-start;
   padding: 6px 12px;

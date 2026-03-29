@@ -3,21 +3,17 @@ import { supabase } from "../supabase";
 import "./RecipeList.css";
 
 const CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snacks", "Other"];
+const EMPTY_FORM = { name: "", link: "", category: "Dinner", ingredients: "", notes: "" };
 
 export default function RecipeList() {
   const [recipes, setRecipes] = useState([]);
   const [expanded, setExpanded] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [activeCategory, setActiveCategory] = useState("All");
   const [adding, setAdding] = useState(false);
   const [selectedIngredients, setSelectedIngredients] = useState({});
-  const [form, setForm] = useState({
-    name: "",
-    link: "",
-    category: "Dinner",
-    ingredients: "",
-    notes: "",
-  });
+  const [form, setForm] = useState(EMPTY_FORM);
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -37,7 +33,6 @@ export default function RecipeList() {
     return () => supabase.removeChannel(channel);
   }, []);
 
-  // When a recipe is expanded, pre-select all its ingredients
   const handleExpand = (recipe) => {
     const isOpening = expanded !== recipe.id;
     setExpanded(isOpening ? recipe.id : null);
@@ -60,20 +55,49 @@ export default function RecipeList() {
     }));
   };
 
+  const openAddForm = () => {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setShowForm(true);
+  };
+
+  const openEditForm = (recipe) => {
+    setEditingId(recipe.id);
+    setForm({
+      name: recipe.name,
+      link: recipe.link || "",
+      category: recipe.category,
+      ingredients: recipe.ingredients || "",
+      notes: recipe.notes || "",
+    });
+    setShowForm(true);
+  };
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
 
-    await supabase.from("recipes").insert({
+    const payload = {
       name: form.name.trim(),
       link: form.link.trim(),
       category: form.category,
       ingredients: form.ingredients.trim(),
       notes: form.notes.trim(),
-    });
+    };
 
-    setForm({ name: "", link: "", category: "Dinner", ingredients: "", notes: "" });
-    setShowForm(false);
+    if (editingId) {
+      await supabase.from("recipes").update(payload).eq("id", editingId);
+    } else {
+      await supabase.from("recipes").insert(payload);
+    }
+
+    closeForm();
   };
 
   const deleteRecipe = async (id) => {
@@ -109,13 +133,14 @@ export default function RecipeList() {
     <div className="recipe-container">
       <div className="recipe-header">
         <h1 className="recipe-title">Recipes</h1>
-        <button className="add-recipe-button" onClick={() => setShowForm(!showForm)}>
+        <button className="add-recipe-button" onClick={showForm ? closeForm : openAddForm}>
           {showForm ? "Cancel" : "+ Add Recipe"}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="recipe-form">
+          <p className="form-title">{editingId ? "Edit Recipe" : "New Recipe"}</p>
           <input
             className="form-input"
             placeholder="Recipe name"
@@ -152,7 +177,9 @@ export default function RecipeList() {
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={3}
           />
-          <button type="submit" className="submit-button">Save Recipe</button>
+          <button type="submit" className="submit-button">
+            {editingId ? "Save Changes" : "Save Recipe"}
+          </button>
         </form>
       )}
 
@@ -227,9 +254,14 @@ export default function RecipeList() {
                     <pre className="detail-text">{recipe.notes}</pre>
                   </div>
                 )}
-                <button className="delete-recipe-button" onClick={() => deleteRecipe(recipe.id)}>
-                  Delete recipe
-                </button>
+                <div className="recipe-actions">
+                  <button className="edit-recipe-button" onClick={() => openEditForm(recipe)}>
+                    Edit recipe
+                  </button>
+                  <button className="delete-recipe-button" onClick={() => deleteRecipe(recipe.id)}>
+                    Delete recipe
+                  </button>
+                </div>
               </div>
             )}
           </li>
