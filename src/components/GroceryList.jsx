@@ -6,6 +6,8 @@ export default function GroceryList() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState("");
   const [priority, setPriority] = useState("later");
+  const [editingId, setEditingId] = useState(null);
+  const [editingName, setEditingName] = useState("");
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -57,10 +59,60 @@ export default function GroceryList() {
     await supabase.from("groceries").update({ priority: next }).eq("id", item.id);
   };
 
+  const startEdit = (item) => {
+    setEditingId(item.id);
+    setEditingName(item.name);
+  };
+
+  const saveEdit = async (id) => {
+    const trimmed = editingName.trim();
+    if (!trimmed) return;
+    setItems(prev => prev.map(i => i.id === id ? { ...i, name: trimmed } : i));
+    setEditingId(null);
+    await supabase.from("groceries").update({ name: trimmed }).eq("id", id);
+  };
+
   const unchecked = items
     .filter((item) => !item.checked)
     .sort((a, b) => (a.priority === "urgent" ? -1 : 1));
   const checked = items.filter((item) => item.checked);
+
+  const renderItem = (item, isChecked) => (
+    <li key={item.id} className={"item" + (isChecked ? " checked" : "")}>
+      <button
+        className={"checkbox" + (isChecked ? " checked" : "")}
+        onClick={() => toggleItem(item)}
+        aria-label={isChecked ? "Mark as not got" : "Mark as got"}
+      >{isChecked ? "✓" : ""}</button>
+
+      {!isChecked && (
+        <button className="item-priority" onClick={() => togglePriority(item)} title="Change priority">
+          {item.priority === "urgent" ? "⚡" : "💤"}
+        </button>
+      )}
+
+      {editingId === item.id ? (
+        <input
+          className="edit-input"
+          value={editingName}
+          onChange={(e) => setEditingName(e.target.value)}
+          onBlur={() => saveEdit(item.id)}
+          onKeyDown={(e) => e.key === "Enter" && saveEdit(item.id)}
+          autoFocus
+        />
+      ) : (
+        <span className="item-name" onClick={() => !isChecked && startEdit(item)}>
+          {item.name}
+        </span>
+      )}
+
+      <button
+        className="delete-button"
+        onClick={() => deleteItem(item.id)}
+        aria-label="Remove item"
+      >✕</button>
+    </li>
+  );
 
   return (
     <div className="page-bg">
@@ -93,51 +145,14 @@ export default function GroceryList() {
       </form>
 
       <ul className="item-list">
-        {unchecked.map((item) => (
-          <li key={item.id} className="item">
-            <button
-              className="checkbox"
-              onClick={() => toggleItem(item)}
-              aria-label="Mark as got"
-            />
-            <button className="item-priority" onClick={() => togglePriority(item)} title="Change priority">
-              {item.priority === "urgent" ? "⚡" : "💤"}
-            </button>
-            <span className="item-name">{item.name}</span>
-            <button
-              className="delete-button"
-              onClick={() => deleteItem(item.id)}
-              aria-label="Remove item"
-            >
-              ✕
-            </button>
-          </li>
-        ))}
+        {unchecked.map((item) => renderItem(item, false))}
       </ul>
 
       {checked.length > 0 && (
         <>
           <p className="got-label">Got</p>
           <ul className="item-list">
-            {checked.map((item) => (
-              <li key={item.id} className="item checked">
-                <button
-                  className="checkbox checked"
-                  onClick={() => toggleItem(item)}
-                  aria-label="Mark as not got"
-                >
-                  ✓
-                </button>
-                <span className="item-name">{item.name}</span>
-                <button
-                  className="delete-button"
-                  onClick={() => deleteItem(item.id)}
-                  aria-label="Remove item"
-                >
-                  ✕
-                </button>
-              </li>
-            ))}
+            {checked.map((item) => renderItem(item, true))}
           </ul>
         </>
       )}

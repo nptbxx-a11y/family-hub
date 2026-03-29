@@ -80,6 +80,18 @@
   background: rgba(0,0,0,0.06);
 }
 
+.edit-input {
+  flex: 1;
+  padding: 4px 8px;
+  border: 2px solid var(--green-dark);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--brown);
+  outline: none;
+}
+
 .add-button {
   padding: 12px 20px;
   background: var(--green-dark);
