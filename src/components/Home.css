@@ -1,9 +1,10 @@
 .home-container {
   min-height: calc(100vh - 60px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 24px 20px;
+  gap: 20px;
 }
 
 .home-card {
@@ -38,7 +39,8 @@
   background: var(--purple);
   border-radius: 16px;
   padding: 20px 24px;
-  margin-bottom: 28px;
+  flex-shrink: 0;
+  width: 140px;
 }
 
 .days-number {

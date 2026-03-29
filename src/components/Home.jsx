@@ -15,15 +15,15 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      <div className="days-widget">
+        <span className="days-number">{days}</span>
+        <span className="days-label">days together</span>
+        <span className="days-since">since 9 July 2025</span>
+      </div>
+
       <div className="home-card">
         <h1 className="home-title">Br Br Family Hub</h1>
         <p className="home-subtitle">Welcome back, Nick & Laura</p>
-
-        <div className="days-widget">
-          <span className="days-number">{days}</span>
-          <span className="days-label">days together</span>
-          <span className="days-since">since 9 July 2025</span>
-        </div>
 
         <div className="home-links">
           <Link to="/groceries" className="home-link">
