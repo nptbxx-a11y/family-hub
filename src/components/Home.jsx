@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import "./Home.css";
 
 const MET_DATE = new Date("2025-07-09");
@@ -23,17 +22,6 @@ export default function Home() {
       <div className="home-card">
         <h1 className="home-title">Br Br Family Hub</h1>
         <p className="home-subtitle">Welcome back, Nick & Laura</p>
-
-        <div className="home-links">
-          <Link to="/groceries" className="home-link">
-            <span className="home-link-icon">🛒</span>
-            <span className="home-link-label">Grocery List</span>
-          </Link>
-          <Link to="/recipes" className="home-link">
-            <span className="home-link-icon">🍳</span>
-            <span className="home-link-label">Recipes</span>
-          </Link>
-        </div>
       </div>
     </div>
   );
