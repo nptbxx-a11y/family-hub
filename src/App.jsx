@@ -5,6 +5,7 @@ import NavBar from "./components/NavBar";
 import Home from "./components/Home";
 import GroceryList from "./components/GroceryList";
 import RecipeList from "./components/RecipeList";
+import MealPlan from "./components/MealPlan";
 import Login from "./components/Login";
 
 export default function App() {
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/groceries" element={<GroceryList />} />
         <Route path="/recipes" element={<RecipeList />} />
+        <Route path="/meals" element={<MealPlan />} />
       </Routes>
     </BrowserRouter>
   );

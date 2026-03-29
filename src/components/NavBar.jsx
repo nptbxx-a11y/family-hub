@@ -31,6 +31,9 @@ export default function NavBar({ onLogout }) {
           <NavLink to="/recipes" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             🍳 Recipes
           </NavLink>
+          <NavLink to="/meals" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
+            🗓️ This Week's Meals
+          </NavLink>
         </nav>
         <button className="sidebar-logout" onClick={onLogout}>Log out</button>
       </div>
