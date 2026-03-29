@@ -32,17 +32,37 @@ export default function MealPlan() {
 
   const assignMeal = async (day, recipe) => {
     const existing = getMealForDay(day);
+    // Optimistic update
     if (existing) {
-      await supabase.from("meal_plan").update({ recipe_id: recipe.id, recipe_name: recipe.name }).eq("id", existing.id);
+      setMeals((prev) => prev.map((m) => m.id === existing.id ? { ...m, recipe_id: recipe.id, recipe_name: recipe.name } : m));
+      const { error } = await supabase.from("meal_plan").update({ recipe_id: recipe.id, recipe_name: recipe.name }).eq("id", existing.id);
+      if (error) {
+        alert("Couldn't save meal: " + error.message);
+        setMeals((prev) => prev.map((m) => m.id === existing.id ? existing : m));
+      }
     } else {
-      await supabase.from("meal_plan").insert({ day_of_week: day, recipe_id: recipe.id, recipe_name: recipe.name });
+      const tempId = "temp-" + day;
+      setMeals((prev) => [...prev, { id: tempId, day_of_week: day, recipe_id: recipe.id, recipe_name: recipe.name }]);
+      const { data, error } = await supabase.from("meal_plan").insert({ day_of_week: day, recipe_id: recipe.id, recipe_name: recipe.name }).select().single();
+      if (error) {
+        alert("Couldn't save meal: " + error.message);
+        setMeals((prev) => prev.filter((m) => m.id !== tempId));
+      } else if (data) {
+        setMeals((prev) => prev.map((m) => m.id === tempId ? data : m));
+      }
     }
     setPicking(null);
   };
 
   const clearMeal = async (day) => {
     const existing = getMealForDay(day);
-    if (existing) await supabase.from("meal_plan").delete().eq("id", existing.id);
+    if (!existing) return;
+    // Optimistic update
+    setMeals((prev) => prev.filter((m) => m.id !== existing.id));
+    const { error } = await supabase.from("meal_plan").delete().eq("id", existing.id);
+    if (error) {
+      setMeals((prev) => [...prev, existing]);
+    }
   };
 
   return (
