@@ -3,18 +3,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  height: 56px;
-  background: white;
-  border-bottom: 1px solid #e5e7eb;
+  height: 60px;
+  background: var(--green-dark);
+  border-bottom: 3px solid var(--yellow);
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .navbar-brand {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #6366f1;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--cream);
   letter-spacing: 0.05em;
 }
 
@@ -25,37 +25,38 @@
 
 .nav-link {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 20px;
   text-decoration: none;
   font-size: 0.95rem;
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.8);
   transition: background 0.2s, color 0.2s;
 }
 
 .nav-link:hover {
-  background: #f3f4f6;
-  color: #1a1a1a;
+  background: rgba(255,255,255,0.15);
+  color: var(--cream);
 }
 
 .nav-link.active {
-  background: #eef2ff;
-  color: #6366f1;
+  background: var(--yellow);
+  color: var(--brown);
 }
 
 .logout-button {
   padding: 8px 16px;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: white;
+  border-radius: 20px;
+  border: 2px solid rgba(245, 240, 232, 0.4);
+  background: transparent;
   font-size: 0.9rem;
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: 600;
+  color: rgba(245, 240, 232, 0.8);
   cursor: pointer;
   transition: all 0.2s;
+  font-family: inherit;
 }
 
 .logout-button:hover {
-  border-color: #ef4444;
-  color: #ef4444;
+  border-color: var(--cream);
+  color: var(--cream);
 }

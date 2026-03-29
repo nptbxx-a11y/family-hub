@@ -2,7 +2,35 @@
   box-sizing: border-box;
 }
 
+:root {
+  --green-dark: #4a7c3f;
+  --green-light: #8db84a;
+  --yellow: #d4b84a;
+  --purple: #7c4a7c;
+  --cream: #f5f0e8;
+  --brown: #2d2417;
+  --border: #c8d8a8;
+  --white: #ffffff;
+}
+
 body {
   margin: 0;
-  background: #f9fafb;
+  font-family: 'Nunito', sans-serif;
+  background-color: var(--cream);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 19px,
+      rgba(141, 184, 74, 0.25) 19px,
+      rgba(141, 184, 74, 0.25) 20px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 19px,
+      rgba(141, 184, 74, 0.25) 19px,
+      rgba(141, 184, 74, 0.25) 20px
+    );
+  min-height: 100vh;
 }
