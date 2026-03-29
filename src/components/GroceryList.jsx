@@ -55,6 +55,7 @@ export default function GroceryList() {
   const checked = items.filter((item) => item.checked);
 
   return (
+    <div className="page-bg">
     <div className="grocery-container">
       <h1 className="grocery-title">Grocery List</h1>
 
@@ -117,6 +118,7 @@ export default function GroceryList() {
           </ul>
         </>
       )}
+    </div>
     </div>
   );
 }

@@ -105,6 +105,7 @@ export default function RecipeList() {
       : recipes.filter((r) => r.category === activeCategory);
 
   return (
+    <div className="page-bg">
     <div className="recipe-container">
       <div className="recipe-header">
         <h1 className="recipe-title">Recipes</h1>
@@ -234,6 +235,7 @@ export default function RecipeList() {
           </li>
         ))}
       </ul>
+    </div>
     </div>
   );
 }
