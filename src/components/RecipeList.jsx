@@ -3,6 +3,77 @@ import { supabase } from "../supabase";
 import "./RecipeList.css";
 
 const CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snacks", "Other"];
+
+// ── Cuisine auto-detection ──
+const CUISINE_KEYWORDS = {
+  Asian: [
+    "fried rice", "egg fried", "pad thai", "stir fry", "stir-fry", "ramen", "pho", "dim sum",
+    "dumpling", "wonton", "teriyaki", "miso", "kimchi", "sushi", "sashimi", "tempura",
+    "kra pao", "pad kra", "pad see ew", "larb", "som tam", "gyoza", "baozi", "bao bun",
+    "satay", "laksa", "rendang", "nasi goreng", "fried noodle",
+    "soy sauce", "sesame oil", "fish sauce", "oyster sauce", "hoisin", "gochujang",
+    "lemongrass", "galangal", "sriracha", "bok choy", "tofu", "edamame", "nori",
+    "rice wine", "mirin", "dashi", "rice noodle", "glass noodle",
+  ],
+  Italian: [
+    "pasta", "spaghetti", "penne", "rigatoni", "linguine", "fettuccine", "tagliatelle",
+    "lasagne", "lasagna", "pizza", "risotto", "gnocchi", "arancini", "carbonara",
+    "bolognese", "arrabiata", "amatriciana", "cacio e pepe", "puttanesca",
+    "parmesan", "parmigiano", "mozzarella", "prosciutto", "pancetta", "ricotta",
+    "pecorino", "pesto", "marinara", "focaccia", "ciabatta", "tiramisu", "cannoli",
+    "biscotti", "bruschetta", "calzone", "antipasto",
+  ],
+  Indian: [
+    "curry", "masala", "tikka", "biryani", "dal", "dhal", "lentil", "naan", "roti",
+    "chapati", "ghee", "turmeric", "garam masala", "cardamom", "fenugreek", "paneer",
+    "chutney", "samosa", "basmati", "tandoori", "korma", "vindaloo", "saag", "aloo",
+    "chana", "rajma", "palak", "bhaji", "pakora", "dosa", "idli", "raita",
+    "cumin seeds", "mustard seeds", "curry leaves", "asafoetida",
+  ],
+  Mexican: [
+    "taco", "burrito", "enchilada", "quesadilla", "salsa", "guacamole", "jalapeño",
+    "jalapeno", "chipotle", "tortilla", "fajita", "tamale", "nachos", "refried beans",
+    "carne asada", "carnitas", "tomatillo", "poblano", "ancho", "mole", "churro",
+    "pico de gallo", "sour cream", "cheddar",
+  ],
+  "Middle Eastern": [
+    "hummus", "falafel", "shawarma", "kebab", "tahini", "zaatar", "za'atar", "sumac",
+    "pita", "flatbread", "bulgur", "pomegranate molasses", "harissa", "baharat",
+    "ras el hanout", "dukkah", "fattoush", "tabbouleh", "baba ganoush", "kofta",
+    "halloumi", "labneh", "freekeh",
+  ],
+  Mediterranean: [
+    "feta", "tzatziki", "moussaka", "spanakopita", "gyros", "calamari", "olives",
+    "capers", "artichoke", "sundried tomato", "greek salad", "orzo",
+  ],
+  French: [
+    "bechamel", "béchamel", "roux", "creme brulee", "crème brûlée", "souffle", "soufflé",
+    "croissant", "brioche", "quiche", "cassoulet", "ratatouille", "bouillabaisse",
+    "coq au vin", "crepe", "crêpe", "gratin", "dijon", "tarragon", "beurre blanc",
+    "vichyssoise", "confit", "velouté",
+  ],
+  American: [
+    "burger", "bbq", "barbecue", "mac and cheese", "macaroni and cheese", "pancake",
+    "waffle", "pulled pork", "coleslaw", "cornbread", "buffalo", "ranch dressing",
+    "cheeseburger", "hot dog", "brownie", "cheesecake",
+  ],
+  British: [
+    "shepherd's pie", "shepherds pie", "cottage pie", "bangers", "yorkshire pudding",
+    "sunday roast", "fish and chips", "scone", "crumble", "treacle", "marmite",
+    "pasty", "sausage roll", "jacket potato", "toad in the hole", "spotted dick",
+  ],
+};
+
+function detectCuisine(name, ingredients) {
+  const text = (name + " " + ingredients).toLowerCase();
+  const scores = {};
+  for (const [cuisine, keywords] of Object.entries(CUISINE_KEYWORDS)) {
+    scores[cuisine] = keywords.filter((kw) => text.includes(kw.toLowerCase())).length;
+  }
+  const [best, count] = Object.entries(scores).sort(([, a], [, b]) => b - a)[0];
+  return count > 0 ? best : null;
+}
+
 const CUISINES = [
   { name: "Italian",        emoji: "🍝" },
   { name: "Asian",          emoji: "🍜" },
@@ -98,10 +169,16 @@ export default function RecipeList() {
       const res = await fetch(`/api/parse-recipe?url=${encodeURIComponent(form.link.trim())}`);
       const data = await res.json();
       if (data.ingredients) {
-        setForm((f) => ({ ...f, ingredients: data.ingredients }));
+        const detected = detectCuisine(form.name, data.ingredients);
+        setForm((f) => ({
+          ...f,
+          ingredients: data.ingredients,
+          ...(detected && f.cuisine === "Other" ? { cuisine: detected } : {}),
+        }));
+        const cuisineNote = detected && form.cuisine === "Other" ? ` Cuisine set to ${detected}.` : "";
         setFetchMessage(data.source === "instagram_caption"
-          ? "✓ Ingredients found in the caption — check and edit if needed!"
-          : "✓ Ingredients imported!");
+          ? `✓ Ingredients found in the caption — check and edit if needed!${cuisineNote}`
+          : `✓ Ingredients imported!${cuisineNote}`);
       } else if (data.message === "instagram_no_caption") {
         setFetchMessage("Instagram blocked access to this reel. Make sure the post is public, or add ingredients manually.");
       } else if (data.message === "instagram_no_ingredients") {
@@ -120,11 +197,14 @@ export default function RecipeList() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
+    const detectedCuisine = form.cuisine === "Other"
+      ? (detectCuisine(form.name.trim(), form.ingredients.trim()) || "Other")
+      : form.cuisine;
     const payload = {
       name: form.name.trim(),
       link: form.link.trim(),
       category: form.category,
-      cuisine: form.cuisine,
+      cuisine: detectedCuisine,
       ingredients: form.ingredients.trim(),
       notes: form.notes.trim(),
     };
