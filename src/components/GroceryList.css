@@ -36,6 +36,39 @@
   border-color: var(--green-dark);
 }
 
+.priority-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.priority-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.priority-btn:hover {
+  border-color: var(--green-dark);
+}
+
+.priority-btn.selected {
+  border-color: var(--green-dark);
+  background: var(--green-dark);
+}
+
+.item-priority {
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
 .add-button {
   padding: 12px 20px;
   background: var(--green-dark);

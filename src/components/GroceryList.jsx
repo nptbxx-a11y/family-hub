@@ -5,10 +5,9 @@ import "./GroceryList.css";
 export default function GroceryList() {
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState("");
+  const [priority, setPriority] = useState("later");
 
-  // Load items and listen for real-time changes
   useEffect(() => {
-    // Initial load
     const fetchItems = async () => {
       const { data } = await supabase
         .from("groceries")
@@ -36,8 +35,9 @@ export default function GroceryList() {
     const trimmed = newItem.trim();
     if (!trimmed) return;
 
-    await supabase.from("groceries").insert({ name: trimmed, checked: false });
+    await supabase.from("groceries").insert({ name: trimmed, checked: false, priority });
     setNewItem("");
+    setPriority("later");
   };
 
   const toggleItem = async (item) => {
@@ -51,7 +51,9 @@ export default function GroceryList() {
     await supabase.from("groceries").delete().eq("id", id);
   };
 
-  const unchecked = items.filter((item) => !item.checked);
+  const unchecked = items
+    .filter((item) => !item.checked)
+    .sort((a, b) => (a.priority === "urgent" ? -1 : 1));
   const checked = items.filter((item) => item.checked);
 
   return (
@@ -67,9 +69,21 @@ export default function GroceryList() {
           placeholder="Add an item..."
           className="add-input"
         />
-        <button type="submit" className="add-button">
-          Add
-        </button>
+        <div className="priority-toggle">
+          <button
+            type="button"
+            className={"priority-btn" + (priority === "urgent" ? " selected" : "")}
+            onClick={() => setPriority("urgent")}
+            title="Urgent"
+          >⚡</button>
+          <button
+            type="button"
+            className={"priority-btn" + (priority === "later" ? " selected" : "")}
+            onClick={() => setPriority("later")}
+            title="Later"
+          >💤</button>
+        </div>
+        <button type="submit" className="add-button">Add</button>
       </form>
 
       <ul className="item-list">
@@ -80,6 +94,7 @@ export default function GroceryList() {
               onClick={() => toggleItem(item)}
               aria-label="Mark as got"
             />
+            <span className="item-priority">{item.priority === "urgent" ? "⚡" : "💤"}</span>
             <span className="item-name">{item.name}</span>
             <button
               className="delete-button"
