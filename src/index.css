@@ -3,34 +3,34 @@
 }
 
 :root {
-  --green-dark: #4a7c3f;
-  --green-light: #8db84a;
+  --green-dark: #5a9e2f;
+  --green-light: #a8d44a;
   --yellow: #d4b84a;
   --purple: #7c4a7c;
   --cream: #f5f0e8;
   --brown: #2d2417;
-  --border: #c8d8a8;
+  --border: #b8d88a;
   --white: #ffffff;
 }
 
 body {
   margin: 0;
   font-family: 'Nunito', sans-serif;
-  background-color: var(--cream);
+  background-color: var(--white);
   background-image:
     repeating-linear-gradient(
       0deg,
-      transparent,
-      transparent 19px,
-      rgba(141, 184, 74, 0.25) 19px,
-      rgba(141, 184, 74, 0.25) 20px
+      rgba(168, 212, 74, 0.55) 0px,
+      rgba(168, 212, 74, 0.55) 30px,
+      transparent 30px,
+      transparent 60px
     ),
     repeating-linear-gradient(
       90deg,
-      transparent,
-      transparent 19px,
-      rgba(141, 184, 74, 0.25) 19px,
-      rgba(141, 184, 74, 0.25) 20px
+      rgba(168, 212, 74, 0.55) 0px,
+      rgba(168, 212, 74, 0.55) 30px,
+      transparent 30px,
+      transparent 60px
     );
   min-height: 100vh;
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { supabase } from "./supabase";
 import NavBar from "./components/NavBar";
+import Home from "./components/Home";
 import GroceryList from "./components/GroceryList";
 import RecipeList from "./components/RecipeList";
 import Login from "./components/Login";
@@ -32,7 +33,8 @@ export default function App() {
     <BrowserRouter>
       <NavBar onLogout={() => supabase.auth.signOut()} />
       <Routes>
-        <Route path="/" element={<GroceryList />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/groceries" element={<GroceryList />} />
         <Route path="/recipes" element={<RecipeList />} />
       </Routes>
     </BrowserRouter>
