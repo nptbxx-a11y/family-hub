@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./Home.css";
 import coupleImg from "../assets/couple.png";
 
 const MET_DATE = new Date("2025-07-09");
-const YOUTUBE_ID = "pO40TcKa_5U";
+const YOUTUBE_ID = "tMDFv5m18Pw";
 
 function getDaysTogether() {
   const today = new Date();
@@ -15,23 +15,58 @@ function getDaysTogether() {
 export default function Home() {
   const days = getDaysTogether();
   const [playing, setPlaying] = useState(false);
-  const iframeRef = useRef(null);
+  const [ready, setReady] = useState(false);
+  const playerRef = useRef(null);
 
-  const srcUrl = `https://www.youtube.com/embed/${YOUTUBE_ID}?enablejsapi=1&loop=1&playlist=${YOUTUBE_ID}&controls=0&modestbranding=1`;
+  useEffect(() => {
+    // Load YouTube IFrame API script once
+    if (!window.YT) {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.head.appendChild(tag);
+    }
 
-  const sendCommand = (func) => {
-    iframeRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ event: "command", func }),
-      "*"
-    );
-  };
+    window.onYouTubeIframeAPIReady = () => {
+      playerRef.current = new window.YT.Player("yt-player", {
+        videoId: YOUTUBE_ID,
+        playerVars: {
+          controls: 0,
+          loop: 1,
+          playlist: YOUTUBE_ID,
+          modestbranding: 1,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => setReady(true),
+        },
+      });
+    };
+
+    // If API already loaded (e.g. revisiting page)
+    if (window.YT && window.YT.Player && !playerRef.current) {
+      playerRef.current = new window.YT.Player("yt-player", {
+        videoId: YOUTUBE_ID,
+        playerVars: {
+          controls: 0,
+          loop: 1,
+          playlist: YOUTUBE_ID,
+          modestbranding: 1,
+          playsinline: 1,
+        },
+        events: {
+          onReady: () => setReady(true),
+        },
+      });
+    }
+  }, []);
 
   const togglePlay = () => {
+    if (!playerRef.current) return;
     if (playing) {
-      sendCommand("pauseVideo");
+      playerRef.current.pauseVideo();
       setPlaying(false);
     } else {
-      sendCommand("playVideo");
+      playerRef.current.playVideo();
       setPlaying(true);
     }
   };
@@ -40,10 +75,10 @@ export default function Home() {
     <div className="home-container">
       <div className="home-card">
         <div className="couple-icon">
-          <img src={coupleImg} alt="Nick and Laura" className="couple-img" />
+          <img src={coupleImg} alt="Ozzy and Tommy" className="couple-img" />
         </div>
         <h1 className="home-title">Br Br Family Hub</h1>
-        <p className="home-subtitle">Welcome back, Nick & Laura</p>
+        <p className="home-subtitle">Welcome back, Ozzy & Tommy</p>
       </div>
 
       <div className="days-widget">
@@ -53,19 +88,14 @@ export default function Home() {
 
       <div className="music-bar">
         <span className="music-note" style={{ opacity: playing ? 1 : 0.4 }}>♪</span>
-        <span className="music-title">You Gotta Be — Des'ree</span>
-        <button className="music-toggle" onClick={togglePlay}>
+        <span className="music-title">Crazy Train — Ozzy Osbourne</span>
+        <button className="music-toggle" onClick={togglePlay} disabled={!ready}>
           {playing ? "⏸" : "▶"}
         </button>
       </div>
 
-      <iframe
-        ref={iframeRef}
-        className="youtube-hidden"
-        src={srcUrl}
-        allow="autoplay"
-        title="background music"
-      />
+      {/* Hidden YouTube player div — API replaces this with an iframe */}
+      <div id="yt-player" className="youtube-hidden" />
     </div>
   );
 }

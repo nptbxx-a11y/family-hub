@@ -19,7 +19,7 @@ export default function GroceryList() {
     };
     fetchItems();
 
-    // Listen for any changes made by you or Laura
+    // Listen for any changes made by you or Tommy
     const channel = supabase
       .channel("groceries")
       .on(

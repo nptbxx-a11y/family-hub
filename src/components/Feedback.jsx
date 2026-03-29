@@ -5,7 +5,7 @@ import "./Feedback.css";
 export default function Feedback() {
   const [notes, setNotes] = useState([]);
   const [message, setMessage] = useState("");
-  const [author, setAuthor] = useState("Nick");
+  const [author, setAuthor] = useState("Ozzy");
   const [posting, setPosting] = useState(false);
   const [posted, setPosted] = useState(false);
 
@@ -75,14 +75,14 @@ export default function Feedback() {
           <div className="author-toggle">
             <button
               type="button"
-              className={"author-btn" + (author === "Nick" ? " selected" : "")}
-              onClick={() => setAuthor("Nick")}
-            >Nick</button>
+              className={"author-btn" + (author === "Ozzy" ? " selected" : "")}
+              onClick={() => setAuthor("Ozzy")}
+            >Ozzy</button>
             <button
               type="button"
-              className={"author-btn" + (author === "Laura" ? " selected" : "")}
-              onClick={() => setAuthor("Laura")}
-            >Laura</button>
+              className={"author-btn" + (author === "Tommy" ? " selected" : "")}
+              onClick={() => setAuthor("Tommy")}
+            >Tommy</button>
           </div>
           <textarea
             className="note-input"
