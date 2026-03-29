@@ -53,6 +53,7 @@ export default function GroceryList() {
 
   const togglePriority = async (item) => {
     const next = item.priority === "urgent" ? "later" : "urgent";
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, priority: next } : i));
     await supabase.from("groceries").update({ priority: next }).eq("id", item.id);
   };
 
