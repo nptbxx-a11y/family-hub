@@ -3,14 +3,27 @@ import { supabase } from "../supabase";
 import "./RecipeList.css";
 
 const CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snacks", "Other"];
-const EMPTY_FORM = { name: "", link: "", category: "Dinner", ingredients: "", notes: "" };
+const CUISINES = [
+  { name: "Italian",        emoji: "🍝" },
+  { name: "Asian",          emoji: "🍜" },
+  { name: "Indian",         emoji: "🍛" },
+  { name: "Mexican",        emoji: "🌮" },
+  { name: "Middle Eastern", emoji: "🥙" },
+  { name: "Mediterranean",  emoji: "🫒" },
+  { name: "French",         emoji: "🥐" },
+  { name: "American",       emoji: "🍔" },
+  { name: "British",        emoji: "🫖" },
+  { name: "Other",          emoji: "🌍" },
+];
+const EMPTY_FORM = { name: "", link: "", category: "Dinner", cuisine: "Other", ingredients: "", notes: "" };
 
 export default function RecipeList() {
   const [recipes, setRecipes] = useState([]);
+  const [activeCuisine, setActiveCuisine] = useState(null);
+  const [activeCategory, setActiveCategory] = useState("All");
   const [expanded, setExpanded] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("All");
   const [adding, setAdding] = useState(false);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [form, setForm] = useState(EMPTY_FORM);
@@ -38,12 +51,8 @@ export default function RecipeList() {
   const handleExpand = (recipe) => {
     const isOpening = expanded !== recipe.id;
     setExpanded(isOpening ? recipe.id : null);
-
     if (isOpening && recipe.ingredients) {
-      const lines = recipe.ingredients
-        .split("\n")
-        .map((l) => l.trim())
-        .filter((l) => l.length > 0);
+      const lines = recipe.ingredients.split("\n").map((l) => l.trim()).filter(Boolean);
       const allSelected = {};
       lines.forEach((line) => (allSelected[line] = true));
       setSelectedIngredients(allSelected);
@@ -51,15 +60,12 @@ export default function RecipeList() {
   };
 
   const toggleIngredient = (ingredient) => {
-    setSelectedIngredients((prev) => ({
-      ...prev,
-      [ingredient]: !prev[ingredient],
-    }));
+    setSelectedIngredients((prev) => ({ ...prev, [ingredient]: !prev[ingredient] }));
   };
 
   const openAddForm = () => {
     setEditingId(null);
-    setForm(EMPTY_FORM);
+    setForm({ ...EMPTY_FORM, cuisine: activeCuisine || "Other" });
     setShowForm(true);
   };
 
@@ -69,6 +75,7 @@ export default function RecipeList() {
       name: recipe.name,
       link: recipe.link || "",
       category: recipe.category,
+      cuisine: recipe.cuisine || "Other",
       ingredients: recipe.ingredients || "",
       notes: recipe.notes || "",
     });
@@ -96,7 +103,7 @@ export default function RecipeList() {
           ? "✓ Ingredients found in the caption — check and edit if needed!"
           : "✓ Ingredients imported!");
       } else if (data.message === "instagram_no_caption") {
-        setFetchMessage("Instagram blocked access to this reel. Try making the post is public, or add ingredients manually.");
+        setFetchMessage("Instagram blocked access to this reel. Make sure the post is public, or add ingredients manually.");
       } else if (data.message === "instagram_no_ingredients") {
         setFetchMessage("Caption found but no ingredient list detected — this reel may be voiceover only. Add ingredients manually.");
       } else {
@@ -113,21 +120,19 @@ export default function RecipeList() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return;
-
     const payload = {
       name: form.name.trim(),
       link: form.link.trim(),
       category: form.category,
+      cuisine: form.cuisine,
       ingredients: form.ingredients.trim(),
       notes: form.notes.trim(),
     };
-
     if (editingId) {
       await supabase.from("recipes").update(payload).eq("id", editingId);
     } else {
       await supabase.from("recipes").insert(payload);
     }
-
     closeForm();
   };
 
@@ -137,138 +142,105 @@ export default function RecipeList() {
   };
 
   const addSelectedToGroceries = async () => {
-    const toAdd = Object.entries(selectedIngredients)
-      .filter(([, checked]) => checked)
-      .map(([name]) => name);
-
-    if (toAdd.length === 0) return;
+    const toAdd = Object.entries(selectedIngredients).filter(([, v]) => v).map(([k]) => k);
+    if (!toAdd.length) return;
     setAdding(true);
-
-    await Promise.all(
-      toAdd.map((name) =>
-        supabase.from("groceries").insert({ name, checked: false })
-      )
-    );
-
+    await Promise.all(toAdd.map((name) => supabase.from("groceries").insert({ name, checked: false })));
     setAdding(false);
     alert(toAdd.length + " ingredient" + (toAdd.length > 1 ? "s" : "") + " added to your grocery list!");
   };
 
-  const filtered =
-    activeCategory === "All"
-      ? recipes
-      : recipes.filter((r) => r.category === activeCategory);
+  // Count recipes per cuisine
+  const countFor = (cuisine) => recipes.filter((r) => (r.cuisine || "Other") === cuisine).length;
 
+  // Filtered recipes when inside a cuisine
+  const inCuisine = activeCuisine
+    ? recipes.filter((r) => (r.cuisine || "Other") === activeCuisine)
+    : [];
+  const filtered = activeCategory === "All"
+    ? inCuisine
+    : inCuisine.filter((r) => r.category === activeCategory);
+
+  // ── Cuisine grid view ──
+  if (!activeCuisine) {
+    return (
+      <div className="page-bg">
+        <div className="recipe-container">
+          <div className="recipe-header">
+            <h1 className="recipe-title">Recipes</h1>
+            <button className="add-recipe-button" onClick={showForm ? closeForm : openAddForm}>
+              {showForm ? "Cancel" : "+ Add Recipe"}
+            </button>
+          </div>
+
+          {showForm && renderForm()}
+
+          <div className="cuisine-grid">
+            {CUISINES.map((c) => (
+              <button
+                key={c.name}
+                className="cuisine-tile"
+                onClick={() => { setActiveCuisine(c.name); setActiveCategory("All"); setExpanded(null); }}
+                disabled={countFor(c.name) === 0}
+              >
+                <span className="cuisine-emoji">{c.emoji}</span>
+                <span className="cuisine-name">{c.name}</span>
+                <span className="cuisine-count">{countFor(c.name)} recipe{countFor(c.name) !== 1 ? "s" : ""}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Recipe list view (inside a cuisine) ──
+  const cuisineObj = CUISINES.find((c) => c.name === activeCuisine);
   return (
     <div className="page-bg">
-    <div className="recipe-container">
-      <div className="recipe-header">
-        <h1 className="recipe-title">Recipes</h1>
-        <button className="add-recipe-button" onClick={showForm ? closeForm : openAddForm}>
-          {showForm ? "Cancel" : "+ Add Recipe"}
-        </button>
-      </div>
-
-      {showForm && (
-        <form onSubmit={handleSubmit} className="recipe-form">
-          <p className="form-title">{editingId ? "Edit Recipe" : "New Recipe"}</p>
-          <input
-            className="form-input"
-            placeholder="Recipe name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-          <div className="link-row">
-            <input
-              className="form-input link-input"
-              placeholder="Link to recipe (optional)"
-              value={form.link}
-              onChange={(e) => setForm({ ...form, link: e.target.value })}
-            />
-            {form.link.trim() && (
-              <button type="button" className="fetch-btn" onClick={fetchIngredients} disabled={fetchingIngredients}>
-                {fetchingIngredients ? "..." : form.link.includes("instagram.com") ? "📸 Scan reel" : "🔍 Get ingredients"}
-              </button>
-            )}
+      <div className="recipe-container">
+        <div className="recipe-header">
+          <div className="cuisine-back-header">
+            <button className="back-button" onClick={() => { setActiveCuisine(null); setExpanded(null); setShowForm(false); }}>
+              ← Cuisines
+            </button>
+            <h1 className="recipe-title">{cuisineObj?.emoji} {activeCuisine}</h1>
           </div>
-          {fetchMessage && <p className="fetch-message">{fetchMessage}</p>}
-          <select
-            className="form-input"
-            value={form.category}
-            onChange={(e) => setForm({ ...form, category: e.target.value })}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
-          <textarea
-            className="form-input"
-            placeholder="Ingredients (one per line)"
-            value={form.ingredients}
-            onChange={(e) => setForm({ ...form, ingredients: e.target.value })}
-            rows={5}
-          />
-          <textarea
-            className="form-input"
-            placeholder="Notes (optional)"
-            value={form.notes}
-            onChange={(e) => setForm({ ...form, notes: e.target.value })}
-            rows={3}
-          />
-          <button type="submit" className="submit-button">
-            {editingId ? "Save Changes" : "Save Recipe"}
+          <button className="add-recipe-button" onClick={showForm ? closeForm : openAddForm}>
+            {showForm ? "Cancel" : "+ Add Recipe"}
           </button>
-        </form>
-      )}
+        </div>
 
-      <div className="category-tabs">
-        {["All", ...CATEGORIES].map((c) => (
-          <button
-            key={c}
-            className={"category-tab " + (activeCategory === c ? "active" : "")}
-            onClick={() => setActiveCategory(c)}
-          >
-            {c}
-          </button>
-        ))}
-      </div>
+        {showForm && renderForm()}
 
-      <ul className="recipe-list">
-        {filtered.length === 0 && (
-          <p className="empty-message">No recipes yet - add one above!</p>
-        )}
-        {filtered.map((recipe) => (
-          <li key={recipe.id} className="recipe-item">
-            <div className="recipe-row" onClick={() => handleExpand(recipe)}>
-              <div>
-                <span className="recipe-name">{recipe.name}</span>
-                <span className="recipe-category">{recipe.category}</span>
+        <div className="category-tabs">
+          {["All", ...CATEGORIES].map((c) => (
+            <button key={c} className={"category-tab " + (activeCategory === c ? "active" : "")} onClick={() => setActiveCategory(c)}>
+              {c}
+            </button>
+          ))}
+        </div>
+
+        <ul className="recipe-list">
+          {filtered.length === 0 && <p className="empty-message">No {activeCategory !== "All" ? activeCategory.toLowerCase() + " " : ""}recipes in {activeCuisine} yet!</p>}
+          {filtered.map((recipe) => (
+            <li key={recipe.id} className="recipe-item">
+              <div className="recipe-row" onClick={() => handleExpand(recipe)}>
+                <div>
+                  <span className="recipe-name">{recipe.name}</span>
+                  <span className="recipe-category">{recipe.category}</span>
+                </div>
+                <span className="recipe-chevron">{expanded === recipe.id ? "▲" : "▼"}</span>
               </div>
-              <span className="recipe-chevron">{expanded === recipe.id ? "▲" : "▼"}</span>
-            </div>
-
-            {expanded === recipe.id && (
-              <div className="recipe-detail">
-                {recipe.link && (
-                  <a href={recipe.link} target="_blank" rel="noreferrer" className="recipe-link">
-                    View full recipe
-                  </a>
-                )}
-                {recipe.ingredients && (
-                  <div className="detail-section">
-                    <p className="detail-label">Ingredients - tick what you need</p>
-                    <ul className="ingredient-list">
-                      {recipe.ingredients
-                        .split("\n")
-                        .map((l) => l.trim())
-                        .filter((l) => l.length > 0)
-                        .map((ingredient) => (
-                          <li
-                            key={ingredient}
-                            className="ingredient-item"
-                            onClick={() => toggleIngredient(ingredient)}
-                          >
+              {expanded === recipe.id && (
+                <div className="recipe-detail">
+                  {recipe.link && <a href={recipe.link} target="_blank" rel="noreferrer" className="recipe-link">View full recipe</a>}
+                  {recipe.ingredients && (
+                    <div className="detail-section">
+                      <p className="detail-label">Ingredients - tick what you need</p>
+                      <ul className="ingredient-list">
+                        {recipe.ingredients.split("\n").map((l) => l.trim()).filter(Boolean).map((ingredient) => (
+                          <li key={ingredient} className="ingredient-item" onClick={() => toggleIngredient(ingredient)}>
                             <span className={"ingredient-checkbox " + (selectedIngredients[ingredient] ? "checked" : "")}>
                               {selectedIngredients[ingredient] ? "✓" : ""}
                             </span>
@@ -277,36 +249,57 @@ export default function RecipeList() {
                             </span>
                           </li>
                         ))}
-                    </ul>
-                    <button
-                      className="grocery-button"
-                      onClick={addSelectedToGroceries}
-                      disabled={adding || Object.values(selectedIngredients).every((v) => !v)}
-                    >
-                      {adding ? "Adding..." : "Add selected to Grocery List"}
-                    </button>
+                      </ul>
+                      <button className="grocery-button" onClick={addSelectedToGroceries} disabled={adding || Object.values(selectedIngredients).every((v) => !v)}>
+                        {adding ? "Adding..." : "Add selected to Grocery List"}
+                      </button>
+                    </div>
+                  )}
+                  {recipe.notes && (
+                    <div className="detail-section">
+                      <p className="detail-label">Notes</p>
+                      <pre className="detail-text">{recipe.notes}</pre>
+                    </div>
+                  )}
+                  <div className="recipe-actions">
+                    <button className="edit-recipe-button" onClick={() => openEditForm(recipe)}>Edit recipe</button>
+                    <button className="delete-recipe-button" onClick={() => deleteRecipe(recipe.id)}>Delete recipe</button>
                   </div>
-                )}
-                {recipe.notes && (
-                  <div className="detail-section">
-                    <p className="detail-label">Notes</p>
-                    <pre className="detail-text">{recipe.notes}</pre>
-                  </div>
-                )}
-                <div className="recipe-actions">
-                  <button className="edit-recipe-button" onClick={() => openEditForm(recipe)}>
-                    Edit recipe
-                  </button>
-                  <button className="delete-recipe-button" onClick={() => deleteRecipe(recipe.id)}>
-                    Delete recipe
-                  </button>
                 </div>
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
-    </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
+
+  function renderForm() {
+    return (
+      <form onSubmit={handleSubmit} className="recipe-form">
+        <p className="form-title">{editingId ? "Edit Recipe" : "New Recipe"}</p>
+        <input className="form-input" placeholder="Recipe name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+        <div className="link-row">
+          <input className="form-input link-input" placeholder="Link to recipe (optional)" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} />
+          {form.link.trim() && (
+            <button type="button" className="fetch-btn" onClick={fetchIngredients} disabled={fetchingIngredients}>
+              {fetchingIngredients ? "..." : form.link.includes("instagram.com") ? "📸 Scan reel" : "🔍 Get ingredients"}
+            </button>
+          )}
+        </div>
+        {fetchMessage && <p className="fetch-message">{fetchMessage}</p>}
+        <div className="form-row">
+          <select className="form-input" value={form.cuisine} onChange={(e) => setForm({ ...form, cuisine: e.target.value })}>
+            {CUISINES.map((c) => <option key={c.name} value={c.name}>{c.emoji} {c.name}</option>)}
+          </select>
+          <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <textarea className="form-input" placeholder="Ingredients (one per line)" value={form.ingredients} onChange={(e) => setForm({ ...form, ingredients: e.target.value })} rows={5} />
+        <textarea className="form-input" placeholder="Notes (optional)" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} />
+        <button type="submit" className="submit-button">{editingId ? "Save Changes" : "Save Recipe"}</button>
+      </form>
+    );
+  }
 }

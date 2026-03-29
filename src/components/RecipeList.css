@@ -326,6 +326,94 @@
   padding: 40px 0;
 }
 
+/* ── Cuisine grid ── */
+.cuisine-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.cuisine-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 20px 12px;
+  background: var(--white);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.cuisine-tile:hover:not(:disabled) {
+  border-color: var(--green-dark);
+  background: var(--cream);
+  transform: translateY(-2px);
+}
+
+.cuisine-tile:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cuisine-emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.cuisine-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--brown);
+}
+
+.cuisine-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--green-dark);
+}
+
+/* ── Back button header ── */
+.cuisine-back-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-button {
+  padding: 6px 12px;
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--green-dark);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.back-button:hover {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
+}
+
+/* ── Form row (cuisine + category side by side) ── */
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.form-row .form-input {
+  flex: 1;
+  min-width: 0;
+}
+
 .ingredient-list {
   list-style: none;
   padding: 0;

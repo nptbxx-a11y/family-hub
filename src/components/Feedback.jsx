@@ -75,7 +75,6 @@ export default function Feedback() {
         <h1 className="feedback-title">Feedback Box</h1>
         <p className="feedback-subtitle">Post ideas and thoughts for improving the app</p>
         {dbError && <p style={{color:"red", fontSize:"0.85rem"}}>{dbError}</p>}
-        <p style={{color:"#aaa", fontSize:"0.75rem"}}>{notes.length} note(s) loaded</p>
 
         {/* Letterbox */}
         <div className="letterbox">
