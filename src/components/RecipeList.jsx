@@ -14,6 +14,8 @@ export default function RecipeList() {
   const [adding, setAdding] = useState(false);
   const [selectedIngredients, setSelectedIngredients] = useState({});
   const [form, setForm] = useState(EMPTY_FORM);
+  const [fetchingIngredients, setFetchingIngredients] = useState(false);
+  const [fetchMessage, setFetchMessage] = useState("");
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -77,6 +79,26 @@ export default function RecipeList() {
     setShowForm(false);
     setEditingId(null);
     setForm(EMPTY_FORM);
+    setFetchMessage("");
+  };
+
+  const fetchIngredients = async () => {
+    if (!form.link.trim()) return;
+    setFetchingIngredients(true);
+    setFetchMessage("");
+    try {
+      const res = await fetch(`/api/parse-recipe?url=${encodeURIComponent(form.link.trim())}`);
+      const data = await res.json();
+      if (data.ingredients) {
+        setForm((f) => ({ ...f, ingredients: data.ingredients }));
+        setFetchMessage("✓ Ingredients imported!");
+      } else {
+        setFetchMessage("Couldn't find ingredients on that page — try adding them manually.");
+      }
+    } catch {
+      setFetchMessage("Something went wrong — try adding ingredients manually.");
+    }
+    setFetchingIngredients(false);
   };
 
   const handleSubmit = async (e) => {
@@ -148,12 +170,20 @@ export default function RecipeList() {
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
           />
-          <input
-            className="form-input"
-            placeholder="Link to recipe (optional)"
-            value={form.link}
-            onChange={(e) => setForm({ ...form, link: e.target.value })}
-          />
+          <div className="link-row">
+            <input
+              className="form-input link-input"
+              placeholder="Link to recipe (optional)"
+              value={form.link}
+              onChange={(e) => setForm({ ...form, link: e.target.value })}
+            />
+            {form.link.trim() && (
+              <button type="button" className="fetch-btn" onClick={fetchIngredients} disabled={fetchingIngredients}>
+                {fetchingIngredients ? "..." : "🔍 Get ingredients"}
+              </button>
+            )}
+          </div>
+          {fetchMessage && <p className="fetch-message">{fetchMessage}</p>}
           <select
             className="form-input"
             value={form.category}

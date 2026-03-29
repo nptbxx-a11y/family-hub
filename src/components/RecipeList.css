@@ -230,6 +230,47 @@
   cursor: not-allowed;
 }
 
+.link-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.link-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.fetch-btn {
+  padding: 10px 14px;
+  background: var(--green-dark);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.fetch-btn:hover {
+  background: var(--green-light);
+}
+
+.fetch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.fetch-message {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin: 0;
+}
+
 .form-title {
   font-size: 1rem;
   font-weight: 700;
