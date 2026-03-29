@@ -8,14 +8,19 @@ export default function Feedback() {
   const [author, setAuthor] = useState("Ozzy");
   const [posting, setPosting] = useState(false);
   const [posted, setPosted] = useState(false);
+  const [dbError, setDbError] = useState("");
 
   useEffect(() => {
     const fetchNotes = async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("feedback")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (data) setNotes(data);
+        .select("*");
+      if (error) {
+        setDbError("DB error: " + error.message);
+      } else {
+        setNotes(data || []);
+        setDbError("");
+      }
     };
     fetchNotes();
 
@@ -69,6 +74,8 @@ export default function Feedback() {
       <div className="feedback-container">
         <h1 className="feedback-title">Feedback Box</h1>
         <p className="feedback-subtitle">Post ideas and thoughts for improving the app</p>
+        {dbError && <p style={{color:"red", fontSize:"0.85rem"}}>{dbError}</p>}
+        <p style={{color:"#aaa", fontSize:"0.75rem"}}>{notes.length} note(s) loaded</p>
 
         {/* Letterbox */}
         <div className="letterbox">
