@@ -33,9 +33,8 @@ function toDateKey(date) {
 }
 
 function formatDayLabel(date) {
-  const dayName = date.toLocaleDateString("en-GB", { weekday: "long" });
+  const dayName = date.toLocaleDateString("en-GB", { weekday: "short" });
   const day = date.getDate();
-  // Show month name only on the 1st so the transition is obvious
   if (day === 1) {
     const month = date.toLocaleDateString("en-GB", { month: "short" });
     return `${dayName} ${day}${ordinalSuffix(day)} ${month}`;
