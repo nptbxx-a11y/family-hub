@@ -93,7 +93,7 @@ export default function MealPlan() {
                       onClick={() => toggleCooked(meal)}
                       title={meal.cooked ? "Mark as not made" : "Mark as made"}
                     >
-                      {meal.cooked ? "✓" : "○"}
+                      🧑‍🍳
                     </button>
                     <span className={"day-meal-name" + (meal.cooked ? " cooked" : "")}>{meal.recipe_name}</span>
                     <button className="day-change" onClick={() => { setPicking(day); setFreeText(""); }}>Change</button>
