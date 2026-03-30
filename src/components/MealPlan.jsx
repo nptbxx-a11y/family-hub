@@ -7,7 +7,8 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 export default function MealPlan() {
   const [meals, setMeals] = useState([]);
   const [recipes, setRecipes] = useState([]);
-  const [picking, setPicking] = useState(null); // day name currently being picked for
+  const [picking, setPicking] = useState(null);
+  const [freeText, setFreeText] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,20 +31,19 @@ export default function MealPlan() {
 
   const getMealForDay = (day) => meals.find((m) => m.day_of_week === day);
 
-  const assignMeal = async (day, recipe) => {
+  const assignMeal = async (day, mealName, recipeId = null) => {
     const existing = getMealForDay(day);
-    // Optimistic update
     if (existing) {
-      setMeals((prev) => prev.map((m) => m.id === existing.id ? { ...m, recipe_id: recipe.id, recipe_name: recipe.name } : m));
-      const { error } = await supabase.from("meal_plan").update({ recipe_id: recipe.id, recipe_name: recipe.name }).eq("id", existing.id);
+      setMeals((prev) => prev.map((m) => m.id === existing.id ? { ...m, recipe_id: recipeId, recipe_name: mealName, cooked: false } : m));
+      const { error } = await supabase.from("meal_plan").update({ recipe_id: recipeId, recipe_name: mealName, cooked: false }).eq("id", existing.id);
       if (error) {
         alert("Couldn't save meal: " + error.message);
         setMeals((prev) => prev.map((m) => m.id === existing.id ? existing : m));
       }
     } else {
       const tempId = "temp-" + day;
-      setMeals((prev) => [...prev, { id: tempId, day_of_week: day, recipe_id: recipe.id, recipe_name: recipe.name }]);
-      const { data, error } = await supabase.from("meal_plan").insert({ day_of_week: day, recipe_id: recipe.id, recipe_name: recipe.name }).select().single();
+      setMeals((prev) => [...prev, { id: tempId, day_of_week: day, recipe_id: recipeId, recipe_name: mealName, cooked: false }]);
+      const { data, error } = await supabase.from("meal_plan").insert({ day_of_week: day, recipe_id: recipeId, recipe_name: mealName, cooked: false }).select().single();
       if (error) {
         alert("Couldn't save meal: " + error.message);
         setMeals((prev) => prev.filter((m) => m.id !== tempId));
@@ -52,16 +52,25 @@ export default function MealPlan() {
       }
     }
     setPicking(null);
+    setFreeText("");
   };
 
   const clearMeal = async (day) => {
     const existing = getMealForDay(day);
     if (!existing) return;
-    // Optimistic update
     setMeals((prev) => prev.filter((m) => m.id !== existing.id));
     const { error } = await supabase.from("meal_plan").delete().eq("id", existing.id);
     if (error) {
       setMeals((prev) => [...prev, existing]);
+    }
+  };
+
+  const toggleCooked = async (meal) => {
+    const newCooked = !meal.cooked;
+    setMeals((prev) => prev.map((m) => m.id === meal.id ? { ...m, cooked: newCooked } : m));
+    const { error } = await supabase.from("meal_plan").update({ cooked: newCooked }).eq("id", meal.id);
+    if (error) {
+      setMeals((prev) => prev.map((m) => m.id === meal.id ? meal : m));
     }
   };
 
@@ -79,12 +88,19 @@ export default function MealPlan() {
 
                 {meal ? (
                   <div className="day-meal">
-                    <span className="day-meal-name">{meal.recipe_name}</span>
-                    <button className="day-change" onClick={() => setPicking(day)}>Change</button>
+                    <button
+                      className={"day-cooked" + (meal.cooked ? " cooked" : "")}
+                      onClick={() => toggleCooked(meal)}
+                      title={meal.cooked ? "Mark as not made" : "Mark as made"}
+                    >
+                      {meal.cooked ? "✓" : "○"}
+                    </button>
+                    <span className={"day-meal-name" + (meal.cooked ? " cooked" : "")}>{meal.recipe_name}</span>
+                    <button className="day-change" onClick={() => { setPicking(day); setFreeText(""); }}>Change</button>
                     <button className="day-clear" onClick={() => clearMeal(day)}>✕</button>
                   </div>
                 ) : (
-                  <button className="day-add" onClick={() => setPicking(day)}>+ Add meal</button>
+                  <button className="day-add" onClick={() => { setPicking(day); setFreeText(""); }}>+ Add meal</button>
                 )}
               </div>
             );
@@ -98,9 +114,30 @@ export default function MealPlan() {
                 <span className="picker-title">Pick a meal for {picking}</span>
                 <button className="picker-close" onClick={() => setPicking(null)}>✕</button>
               </div>
+              <div className="picker-extras">
+                <button className="picker-eating-out" onClick={() => assignMeal(picking, "🍽️ Eating out")}>
+                  🍽️ Eating out
+                </button>
+                <div className="picker-freetext-row">
+                  <input
+                    className="picker-freetext-input"
+                    placeholder="Type a meal name..."
+                    value={freeText}
+                    onChange={(e) => setFreeText(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && freeText.trim() && assignMeal(picking, freeText.trim())}
+                  />
+                  <button
+                    className="picker-freetext-btn"
+                    onClick={() => freeText.trim() && assignMeal(picking, freeText.trim())}
+                    disabled={!freeText.trim()}
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
               <ul className="picker-list">
                 {recipes.map((r) => (
-                  <li key={r.id} className="picker-item" onClick={() => assignMeal(picking, r)}>
+                  <li key={r.id} className="picker-item" onClick={() => assignMeal(picking, r.name, r.id)}>
                     <span className="picker-recipe-name">{r.name}</span>
                     <span className="picker-recipe-category">{r.category}</span>
                   </li>
