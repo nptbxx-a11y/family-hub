@@ -31,11 +31,16 @@
 }
 
 .day-name {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: var(--green-dark);
-  width: 90px;
+  width: 130px;
   flex-shrink: 0;
+}
+
+.day-card.today {
+  border-color: var(--green-dark);
+  background: #f0f8e8;
 }
 
 .day-meal {

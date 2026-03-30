@@ -2,18 +2,65 @@ import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import "./MealPlan.css";
 
-const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+function ordinalSuffix(day) {
+  if (day >= 11 && day <= 13) return "th";
+  switch (day % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+}
+
+function getUpcomingDays() {
+  const days = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    days.push(d);
+  }
+  return days;
+}
+
+function toDateKey(date) {
+  // YYYY-MM-DD stored in day_of_week column
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function formatDayLabel(date) {
+  const dayName = date.toLocaleDateString("en-GB", { weekday: "long" });
+  const day = date.getDate();
+  // Show month name only on the 1st so the transition is obvious
+  if (day === 1) {
+    const month = date.toLocaleDateString("en-GB", { month: "short" });
+    return `${dayName} ${day}${ordinalSuffix(day)} ${month}`;
+  }
+  return `${dayName} ${day}${ordinalSuffix(day)}`;
+}
+
+function labelFromKey(dateKey) {
+  // parse safely at noon to avoid timezone edge cases
+  return formatDayLabel(new Date(dateKey + "T12:00:00"));
+}
 
 export default function MealPlan() {
   const [meals, setMeals] = useState([]);
   const [recipes, setRecipes] = useState([]);
-  const [picking, setPicking] = useState(null);
+  const [picking, setPicking] = useState(null); // dateKey string
   const [freeText, setFreeText] = useState("");
 
+  const upcomingDays = getUpcomingDays();
+
   useEffect(() => {
+    const keys = upcomingDays.map(toDateKey);
     const fetchData = async () => {
       const [{ data: mealData }, { data: recipeData }] = await Promise.all([
-        supabase.from("meal_plan").select("*"),
+        supabase.from("meal_plan").select("*").in("day_of_week", keys),
         supabase.from("recipes").select("id, name, category").order("name"),
       ]);
       if (mealData) setMeals(mealData);
@@ -29,10 +76,10 @@ export default function MealPlan() {
     return () => supabase.removeChannel(channel);
   }, []);
 
-  const getMealForDay = (day) => meals.find((m) => m.day_of_week === day);
+  const getMealForDay = (dateKey) => meals.find((m) => m.day_of_week === dateKey);
 
-  const assignMeal = async (day, mealName, recipeId = null) => {
-    const existing = getMealForDay(day);
+  const assignMeal = async (dateKey, mealName, recipeId = null) => {
+    const existing = getMealForDay(dateKey);
     if (existing) {
       setMeals((prev) => prev.map((m) => m.id === existing.id ? { ...m, recipe_id: recipeId, recipe_name: mealName, cooked: false } : m));
       const { error } = await supabase.from("meal_plan").update({ recipe_id: recipeId, recipe_name: mealName, cooked: false }).eq("id", existing.id);
@@ -41,9 +88,9 @@ export default function MealPlan() {
         setMeals((prev) => prev.map((m) => m.id === existing.id ? existing : m));
       }
     } else {
-      const tempId = "temp-" + day;
-      setMeals((prev) => [...prev, { id: tempId, day_of_week: day, recipe_id: recipeId, recipe_name: mealName, cooked: false }]);
-      const { data, error } = await supabase.from("meal_plan").insert({ day_of_week: day, recipe_id: recipeId, recipe_name: mealName, cooked: false }).select().single();
+      const tempId = "temp-" + dateKey;
+      setMeals((prev) => [...prev, { id: tempId, day_of_week: dateKey, recipe_id: recipeId, recipe_name: mealName, cooked: false }]);
+      const { data, error } = await supabase.from("meal_plan").insert({ day_of_week: dateKey, recipe_id: recipeId, recipe_name: mealName, cooked: false }).select().single();
       if (error) {
         alert("Couldn't save meal: " + error.message);
         setMeals((prev) => prev.filter((m) => m.id !== tempId));
@@ -55,8 +102,8 @@ export default function MealPlan() {
     setFreeText("");
   };
 
-  const clearMeal = async (day) => {
-    const existing = getMealForDay(day);
+  const clearMeal = async (dateKey) => {
+    const existing = getMealForDay(dateKey);
     if (!existing) return;
     setMeals((prev) => prev.filter((m) => m.id !== existing.id));
     const { error } = await supabase.from("meal_plan").delete().eq("id", existing.id);
@@ -80,11 +127,14 @@ export default function MealPlan() {
         <h1 className="meal-title">This Week's Meals</h1>
 
         <div className="days-list">
-          {DAYS.map((day) => {
-            const meal = getMealForDay(day);
+          {upcomingDays.map((date) => {
+            const dateKey = toDateKey(date);
+            const label = formatDayLabel(date);
+            const meal = getMealForDay(dateKey);
+            const isToday = dateKey === toDateKey(new Date());
             return (
-              <div key={day} className="day-card">
-                <span className="day-name">{day}</span>
+              <div key={dateKey} className={"day-card" + (isToday ? " today" : "")}>
+                <span className="day-name">{label}</span>
 
                 {meal ? (
                   <div className="day-meal">
@@ -96,11 +146,11 @@ export default function MealPlan() {
                       🧑‍🍳
                     </button>
                     <span className={"day-meal-name" + (meal.cooked ? " cooked" : "")}>{meal.recipe_name}</span>
-                    <button className="day-change" onClick={() => { setPicking(day); setFreeText(""); }}>Change</button>
-                    <button className="day-clear" onClick={() => clearMeal(day)}>✕</button>
+                    <button className="day-change" onClick={() => { setPicking(dateKey); setFreeText(""); }}>Change</button>
+                    <button className="day-clear" onClick={() => clearMeal(dateKey)}>✕</button>
                   </div>
                 ) : (
-                  <button className="day-add" onClick={() => { setPicking(day); setFreeText(""); }}>+ Add meal</button>
+                  <button className="day-add" onClick={() => { setPicking(dateKey); setFreeText(""); }}>+ Add meal</button>
                 )}
               </div>
             );
@@ -111,7 +161,7 @@ export default function MealPlan() {
           <div className="picker-overlay" onClick={() => setPicking(null)}>
             <div className="picker-modal" onClick={(e) => e.stopPropagation()}>
               <div className="picker-header">
-                <span className="picker-title">Pick a meal for {picking}</span>
+                <span className="picker-title">Pick a meal for {labelFromKey(picking)}</span>
                 <button className="picker-close" onClick={() => setPicking(null)}>✕</button>
               </div>
               <div className="picker-extras">
