@@ -144,19 +144,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 20px 12px;
-  background: var(--green-dark);
+  background: transparent;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .picker-title {
   font-size: 1rem;
   font-weight: 800;
-  color: var(--cream);
+  color: var(--brown);
 }
 
 .picker-close {
   background: none;
   border: none;
-  color: var(--cream);
+  color: var(--brown);
   font-size: 1.1rem;
   cursor: pointer;
   padding: 4px 8px;
