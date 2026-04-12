@@ -199,12 +199,16 @@ export default function RecipeList() {
     alert(toAdd.length + " ingredient" + (toAdd.length > 1 ? "s" : "") + " added to your grocery list!");
   };
 
+  // Normalise old cuisine values to "Other" if not a known protein
+  const PROTEIN_NAMES = PROTEINS.map((p) => p.name);
+  const toProtein = (cuisine) => PROTEIN_NAMES.includes(cuisine) ? cuisine : "Other";
+
   // Count recipes per protein
-  const countFor = (protein) => recipes.filter((r) => (r.cuisine || "Other") === protein).length;
+  const countFor = (protein) => recipes.filter((r) => toProtein(r.cuisine) === protein).length;
 
   // Filtered recipes when inside a protein
   const inProtein = activeCuisine
-    ? recipes.filter((r) => (r.cuisine || "Other") === activeCuisine)
+    ? recipes.filter((r) => toProtein(r.cuisine) === activeCuisine)
     : [];
   const filtered = activeCategory === "All"
     ? inProtein
