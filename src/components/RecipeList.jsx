@@ -76,7 +76,27 @@ export default function RecipeList() {
         .from("recipes")
         .select("*")
         .order("created_at", { ascending: false });
-      if (data) setRecipes(data);
+      if (!data) return;
+
+      // Auto-categorise any recipes that don't already have a protein value
+      const PROTEIN_NAMES = PROTEINS.map((p) => p.name);
+      const needsUpdate = data.filter((r) => !PROTEIN_NAMES.includes(r.cuisine));
+      if (needsUpdate.length > 0) {
+        await Promise.all(
+          needsUpdate.map((r) => {
+            const detected = detectProtein(r.name, r.ingredients || "") || "Other";
+            return supabase.from("recipes").update({ cuisine: detected }).eq("id", r.id);
+          })
+        );
+        // Re-fetch after updating
+        const { data: updated } = await supabase
+          .from("recipes")
+          .select("*")
+          .order("created_at", { ascending: false });
+        if (updated) setRecipes(updated);
+      } else {
+        setRecipes(data);
+      }
     };
     fetchRecipes();
 
