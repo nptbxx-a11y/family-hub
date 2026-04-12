@@ -4,87 +4,56 @@ import "./RecipeList.css";
 
 const CATEGORIES = ["Breakfast", "Lunch", "Dinner", "Dessert", "Snacks", "Other"];
 
-// ── Cuisine auto-detection ──
-const CUISINE_KEYWORDS = {
-  Asian: [
-    "fried rice", "egg fried", "pad thai", "stir fry", "stir-fry", "ramen", "pho", "dim sum",
-    "dumpling", "wonton", "teriyaki", "miso", "kimchi", "sushi", "sashimi", "tempura",
-    "kra pao", "pad kra", "pad see ew", "larb", "som tam", "gyoza", "baozi", "bao bun",
-    "satay", "laksa", "rendang", "nasi goreng", "fried noodle",
-    "soy sauce", "sesame oil", "fish sauce", "oyster sauce", "hoisin", "gochujang",
-    "lemongrass", "galangal", "sriracha", "bok choy", "tofu", "edamame", "nori",
-    "rice wine", "mirin", "dashi", "rice noodle", "glass noodle",
+// ── Protein auto-detection ──
+const PROTEIN_KEYWORDS = {
+  Chicken: [
+    "chicken", "poultry", "hen", "drumstick", "thigh", "breast fillet", "wing",
   ],
-  Italian: [
-    "pasta", "spaghetti", "penne", "rigatoni", "linguine", "fettuccine", "tagliatelle",
-    "lasagne", "lasagna", "pizza", "risotto", "gnocchi", "arancini", "carbonara",
-    "bolognese", "arrabiata", "amatriciana", "cacio e pepe", "puttanesca",
-    "parmesan", "parmigiano", "mozzarella", "prosciutto", "pancetta", "ricotta",
-    "pecorino", "pesto", "marinara", "focaccia", "ciabatta", "tiramisu", "cannoli",
-    "biscotti", "bruschetta", "calzone", "antipasto",
+  Beef: [
+    "beef", "steak", "mince", "ground beef", "brisket", "ribeye", "sirloin", "rump",
+    "chuck", "short rib", "oxtail", "veal",
   ],
-  Indian: [
-    "curry", "masala", "tikka", "biryani", "dal", "dhal", "lentil", "naan", "roti",
-    "chapati", "ghee", "turmeric", "garam masala", "cardamom", "fenugreek", "paneer",
-    "chutney", "samosa", "basmati", "tandoori", "korma", "vindaloo", "saag", "aloo",
-    "chana", "rajma", "palak", "bhaji", "pakora", "dosa", "idli", "raita",
-    "cumin seeds", "mustard seeds", "curry leaves", "asafoetida",
+  Pork: [
+    "pork", "bacon", "ham", "sausage", "chorizo", "pancetta", "prosciutto", "lardons",
+    "pulled pork", "gammon", "belly pork", "pork mince",
   ],
-  Mexican: [
-    "taco", "burrito", "enchilada", "quesadilla", "salsa", "guacamole", "jalapeño",
-    "jalapeno", "chipotle", "tortilla", "fajita", "tamale", "nachos", "refried beans",
-    "carne asada", "carnitas", "tomatillo", "poblano", "ancho", "mole", "churro",
-    "pico de gallo", "sour cream", "cheddar",
+  Fish: [
+    "salmon", "tuna", "cod", "haddock", "sea bass", "trout", "tilapia", "mackerel",
+    "halibut", "snapper", "bream", "sardine", "anchovy", "fish fillet", "fish",
   ],
-  "Middle Eastern": [
-    "hummus", "falafel", "shawarma", "kebab", "tahini", "zaatar", "za'atar", "sumac",
-    "pita", "flatbread", "bulgur", "pomegranate molasses", "harissa", "baharat",
-    "ras el hanout", "dukkah", "fattoush", "tabbouleh", "baba ganoush", "kofta",
-    "halloumi", "labneh", "freekeh",
+  Lamb: [
+    "lamb", "mutton", "rack of lamb", "lamb mince", "lamb chop", "lamb shank",
   ],
-  Mediterranean: [
-    "feta", "tzatziki", "moussaka", "spanakopita", "gyros", "calamari", "olives",
-    "capers", "artichoke", "sundried tomato", "greek salad", "orzo",
+  Seafood: [
+    "prawn", "shrimp", "crab", "lobster", "scallop", "mussel", "clam", "squid",
+    "octopus", "langoustine", "oyster", "seafood",
   ],
-  French: [
-    "bechamel", "béchamel", "roux", "creme brulee", "crème brûlée", "souffle", "soufflé",
-    "croissant", "brioche", "quiche", "cassoulet", "ratatouille", "bouillabaisse",
-    "coq au vin", "crepe", "crêpe", "gratin", "dijon", "tarragon", "beurre blanc",
-    "vichyssoise", "confit", "velouté",
-  ],
-  American: [
-    "burger", "bbq", "barbecue", "mac and cheese", "macaroni and cheese", "pancake",
-    "waffle", "pulled pork", "coleslaw", "cornbread", "buffalo", "ranch dressing",
-    "cheeseburger", "hot dog", "brownie", "cheesecake",
-  ],
-  British: [
-    "shepherd's pie", "shepherds pie", "cottage pie", "bangers", "yorkshire pudding",
-    "sunday roast", "fish and chips", "scone", "crumble", "treacle", "marmite",
-    "pasty", "sausage roll", "jacket potato", "toad in the hole", "spotted dick",
+  Veggie: [
+    "tofu", "tempeh", "lentil", "dal", "dhal", "chickpea", "black bean", "kidney bean",
+    "butter bean", "cannellini", "paneer", "halloumi", "quorn", "seitan",
+    "vegetarian", "vegan", "veggie",
   ],
 };
 
-function detectCuisine(name, ingredients) {
+function detectProtein(name, ingredients) {
   const text = (name + " " + ingredients).toLowerCase();
   const scores = {};
-  for (const [cuisine, keywords] of Object.entries(CUISINE_KEYWORDS)) {
-    scores[cuisine] = keywords.filter((kw) => text.includes(kw.toLowerCase())).length;
+  for (const [protein, keywords] of Object.entries(PROTEIN_KEYWORDS)) {
+    scores[protein] = keywords.filter((kw) => text.includes(kw.toLowerCase())).length;
   }
   const [best, count] = Object.entries(scores).sort(([, a], [, b]) => b - a)[0];
   return count > 0 ? best : null;
 }
 
-const CUISINES = [
-  { name: "Italian",        emoji: "🍝" },
-  { name: "Asian",          emoji: "🍜" },
-  { name: "Indian",         emoji: "🍛" },
-  { name: "Mexican",        emoji: "🌮" },
-  { name: "Middle Eastern", emoji: "🥙" },
-  { name: "Mediterranean",  emoji: "🫒" },
-  { name: "French",         emoji: "🥐" },
-  { name: "American",       emoji: "🍔" },
-  { name: "British",        emoji: "🫖" },
-  { name: "Other",          emoji: "🌍" },
+const PROTEINS = [
+  { name: "Chicken", emoji: "🍗" },
+  { name: "Beef",    emoji: "🥩" },
+  { name: "Pork",    emoji: "🥓" },
+  { name: "Fish",    emoji: "🐟" },
+  { name: "Lamb",    emoji: "🫕" },
+  { name: "Seafood", emoji: "🦐" },
+  { name: "Veggie",  emoji: "🥦" },
+  { name: "Other",   emoji: "🍽️" },
 ];
 const EMPTY_FORM = { name: "", link: "", category: "Dinner", cuisine: "Other", ingredients: "", notes: "" };
 
@@ -169,13 +138,13 @@ export default function RecipeList() {
       const res = await fetch(`/api/parse-recipe?url=${encodeURIComponent(form.link.trim())}`);
       const data = await res.json();
       if (data.ingredients) {
-        const detected = detectCuisine(form.name, data.ingredients);
+        const detected = detectProtein(form.name, data.ingredients);
         setForm((f) => ({
           ...f,
           ingredients: data.ingredients,
           ...(detected && f.cuisine === "Other" ? { cuisine: detected } : {}),
         }));
-        const cuisineNote = detected && form.cuisine === "Other" ? ` Cuisine set to ${detected}.` : "";
+        const cuisineNote = detected && form.cuisine === "Other" ? ` Category set to ${detected}.` : "";
         setFetchMessage(data.source === "instagram_caption"
           ? `✓ Ingredients found in the caption — check and edit if needed!${cuisineNote}`
           : `✓ Ingredients imported!${cuisineNote}`);
@@ -198,7 +167,7 @@ export default function RecipeList() {
     e.preventDefault();
     if (!form.name.trim()) return;
     const detectedCuisine = form.cuisine === "Other"
-      ? (detectCuisine(form.name.trim(), form.ingredients.trim()) || "Other")
+      ? (detectProtein(form.name.trim(), form.ingredients.trim()) || "Other")
       : form.cuisine;
     const payload = {
       name: form.name.trim(),
@@ -230,18 +199,18 @@ export default function RecipeList() {
     alert(toAdd.length + " ingredient" + (toAdd.length > 1 ? "s" : "") + " added to your grocery list!");
   };
 
-  // Count recipes per cuisine
-  const countFor = (cuisine) => recipes.filter((r) => (r.cuisine || "Other") === cuisine).length;
+  // Count recipes per protein
+  const countFor = (protein) => recipes.filter((r) => (r.cuisine || "Other") === protein).length;
 
-  // Filtered recipes when inside a cuisine
-  const inCuisine = activeCuisine
+  // Filtered recipes when inside a protein
+  const inProtein = activeCuisine
     ? recipes.filter((r) => (r.cuisine || "Other") === activeCuisine)
     : [];
   const filtered = activeCategory === "All"
-    ? inCuisine
-    : inCuisine.filter((r) => r.category === activeCategory);
+    ? inProtein
+    : inProtein.filter((r) => r.category === activeCategory);
 
-  // ── Cuisine grid view ──
+  // ── Protein grid view ──
   if (!activeCuisine) {
     return (
       <div className="page-bg">
@@ -256,7 +225,7 @@ export default function RecipeList() {
           {showForm && renderForm()}
 
           <div className="cuisine-grid">
-            {CUISINES.map((c) => (
+            {PROTEINS.map((c) => (
               <button
                 key={c.name}
                 className="cuisine-tile"
@@ -274,15 +243,15 @@ export default function RecipeList() {
     );
   }
 
-  // ── Recipe list view (inside a cuisine) ──
-  const cuisineObj = CUISINES.find((c) => c.name === activeCuisine);
+  // ── Recipe list view (inside a protein) ──
+  const cuisineObj = PROTEINS.find((c) => c.name === activeCuisine);
   return (
     <div className="page-bg">
       <div className="recipe-container">
         <div className="recipe-header">
           <div className="cuisine-back-header">
             <button className="back-button" onClick={() => { setActiveCuisine(null); setExpanded(null); setShowForm(false); }}>
-              ← Cuisines
+              ← Recipes
             </button>
             <h1 className="recipe-title">{cuisineObj?.emoji} {activeCuisine}</h1>
           </div>
@@ -302,7 +271,7 @@ export default function RecipeList() {
         </div>
 
         <ul className="recipe-list">
-          {filtered.length === 0 && <p className="empty-message">No {activeCategory !== "All" ? activeCategory.toLowerCase() + " " : ""}recipes in {activeCuisine} yet!</p>}
+          {filtered.length === 0 && <p className="empty-message">No {activeCategory !== "All" ? activeCategory.toLowerCase() + " " : ""}recipes here yet!</p>}
           {filtered.map((recipe) => (
             <li key={recipe.id} className="recipe-item">
               <div className="recipe-row" onClick={() => handleExpand(recipe)}>
@@ -370,7 +339,7 @@ export default function RecipeList() {
         {fetchMessage && <p className="fetch-message">{fetchMessage}</p>}
         <div className="form-row">
           <select className="form-input" value={form.cuisine} onChange={(e) => setForm({ ...form, cuisine: e.target.value })}>
-            {CUISINES.map((c) => <option key={c.name} value={c.name}>{c.emoji} {c.name}</option>)}
+            {PROTEINS.map((c) => <option key={c.name} value={c.name}>{c.emoji} {c.name}</option>)}
           </select>
           <select className="form-input" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
             {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}

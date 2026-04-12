@@ -1,0 +1,226 @@
+.todo-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 24px auto;
+  padding: 20px 16px;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 20px;
+}
+
+.todo-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--green-dark);
+  margin-bottom: 24px;
+}
+
+.todo-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.todo-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: var(--white);
+  outline: none;
+  color: var(--brown);
+  transition: border-color 0.2s;
+}
+
+.todo-input:focus {
+  border-color: var(--green-dark);
+}
+
+.assignee-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.assignee-btn {
+  padding: 0 14px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--brown);
+}
+
+.assignee-btn.selected.assignee-ozzy {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: var(--white);
+}
+
+.assignee-btn.selected.assignee-tommy {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
+}
+
+.assignee-btn.selected.assignee-both {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--brown);
+}
+
+.todo-add-btn {
+  padding: 12px 20px;
+  background: var(--green-dark);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.todo-add-btn:hover {
+  background: var(--green-light);
+}
+
+.todo-filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.todo-filter-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: var(--white);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  color: var(--brown);
+  transition: all 0.2s;
+}
+
+.todo-filter-btn.active {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.todo-checkbox {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  background: var(--cream);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+
+.todo-checkbox-done {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  color: var(--white);
+}
+
+.todo-task {
+  flex: 1;
+  font-size: 1rem;
+  color: var(--brown);
+  font-weight: 500;
+}
+
+.todo-task-done {
+  text-decoration: line-through;
+  color: #a0a0a0;
+}
+
+.todo-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+
+.badge-ozzy {
+  background: #f0e8f5;
+  color: var(--purple);
+}
+
+.badge-tommy {
+  background: #e8f5e8;
+  color: var(--green-dark);
+}
+
+.badge-both {
+  background: #fdf5d8;
+  color: #8a6e00;
+}
+
+.todo-delete {
+  background: none;
+  border: none;
+  color: #c8b8a8;
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  font-family: inherit;
+}
+
+.todo-delete:hover {
+  color: var(--purple);
+}
+
+.todo-done-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #a0a0a0;
+  margin: 20px 0 8px;
+}
+
+.todo-empty {
+  text-align: center;
+  color: #a0a0a0;
+  font-size: 0.95rem;
+  padding: 20px 0;
+}

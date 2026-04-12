@@ -10,7 +10,7 @@
 
 .ribbon-track {
   display: inline-flex;
-  animation: ribbon-scroll 30s linear infinite;
+  animation: ribbon-scroll 60s linear infinite;
 }
 
 .ribbon-wrapper:hover .ribbon-track {
