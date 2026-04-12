@@ -11,6 +11,14 @@ export default function GroceryList() {
 
   useEffect(() => {
     const fetchItems = async () => {
+      // Clear checked items older than 24 hours
+      const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      await supabase
+        .from("groceries")
+        .delete()
+        .eq("checked", true)
+        .lt("checked_at", cutoff);
+
       const { data } = await supabase
         .from("groceries")
         .select("*")
@@ -43,9 +51,10 @@ export default function GroceryList() {
   };
 
   const toggleItem = async (item) => {
+    const nowChecked = !item.checked;
     await supabase
       .from("groceries")
-      .update({ checked: !item.checked })
+      .update({ checked: nowChecked, checked_at: nowChecked ? new Date().toISOString() : null })
       .eq("id", item.id);
   };
 
