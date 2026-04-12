@@ -11,13 +11,10 @@ export default function GroceryList() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      // Clear checked items older than 24 hours
+      // Clear checked items older than 24 hours, or with no checked_at (checked before tracking began)
       const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      await supabase
-        .from("groceries")
-        .delete()
-        .eq("checked", true)
-        .lt("checked_at", cutoff);
+      await supabase.from("groceries").delete().eq("checked", true).lt("checked_at", cutoff);
+      await supabase.from("groceries").delete().eq("checked", true).is("checked_at", null);
 
       const { data } = await supabase
         .from("groceries")
