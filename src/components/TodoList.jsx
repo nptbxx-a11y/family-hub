@@ -64,19 +64,21 @@ export default function TodoList() {
             value={task}
             onChange={(e) => setTask(e.target.value)}
           />
-          <div className="assignee-toggle">
-            {ASSIGNEES.map((a) => (
-              <button
-                key={a}
-                type="button"
-                className={"assignee-btn assignee-" + a.toLowerCase() + (assignedTo === a ? " selected" : "")}
-                onClick={() => setAssignedTo(a)}
-              >
-                {a}
-              </button>
-            ))}
+          <div className="todo-form-row">
+            <div className="assignee-toggle">
+              {ASSIGNEES.map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  className={"assignee-btn assignee-" + a.toLowerCase() + (assignedTo === a ? " selected" : "")}
+                  onClick={() => setAssignedTo(a)}
+                >
+                  {a}
+                </button>
+              ))}
+            </div>
+            <button type="submit" className="todo-add-btn">Add</button>
           </div>
-          <button type="submit" className="todo-add-btn">Add</button>
         </form>
 
         <div className="todo-filters">
