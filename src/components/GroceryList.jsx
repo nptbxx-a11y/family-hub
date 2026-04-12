@@ -10,21 +10,24 @@ export default function GroceryList() {
   const [editingName, setEditingName] = useState("");
 
   useEffect(() => {
-    const fetchItems = async () => {
-      // Clear checked items older than 24 hours, or with no checked_at (checked before tracking began)
+    const clearOldItems = async () => {
       const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       await supabase.from("groceries").delete().eq("checked", true).lt("checked_at", cutoff);
       await supabase.from("groceries").delete().eq("checked", true).is("checked_at", null);
+    };
 
+    const fetchItems = async () => {
       const { data } = await supabase
         .from("groceries")
         .select("*")
         .order("created_at", { ascending: true });
       if (data) setItems(data);
     };
-    fetchItems();
 
-    // Listen for any changes made by you or Tommy
+    // Clean up old items once on mount, then fetch
+    clearOldItems().then(fetchItems);
+
+    // Realtime: just re-fetch, no cleanup
     const channel = supabase
       .channel("groceries")
       .on(
