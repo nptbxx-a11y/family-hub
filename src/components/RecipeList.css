@@ -3,8 +3,10 @@
   width: 100%;
   margin: 24px auto;
   padding: 20px 16px;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface);
   border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 .recipe-header {
@@ -43,7 +45,7 @@
   flex-direction: column;
   gap: 12px;
   margin-bottom: 24px;
-  background: var(--white);
+  background: var(--card-item);
   padding: 20px;
   border-radius: 16px;
   border: 1px solid var(--border);
@@ -57,14 +59,14 @@
   font-family: inherit;
   outline: none;
   color: var(--brown);
-  background: var(--cream);
+  background: var(--input-bg);
   transition: border-color 0.2s;
   resize: vertical;
 }
 
 .form-input:focus {
   border-color: var(--green-dark);
-  background: var(--white);
+  background: var(--input-bg);
 }
 
 .submit-button {
@@ -95,7 +97,7 @@
   padding: 6px 16px;
   border-radius: 20px;
   border: 2px solid var(--border);
-  background: var(--white);
+  background: var(--card-item);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--brown);
@@ -125,7 +127,7 @@
 }
 
 .recipe-item {
-  background: var(--white);
+  background: var(--card-item);
   border-radius: 16px;
   border: 1px solid var(--border);
   overflow: hidden;
@@ -141,7 +143,7 @@
 }
 
 .recipe-row:hover {
-  background: var(--cream);
+  background: rgba(255,255,255,0.05);
 }
 
 .recipe-name {
@@ -316,8 +318,8 @@
 }
 
 .delete-recipe-button:hover {
-  background: #fef2f2;
-  color: #b04040;
+  background: rgba(232,58,42,0.12);
+  color: #ff8070;
 }
 
 .empty-message {
@@ -340,7 +342,7 @@
   justify-content: center;
   gap: 6px;
   padding: 20px 12px;
-  background: var(--white);
+  background: var(--card-item);
   border: 2px solid var(--border);
   border-radius: 16px;
   cursor: pointer;
@@ -350,7 +352,7 @@
 
 .cuisine-tile:hover:not(:disabled) {
   border-color: var(--green-dark);
-  background: var(--cream);
+  background: rgba(255,255,255,0.07);
   transform: translateY(-2px);
 }
 
@@ -434,7 +436,7 @@
 }
 
 .ingredient-item:hover {
-  background: var(--cream);
+  background: rgba(255,255,255,0.05);
 }
 
 .ingredient-checkbox {
@@ -442,7 +444,7 @@
   height: 22px;
   border-radius: 5px;
   border: 2px solid var(--border);
-  background: var(--cream);
+  background: var(--input-bg);
   flex-shrink: 0;
   display: flex;
   align-items: center;

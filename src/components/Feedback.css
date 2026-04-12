@@ -49,8 +49,10 @@
   width: 100%;
   margin: 24px auto;
   padding: 20px 16px;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface);
   border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 .feedback-title {
@@ -163,7 +165,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #fffdf5;
+  background: var(--card-item);
   border: 2px solid var(--border);
   border-radius: 16px;
   padding: 20px;
@@ -191,7 +193,7 @@
   padding: 6px 18px;
   border-radius: 20px;
   border: 2px solid var(--border);
-  background: var(--white);
+  background: var(--card-item);
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--brown);
@@ -213,7 +215,7 @@
   font-size: 1rem;
   font-family: inherit;
   color: var(--brown);
-  background: var(--white);
+  background: var(--input-bg);
   resize: vertical;
   outline: none;
   transition: border-color 0.2s;
@@ -261,7 +263,7 @@
 }
 
 .note-card {
-  background: #fffdf5;
+  background: var(--card-item);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px 16px;

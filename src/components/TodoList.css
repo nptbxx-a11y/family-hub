@@ -3,8 +3,10 @@
   width: 100%;
   margin: 24px auto;
   padding: 20px 16px;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface);
   border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 .todo-title {
@@ -29,7 +31,7 @@
   border-radius: 12px;
   font-size: 1rem;
   font-family: inherit;
-  background: var(--white);
+  background: var(--input-bg);
   outline: none;
   color: var(--brown);
   transition: border-color 0.2s;
@@ -56,7 +58,7 @@
   height: 42px;
   border-radius: 10px;
   border: 2px solid var(--border);
-  background: var(--white);
+  background: var(--card-item);
   font-size: 0.9rem;
   font-weight: 700;
   font-family: inherit;
@@ -80,7 +82,7 @@
 .assignee-btn.selected.assignee-both {
   background: var(--yellow);
   border-color: var(--yellow);
-  color: var(--brown);
+  color: #1a1a1a;
 }
 
 .todo-add-btn {
@@ -111,7 +113,7 @@
   padding: 6px 14px;
   border-radius: 20px;
   border: 2px solid var(--border);
-  background: var(--white);
+  background: var(--card-item);
   font-size: 0.85rem;
   font-weight: 700;
   font-family: inherit;
@@ -138,7 +140,7 @@
   gap: 10px;
   padding: 12px 14px;
   margin-bottom: 6px;
-  background: var(--white);
+  background: var(--card-item);
   border-radius: 12px;
   border: 1px solid var(--border);
 }
@@ -148,7 +150,7 @@
   height: 26px;
   border-radius: 6px;
   border: 2px solid var(--border);
-  background: var(--cream);
+  background: var(--input-bg);
   cursor: pointer;
   flex-shrink: 0;
   font-size: 0.8rem;
@@ -174,7 +176,7 @@
 
 .todo-task-done {
   text-decoration: line-through;
-  color: #a0a0a0;
+  color: rgba(220,228,255,0.35);
 }
 
 .todo-badge {
@@ -186,24 +188,24 @@
 }
 
 .badge-ozzy {
-  background: #f0e8f5;
+  background: rgba(199,125,255,0.15);
   color: var(--purple);
 }
 
 .badge-tommy {
-  background: #e8f5e8;
-  color: var(--green-dark);
+  background: rgba(232,58,42,0.15);
+  color: var(--green-light);
 }
 
 .badge-both {
-  background: #fdf5d8;
-  color: #8a6e00;
+  background: rgba(255,209,102,0.15);
+  color: var(--yellow);
 }
 
 .todo-delete {
   background: none;
   border: none;
-  color: #c8b8a8;
+  color: rgba(220,228,255,0.3);
   font-size: 0.9rem;
   cursor: pointer;
   padding: 4px 6px;
@@ -213,7 +215,7 @@
 }
 
 .todo-delete:hover {
-  color: var(--purple);
+  color: var(--green-dark);
 }
 
 .todo-done-label {
@@ -221,13 +223,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #a0a0a0;
+  color: rgba(220,228,255,0.35);
   margin: 20px 0 8px;
 }
 
 .todo-empty {
   text-align: center;
-  color: #a0a0a0;
+  color: rgba(220,228,255,0.35);
   font-size: 0.95rem;
   padding: 20px 0;
 }

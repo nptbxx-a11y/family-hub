@@ -3,8 +3,10 @@
   width: 100%;
   margin: 24px auto;
   padding: 20px 16px;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface);
   border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 .grocery-title {
@@ -28,7 +30,7 @@
   border-radius: 12px;
   font-size: 1rem;
   font-family: inherit;
-  background: var(--white);
+  background: var(--input-bg);
   outline: none;
   transition: border-color 0.2s;
   color: var(--brown);
@@ -48,7 +50,7 @@
   height: 42px;
   border-radius: 10px;
   border: 2px solid var(--border);
-  background: var(--white);
+  background: var(--card-item);
   font-size: 1.1rem;
   cursor: pointer;
   transition: all 0.2s;
@@ -89,7 +91,7 @@
   border-radius: 8px;
   font-size: 1rem;
   font-family: inherit;
-  background: var(--white);
+  background: var(--input-bg);
   color: var(--brown);
   outline: none;
 }
@@ -123,7 +125,7 @@
   gap: 12px;
   padding: 12px 16px;
   margin-bottom: 6px;
-  background: var(--white);
+  background: var(--card-item);
   border-radius: 12px;
   border: 1px solid var(--border);
 }
@@ -133,7 +135,7 @@
   height: 26px;
   border-radius: 6px;
   border: 2px solid var(--border);
-  background: var(--cream);
+  background: var(--input-bg);
   cursor: pointer;
   flex-shrink: 0;
   font-size: 0.8rem;

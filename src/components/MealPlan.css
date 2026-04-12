@@ -3,8 +3,10 @@
   width: 100%;
   margin: 24px auto;
   padding: 20px 16px;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--surface);
   border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
 }
 
 .meal-title {
@@ -21,7 +23,7 @@
 }
 
 .day-card {
-  background: var(--white);
+  background: var(--card-item);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 14px 16px;
@@ -40,7 +42,7 @@
 
 .day-card.today {
   border-color: var(--green-dark);
-  background: #f0f8e8;
+  background: rgba(232, 58, 42, 0.1);
 }
 
 .day-meal {
@@ -127,7 +129,7 @@
 }
 
 .picker-modal {
-  background: var(--cream);
+  background: var(--surface);
   border-radius: 24px 24px 0 0;
   width: 100%;
   max-width: 600px;
@@ -182,7 +184,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 16px;
-  background: var(--white);
+  background: var(--card-item);
   border-radius: 12px;
   border: 1px solid var(--border);
   cursor: pointer;
@@ -262,7 +264,7 @@
 
 .picker-eating-out {
   padding: 12px 16px;
-  background: var(--cream);
+  background: var(--card-item);
   border: 2px dashed var(--yellow);
   border-radius: 12px;
   font-size: 0.95rem;
@@ -292,7 +294,7 @@
   font-size: 0.95rem;
   font-family: inherit;
   color: var(--brown);
-  background: var(--white);
+  background: var(--input-bg);
   outline: none;
 }
 
