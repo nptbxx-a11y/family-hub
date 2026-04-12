@@ -56,10 +56,11 @@
 }
 
 .feedback-title {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--green-dark);
+  font-size: 2.6rem;
+  font-weight: 400;
+  color: var(--brown);
   margin-bottom: 4px;
+  line-height: 1.1;
 }
 
 .feedback-subtitle {

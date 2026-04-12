@@ -207,6 +207,51 @@ body::after {
   background: transparent;
 }
 
+/* ── Display font for all page titles ── */
+.grocery-title,
+.recipe-title,
+.meal-title,
+.feedback-title,
+.todo-title,
+.home-title {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* ── Page entrance animation ── */
+.page-bg > * {
+  animation: pageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.home-container > * {
+  animation: pageEnter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.home-container > *:nth-child(2) { animation-delay: 0.05s; }
+.home-container > *:nth-child(3) { animation-delay: 0.1s; }
+.home-container > *:nth-child(4) { animation-delay: 0.15s; }
+
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Restrain coral: headings use white, coral only for primary CTAs ── */
+.grocery-title,
+.recipe-title,
+.meal-title,
+.feedback-title,
+.todo-title,
+.notes-heading,
+.day-name,
+.cuisine-count,
+.recipe-category,
+.detail-label,
+.form-title {
+  color: var(--brown) !important;
+}
+
 /* ── Glassmorphism: frosted dark glass on all main cards ── */
 .grocery-container,
 .recipe-container,
