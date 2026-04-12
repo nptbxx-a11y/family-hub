@@ -198,11 +198,16 @@ export default function RecipeList() {
       notes: form.notes.trim(),
     };
     if (editingId) {
+      // Optimistic: update local state immediately, close form, then persist
+      setRecipes((prev) => prev.map((r) => r.id === editingId ? { ...r, ...payload } : r));
+      closeForm();
       await supabase.from("recipes").update(payload).eq("id", editingId);
     } else {
-      await supabase.from("recipes").insert(payload);
+      // Optimistic: insert then prepend real record
+      closeForm();
+      const { data } = await supabase.from("recipes").insert(payload).select().single();
+      if (data) setRecipes((prev) => [data, ...prev]);
     }
-    closeForm();
   };
 
   const deleteRecipe = async (id) => {

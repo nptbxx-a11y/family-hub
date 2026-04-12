@@ -12,8 +12,10 @@ export default function GroceryList() {
   useEffect(() => {
     const clearOldItems = async () => {
       const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-      await supabase.from("groceries").delete().eq("checked", true).lt("checked_at", cutoff);
-      await supabase.from("groceries").delete().eq("checked", true).is("checked_at", null);
+      await Promise.all([
+        supabase.from("groceries").delete().eq("checked", true).lt("checked_at", cutoff),
+        supabase.from("groceries").delete().eq("checked", true).is("checked_at", null),
+      ]);
     };
 
     const fetchItems = async () => {
@@ -45,9 +47,21 @@ export default function GroceryList() {
     const trimmed = newItem.trim();
     if (!trimmed) return;
 
-    await supabase.from("groceries").insert({ name: trimmed, checked: false, priority });
+    // Optimistic: show immediately, replace with real record when it comes back
+    const tempId = `temp-${Date.now()}`;
+    const tempItem = { id: tempId, name: trimmed, checked: false, priority, created_at: new Date().toISOString(), checked_at: null };
+    setItems((prev) => [...prev, tempItem]);
     setNewItem("");
     setPriority("later");
+
+    const { data } = await supabase
+      .from("groceries")
+      .insert({ name: trimmed, checked: false, priority })
+      .select()
+      .single();
+    if (data) {
+      setItems((prev) => prev.map((i) => i.id === tempId ? data : i));
+    }
   };
 
   const toggleItem = async (item) => {
