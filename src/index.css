@@ -289,8 +289,7 @@ body::after {
 .meal-container,
 .feedback-container,
 .todo-container,
-.home-card,
-.music-bar {
+.home-card {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   background: var(--surface) !important;
