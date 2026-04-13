@@ -155,7 +155,7 @@ export default function Feedback() {
           <div className="notes-list">
             <h2 className="notes-heading">Posted Notes</h2>
             <motion.div variants={noteListVariants} initial="hidden" animate="show">
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {notes.map((note) => (
                   <motion.div
                     key={note.id}
