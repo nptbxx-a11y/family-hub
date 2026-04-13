@@ -293,8 +293,27 @@ body::after {
 .music-bar {
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  box-shadow: 0 8px 48px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: var(--surface) !important;
+  box-shadow:
+    0 8px 48px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(180, 140, 255, 0.12),
+    0 0 40px rgba(100, 50, 200, 0.1) !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ── Coral accent glow on key labels ── */
+.music-note,
+.item-priority,
+.priority-btn.selected {
+  text-shadow: 0 0 10px rgba(212, 120, 90, 0.5);
+}
+
+/* ── Purple glow on primary buttons ── */
+.add-button,
+.submit-button,
+.add-recipe-button,
+.post-button {
+  box-shadow: 0 4px 20px rgba(212, 120, 90, 0.25) !important;
 }
 
 /* ── Pill buttons globally ── */

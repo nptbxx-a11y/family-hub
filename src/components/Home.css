@@ -41,9 +41,10 @@
   height: 110px;
   border-radius: 50%;
   overflow: hidden;
-  border: 3px solid var(--border);
+  border: 2px solid rgba(160, 100, 255, 0.35);
   margin: 0 auto 16px;
   background: var(--card-item);
+  box-shadow: 0 0 24px rgba(120, 60, 220, 0.3);
 }
 
 .couple-img {
@@ -86,12 +87,13 @@
   align-items: center;
   gap: 10px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(212, 120, 90, 0.2);
   border-radius: 12px;
   padding: 10px 16px;
   max-width: 420px;
   width: 100%;
   min-width: 0;
+  box-shadow: 0 0 24px rgba(212, 120, 90, 0.08);
 }
 
 .music-note {
@@ -143,9 +145,11 @@
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  background: var(--purple);
+  background: linear-gradient(135deg, #4c1d8a, #6d28d9);
+  border: 1px solid rgba(180, 120, 255, 0.25);
   border-radius: 12px;
   padding: 10px 20px;
+  box-shadow: 0 4px 20px rgba(100, 40, 180, 0.35), inset 0 1px 0 rgba(220, 180, 255, 0.15);
 }
 
 .days-number {
@@ -153,6 +157,7 @@
   font-weight: 800;
   color: var(--yellow);
   line-height: 1;
+  text-shadow: 0 0 12px rgba(255, 210, 100, 0.5);
 }
 
 .days-label {
