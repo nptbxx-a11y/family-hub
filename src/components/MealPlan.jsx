@@ -165,10 +165,10 @@ export default function MealPlan() {
               <motion.div key={dateKey} className={"day-card" + (isToday ? " today" : "")} variants={dayCardVariants} layout>
                 <span className="day-name">{label}</span>
 
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="popLayout">
                   {meal ? (
                     <motion.div
-                      key={meal.recipe_name}
+                      key={meal.id}
                       className="day-meal"
                       variants={mealAssignedVariants}
                       initial="hidden"
