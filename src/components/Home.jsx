@@ -1,9 +1,24 @@
 import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import "./Home.css";
 import coupleImg from "../assets/couple.png";
 
 const MET_DATE = new Date("2025-07-09");
 const YOUTUBE_ID = "tMDFv5m18Pw";
+
+const containerVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.18 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 260, damping: 22 },
+  },
+};
 
 function getDaysTogether() {
   const today = new Date();
@@ -72,30 +87,41 @@ export default function Home() {
   };
 
   return (
-    <div className="home-container">
-      <div className="home-card">
+    <motion.div
+      className="home-container"
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      exit={{ opacity: 0, y: -10, transition: { duration: 0.25 } }}
+    >
+      <motion.div className="home-card" variants={itemVariants}>
         <div className="couple-icon">
           <img src={coupleImg} alt="Ozzy and Tommy" className="couple-img" />
         </div>
         <h1 className="home-title">Br Br Family Hub</h1>
         <p className="home-subtitle">Welcome back, Ozzy & Tommy</p>
-      </div>
+      </motion.div>
 
-      <div className="days-widget">
+      <motion.div className="days-widget" variants={itemVariants}>
         <span className="days-number">{days}</span>
-        <span className="days-label">days together</span>
-      </div>
+        <span className="days-label">days together ✨</span>
+      </motion.div>
 
-      <div className="music-bar">
+      <motion.div className="music-bar" variants={itemVariants}>
         <span className="music-note" style={{ opacity: playing ? 1 : 0.4 }}>♪</span>
         <span className="music-title">Crazy Train — Ozzy Osbourne</span>
-        <button className="music-toggle" onClick={togglePlay} disabled={!ready}>
+        <motion.button
+          className="music-toggle"
+          onClick={togglePlay}
+          disabled={!ready}
+          whileTap={{ scale: 0.88 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+        >
           {playing ? "⏸" : "▶"}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
-      {/* Hidden YouTube player div — API replaces this with an iframe */}
       <div id="yt-player" className="youtube-hidden" />
-    </div>
+    </motion.div>
   );
 }
