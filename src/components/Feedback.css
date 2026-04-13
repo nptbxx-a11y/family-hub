@@ -76,6 +76,7 @@
   align-items: center;
   margin: 0 auto 28px;
   width: 120px;
+  filter: drop-shadow(0 0 18px rgba(139, 92, 246, 0.25));
 }
 
 .letterbox-top {

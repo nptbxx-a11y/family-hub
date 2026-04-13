@@ -1,6 +1,26 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import "./Feedback.css";
+
+const noteVariants = {
+  hidden: { opacity: 0, y: 30 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 26 },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    transition: { duration: 0.18 },
+  },
+};
+
+const noteListVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
 
 export default function Feedback() {
   const [notes, setNotes] = useState([]);
@@ -55,7 +75,13 @@ export default function Feedback() {
   };
 
   return (
-    <div className="page-bg">
+    <motion.div
+      className="page-bg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
 
       {notes.length > 0 && (
         <div className="ribbon-wrapper">
@@ -112,28 +138,45 @@ export default function Feedback() {
             onChange={(e) => setMessage(e.target.value)}
             rows={4}
           />
-          <button type="submit" className="post-button" disabled={posting || !message.trim()}>
+          <motion.button
+            type="submit"
+            className="post-button"
+            disabled={posting || !message.trim()}
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >
             {posting ? "Posting..." : "📮 Post it!"}
-          </button>
+          </motion.button>
         </form>
 
         {/* Posted notes */}
         {notes.length > 0 && (
           <div className="notes-list">
             <h2 className="notes-heading">Posted Notes</h2>
-            {notes.map((note) => (
-              <div key={note.id} className="note-card">
-                <div className="note-card-header">
-                  <span className="note-author">{note.author}</span>
-                  <span className="note-date">{formatDate(note.created_at)}</span>
-                  <button className="note-delete" onClick={() => deleteNote(note.id)}>✕</button>
-                </div>
-                <p className="note-message">{note.message}</p>
-              </div>
-            ))}
+            <motion.div variants={noteListVariants} initial="hidden" animate="show">
+              <AnimatePresence>
+                {notes.map((note) => (
+                  <motion.div
+                    key={note.id}
+                    className="note-card"
+                    variants={noteVariants}
+                    exit="exit"
+                    layout
+                  >
+                    <div className="note-card-header">
+                      <span className="note-author">{note.author}</span>
+                      <span className="note-date">{formatDate(note.created_at)}</span>
+                      <button className="note-delete" onClick={() => deleteNote(note.id)}>✕</button>
+                    </div>
+                    <p className="note-message">{note.message}</p>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
