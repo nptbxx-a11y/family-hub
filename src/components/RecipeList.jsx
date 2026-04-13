@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import "./RecipeList.css";
 
@@ -56,6 +57,34 @@ const PROTEINS = [
   { name: "Other",   emoji: "🍽️" },
 ];
 const EMPTY_FORM = { name: "", link: "", category: "Dinner", cuisine: "Other", ingredients: "", notes: "" };
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 18 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 280, damping: 24 },
+  },
+};
+
+const listVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
+
+const expandVariants = {
+  hidden: { opacity: 0, height: 0 },
+  show: {
+    opacity: 1,
+    height: "auto",
+    transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+  },
+  exit: {
+    opacity: 0,
+    height: 0,
+    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 export default function RecipeList() {
   const [recipes, setRecipes] = useState([]);
@@ -275,7 +304,13 @@ export default function RecipeList() {
   // ── Recipe list view (inside a protein) ──
   const cuisineObj = PROTEINS.find((c) => c.name === activeCuisine);
   return (
-    <div className="page-bg">
+    <motion.div
+      className="page-bg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="recipe-container">
         <div className="recipe-header">
           <div className="cuisine-back-header">
@@ -293,16 +328,16 @@ export default function RecipeList() {
 
         <div className="category-tabs">
           {["All", ...CATEGORIES].map((c) => (
-            <button key={c} className={"category-tab " + (activeCategory === c ? "active" : "")} onClick={() => setActiveCategory(c)}>
+            <motion.button key={c} className={"category-tab " + (activeCategory === c ? "active" : "")} onClick={() => setActiveCategory(c)} whileTap={{ scale: 0.92 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
               {c}
-            </button>
+            </motion.button>
           ))}
         </div>
 
-        <ul className="recipe-list">
+        <motion.ul className="recipe-list" variants={listVariants} initial="hidden" animate="show">
           {filtered.length === 0 && <p className="empty-message">No {activeCategory !== "All" ? activeCategory.toLowerCase() + " " : ""}recipes here yet!</p>}
           {filtered.map((recipe) => (
-            <li key={recipe.id} className="recipe-item">
+            <motion.li key={recipe.id} className="recipe-item" variants={cardVariants} layout>
               <div className="recipe-row" onClick={() => handleExpand(recipe)}>
                 <div>
                   <span className="recipe-name">{recipe.name}</span>
@@ -310,46 +345,56 @@ export default function RecipeList() {
                 </div>
                 <span className="recipe-chevron">{expanded === recipe.id ? "▲" : "▼"}</span>
               </div>
-              {expanded === recipe.id && (
-                <div className="recipe-detail">
-                  {recipe.link && <a href={recipe.link} target="_blank" rel="noreferrer" className="recipe-link">View full recipe</a>}
-                  {recipe.ingredients && (
-                    <div className="detail-section">
-                      <p className="detail-label">Ingredients - tick what you need</p>
-                      <ul className="ingredient-list">
-                        {recipe.ingredients.split("\n").map((l) => l.trim()).filter(Boolean).map((ingredient) => (
-                          <li key={ingredient} className="ingredient-item" onClick={() => toggleIngredient(ingredient)}>
-                            <span className={"ingredient-checkbox " + (selectedIngredients[ingredient] ? "checked" : "")}>
-                              {selectedIngredients[ingredient] ? "✓" : ""}
-                            </span>
-                            <span className={"ingredient-name " + (selectedIngredients[ingredient] ? "" : "deselected")}>
-                              {ingredient}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                      <button className="grocery-button" onClick={addSelectedToGroceries} disabled={adding || Object.values(selectedIngredients).every((v) => !v)}>
-                        {adding ? "Adding..." : "Add selected to Grocery List"}
-                      </button>
+              <AnimatePresence>
+                {expanded === recipe.id && (
+                  <motion.div
+                    variants={expandVariants}
+                    initial="hidden"
+                    animate="show"
+                    exit="exit"
+                    style={{ overflow: "hidden" }}
+                  >
+                    <div className="recipe-detail">
+                      {recipe.link && <a href={recipe.link} target="_blank" rel="noreferrer" className="recipe-link">View full recipe</a>}
+                      {recipe.ingredients && (
+                        <div className="detail-section">
+                          <p className="detail-label">Ingredients - tick what you need</p>
+                          <ul className="ingredient-list">
+                            {recipe.ingredients.split("\n").map((l) => l.trim()).filter(Boolean).map((ingredient) => (
+                              <li key={ingredient} className="ingredient-item" onClick={() => toggleIngredient(ingredient)}>
+                                <span className={"ingredient-checkbox " + (selectedIngredients[ingredient] ? "checked" : "")}>
+                                  {selectedIngredients[ingredient] ? "✓" : ""}
+                                </span>
+                                <span className={"ingredient-name " + (selectedIngredients[ingredient] ? "" : "deselected")}>
+                                  {ingredient}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                          <button className="grocery-button" onClick={addSelectedToGroceries} disabled={adding || Object.values(selectedIngredients).every((v) => !v)}>
+                            {adding ? "Adding..." : "Add selected to Grocery List"}
+                          </button>
+                        </div>
+                      )}
+                      {recipe.notes && (
+                        <div className="detail-section">
+                          <p className="detail-label">Notes</p>
+                          <pre className="detail-text">{recipe.notes}</pre>
+                        </div>
+                      )}
+                      <div className="recipe-actions">
+                        <button className="edit-recipe-button" onClick={() => openEditForm(recipe)}>Edit recipe</button>
+                        <button className="delete-recipe-button" onClick={() => deleteRecipe(recipe.id)}>Delete recipe</button>
+                      </div>
                     </div>
-                  )}
-                  {recipe.notes && (
-                    <div className="detail-section">
-                      <p className="detail-label">Notes</p>
-                      <pre className="detail-text">{recipe.notes}</pre>
-                    </div>
-                  )}
-                  <div className="recipe-actions">
-                    <button className="edit-recipe-button" onClick={() => openEditForm(recipe)}>Edit recipe</button>
-                    <button className="delete-recipe-button" onClick={() => deleteRecipe(recipe.id)}>Delete recipe</button>
-                  </div>
-                </div>
-              )}
-            </li>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.li>
           ))}
-        </ul>
+        </motion.ul>
       </div>
-    </div>
+    </motion.div>
   );
 
   function renderForm() {
