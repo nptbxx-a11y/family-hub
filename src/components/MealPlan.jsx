@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import "./MealPlan.css";
 
@@ -46,6 +47,29 @@ function labelFromKey(dateKey) {
   // parse safely at noon to avoid timezone edge cases
   return formatDayLabel(new Date(dateKey + "T12:00:00"));
 }
+
+const dayCardVariants = {
+  hidden: { opacity: 0, y: 20 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 280, damping: 24 },
+  },
+};
+
+const dayListVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.05 } },
+};
+
+const mealAssignedVariants = {
+  hidden: { opacity: 0, scale: 0.88 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring", stiffness: 380, damping: 22 },
+  },
+};
 
 export default function MealPlan() {
   const [meals, setMeals] = useState([]);
@@ -121,40 +145,62 @@ export default function MealPlan() {
   };
 
   return (
-    <div className="page-bg">
+    <motion.div
+      className="page-bg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="meal-container">
         <h1 className="meal-title">This Week's Meals</h1>
 
-        <div className="days-list">
+        <motion.div className="days-list" variants={dayListVariants} initial="hidden" animate="show">
           {upcomingDays.map((date) => {
             const dateKey = toDateKey(date);
             const label = formatDayLabel(date);
             const meal = getMealForDay(dateKey);
             const isToday = dateKey === toDateKey(new Date());
             return (
-              <div key={dateKey} className={"day-card" + (isToday ? " today" : "")}>
+              <motion.div key={dateKey} className={"day-card" + (isToday ? " today" : "")} variants={dayCardVariants} layout>
                 <span className="day-name">{label}</span>
 
-                {meal ? (
-                  <div className="day-meal">
-                    <button
-                      className={"day-cooked" + (meal.cooked ? " cooked" : "")}
-                      onClick={() => toggleCooked(meal)}
-                      title={meal.cooked ? "Mark as not made" : "Mark as made"}
+                <AnimatePresence mode="wait">
+                  {meal ? (
+                    <motion.div
+                      key={meal.recipe_name}
+                      className="day-meal"
+                      variants={mealAssignedVariants}
+                      initial="hidden"
+                      animate="show"
+                      exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.15 } }}
                     >
-                      🧑‍🍳
-                    </button>
-                    <span className={"day-meal-name" + (meal.cooked ? " cooked" : "")}>{meal.recipe_name}</span>
-                    <button className="day-change" onClick={() => { setPicking(dateKey); setFreeText(""); }}>Change</button>
-                    <button className="day-clear" onClick={() => clearMeal(dateKey)}>✕</button>
-                  </div>
-                ) : (
-                  <button className="day-add" onClick={() => { setPicking(dateKey); setFreeText(""); }}>+ Add meal</button>
-                )}
-              </div>
+                      <button
+                        className={"day-cooked" + (meal.cooked ? " cooked" : "")}
+                        onClick={() => toggleCooked(meal)}
+                        title={meal.cooked ? "Mark as not made" : "Mark as made"}
+                      >
+                        🧑‍🍳
+                      </button>
+                      <span className={"day-meal-name" + (meal.cooked ? " cooked" : "")}>{meal.recipe_name}</span>
+                      <button className="day-change" onClick={() => { setPicking(dateKey); setFreeText(""); }}>Change</button>
+                      <button className="day-clear" onClick={() => clearMeal(dateKey)}>✕</button>
+                    </motion.div>
+                  ) : (
+                    <motion.button
+                      key="empty"
+                      className="day-add"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      whileTap={{ scale: 0.93 }}
+                      onClick={() => { setPicking(dateKey); setFreeText(""); }}
+                    >+ Add meal</motion.button>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
-        </div>
+        </motion.div>
 
         {picking && (
           <div className="picker-overlay" onClick={() => setPicking(null)}>
@@ -199,6 +245,6 @@ export default function MealPlan() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
