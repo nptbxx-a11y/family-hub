@@ -90,6 +90,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
+  text-align: center;
 }
 
 .music-toggle {
