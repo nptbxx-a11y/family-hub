@@ -34,6 +34,7 @@ export default function App() {
   // Logged in
   return (
     <BrowserRouter>
+      <div className="aurora" />
       <NavBar onLogout={() => supabase.auth.signOut()} />
       <Routes>
         <Route path="/" element={<Home />} />
