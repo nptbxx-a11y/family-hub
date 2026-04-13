@@ -1,6 +1,22 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import "./GroceryList.css";
+
+const listVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.06 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring", stiffness: 300, damping: 25 },
+  },
+  exit: { opacity: 0, x: -24, transition: { duration: 0.18 } },
+};
 
 export default function GroceryList() {
   const [items, setItems] = useState([]);
@@ -101,17 +117,31 @@ export default function GroceryList() {
   const checked = items.filter((item) => item.checked);
 
   const renderItem = (item, isChecked) => (
-    <li key={item.id} className={"item" + (isChecked ? " checked" : "")}>
-      <button
+    <motion.li
+      key={item.id}
+      className={"item" + (isChecked ? " checked" : "")}
+      variants={itemVariants}
+      layout
+      exit="exit"
+    >
+      <motion.button
         className={"checkbox" + (isChecked ? " checked" : "")}
         onClick={() => toggleItem(item)}
         aria-label={isChecked ? "Mark as not got" : "Mark as got"}
-      >{isChecked ? "✓" : ""}</button>
+        whileTap={{ scale: 0.85 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      >{isChecked ? "✓" : ""}</motion.button>
 
       {!isChecked && (
-        <button className="item-priority" onClick={() => togglePriority(item)} title="Change priority">
+        <motion.button
+          className="item-priority"
+          onClick={() => togglePriority(item)}
+          title="Change priority"
+          whileTap={{ scale: 0.75, rotate: 15 }}
+          transition={{ type: "spring", stiffness: 500, damping: 15 }}
+        >
           {item.priority === "urgent" ? "⚡" : "💤"}
-        </button>
+        </motion.button>
       )}
 
       {editingId === item.id ? (
@@ -134,52 +164,78 @@ export default function GroceryList() {
         onClick={() => deleteItem(item.id)}
         aria-label="Remove item"
       >✕</button>
-    </li>
+    </motion.li>
   );
 
   return (
-    <div className="page-bg">
-    <div className="grocery-container">
-      <h1 className="grocery-title">Grocery List</h1>
+    <motion.div
+      className="page-bg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className="grocery-container">
+        <h1 className="grocery-title">Grocery List</h1>
 
-      <form onSubmit={addItem} className="add-form">
-        <input
-          type="text"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-          placeholder="Add an item..."
-          className="add-input"
-        />
-        <div className="priority-toggle">
-          <button
-            type="button"
-            className={"priority-btn" + (priority === "urgent" ? " selected" : "")}
-            onClick={() => setPriority("urgent")}
-            title="Urgent"
-          >⚡</button>
-          <button
-            type="button"
-            className={"priority-btn" + (priority === "later" ? " selected" : "")}
-            onClick={() => setPriority("later")}
-            title="Later"
-          >💤</button>
-        </div>
-        <button type="submit" className="add-button">Add</button>
-      </form>
+        <form onSubmit={addItem} className="add-form">
+          <input
+            type="text"
+            value={newItem}
+            onChange={(e) => setNewItem(e.target.value)}
+            placeholder="Add an item..."
+            className="add-input"
+          />
+          <div className="priority-toggle">
+            <button
+              type="button"
+              className={"priority-btn" + (priority === "urgent" ? " selected" : "")}
+              onClick={() => setPriority("urgent")}
+              title="Urgent"
+            >⚡</button>
+            <button
+              type="button"
+              className={"priority-btn" + (priority === "later" ? " selected" : "")}
+              onClick={() => setPriority("later")}
+              title="Later"
+            >💤</button>
+          </div>
+          <motion.button
+            type="submit"
+            className="add-button"
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.93 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          >Add</motion.button>
+        </form>
 
-      <ul className="item-list">
-        {unchecked.map((item) => renderItem(item, false))}
-      </ul>
+        <AnimatePresence mode="popLayout">
+          <motion.ul
+            className="item-list"
+            variants={listVariants}
+            initial="hidden"
+            animate="show"
+          >
+            {unchecked.map((item) => renderItem(item, false))}
+          </motion.ul>
+        </AnimatePresence>
 
-      {checked.length > 0 && (
-        <>
-          <p className="got-label">Got</p>
-          <ul className="item-list">
-            {checked.map((item) => renderItem(item, true))}
-          </ul>
-        </>
-      )}
-    </div>
-    </div>
+        {checked.length > 0 && (
+          <>
+            <p className="got-label">Got</p>
+            <AnimatePresence mode="popLayout">
+              <motion.ul
+                className="item-list"
+                variants={listVariants}
+                initial="hidden"
+                animate="show"
+              >
+                {checked.map((item) => renderItem(item, true))}
+              </motion.ul>
+            </AnimatePresence>
+          </>
+        )}
+      </div>
+    </motion.div>
   );
 }
