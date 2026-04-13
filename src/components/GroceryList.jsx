@@ -3,11 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import "./GroceryList.css";
 
-const listVariants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.06 } },
-};
-
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
   show: {
@@ -209,30 +204,20 @@ export default function GroceryList() {
           >Add</motion.button>
         </form>
 
-        <AnimatePresence mode="popLayout">
-          <motion.ul
-            className="item-list"
-            variants={listVariants}
-            initial="hidden"
-            animate="show"
-          >
+        <ul className="item-list">
+          <AnimatePresence mode="popLayout">
             {unchecked.map((item) => renderItem(item, false))}
-          </motion.ul>
-        </AnimatePresence>
+          </AnimatePresence>
+        </ul>
 
         {checked.length > 0 && (
           <>
             <p className="got-label">Got</p>
-            <AnimatePresence mode="popLayout">
-              <motion.ul
-                className="item-list"
-                variants={listVariants}
-                initial="hidden"
-                animate="show"
-              >
+            <ul className="item-list">
+              <AnimatePresence mode="popLayout">
                 {checked.map((item) => renderItem(item, true))}
-              </motion.ul>
-            </AnimatePresence>
+              </AnimatePresence>
+            </ul>
           </>
         )}
       </div>
