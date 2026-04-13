@@ -345,7 +345,7 @@ export default function RecipeList() {
                 </div>
                 <span className="recipe-chevron">{expanded === recipe.id ? "▲" : "▼"}</span>
               </div>
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {expanded === recipe.id && (
                   <motion.div
                     variants={expandVariants}
