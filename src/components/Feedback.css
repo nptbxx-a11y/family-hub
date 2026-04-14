@@ -313,3 +313,65 @@
   line-height: 1.6;
   white-space: pre-wrap;
 }
+
+.note-action {
+  background: none;
+  border: none;
+  color: #c8b8a8;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+
+.note-action:hover {
+  color: var(--green-dark);
+}
+
+.note-undo {
+  background: none;
+  border: none;
+  color: #c8b8a8;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.note-undo:hover {
+  color: var(--green-dark);
+}
+
+/* ---- Actioned archive ---- */
+.actioned-section {
+  margin-top: 16px;
+}
+
+.actioned-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  color: #a0a0a0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 20px;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.actioned-toggle:hover {
+  border-color: var(--green-dark);
+  color: var(--green-dark);
+}
+
+.note-card.actioned {
+  opacity: 0.6;
+  border-left-color: var(--green-dark);
+}

@@ -29,6 +29,7 @@ export default function Feedback() {
   const [posting, setPosting] = useState(false);
   const [posted, setPosted] = useState(false);
   const [dbError, setDbError] = useState("");
+  const [showActioned, setShowActioned] = useState(false);
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -69,10 +70,21 @@ export default function Feedback() {
     await supabase.from("feedback").delete().eq("id", id);
   };
 
+  const actionNote = async (id) => {
+    await supabase.from("feedback").update({ actioned: true }).eq("id", id);
+  };
+
+  const unactionNote = async (id) => {
+    await supabase.from("feedback").update({ actioned: false }).eq("id", id);
+  };
+
   const formatDate = (ts) => {
     const d = new Date(ts);
     return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   };
+
+  const activeNotes = notes.filter(n => !n.actioned);
+  const actionedNotes = notes.filter(n => n.actioned);
 
   return (
     <motion.div
@@ -83,10 +95,10 @@ export default function Feedback() {
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
 
-      {notes.length > 0 && (
+      {activeNotes.length > 0 && (
         <div className="ribbon-wrapper">
           <div className="ribbon-track">
-            {[...notes, ...notes].map((note, i) => (
+            {[...activeNotes, ...activeNotes].map((note, i) => (
               <span key={i} className="ribbon-item">
                 <span className="ribbon-author">{note.author}:</span>
                 {" "}{note.message}
@@ -153,27 +165,73 @@ export default function Feedback() {
         {/* Posted notes */}
         {notes.length > 0 && (
           <div className="notes-list">
-            <h2 className="notes-heading">Posted Notes</h2>
-            <motion.div variants={noteListVariants} initial="hidden" animate="show">
-              <AnimatePresence mode="popLayout">
-                {notes.map((note) => (
-                  <motion.div
-                    key={note.id}
-                    className="note-card"
-                    variants={noteVariants}
-                    exit="exit"
-                    layout
-                  >
-                    <div className="note-card-header">
-                      <span className="note-author">{note.author}</span>
-                      <span className="note-date">{formatDate(note.created_at)}</span>
-                      <button className="note-delete" onClick={() => deleteNote(note.id)}>✕</button>
-                    </div>
-                    <p className="note-message">{note.message}</p>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+            {activeNotes.length > 0 && (
+              <>
+                <h2 className="notes-heading">Posted Notes</h2>
+                <motion.div variants={noteListVariants} initial="hidden" animate="show">
+                  <AnimatePresence mode="popLayout">
+                    {activeNotes.map((note) => (
+                      <motion.div
+                        key={note.id}
+                        className="note-card"
+                        variants={noteVariants}
+                        exit="exit"
+                        layout
+                      >
+                        <div className="note-card-header">
+                          <span className="note-author">{note.author}</span>
+                          <span className="note-date">{formatDate(note.created_at)}</span>
+                          <button className="note-action" onClick={() => actionNote(note.id)} title="Mark as actioned">✓</button>
+                          <button className="note-delete" onClick={() => deleteNote(note.id)}>✕</button>
+                        </div>
+                        <p className="note-message">{note.message}</p>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+              </>
+            )}
+
+            {actionedNotes.length > 0 && (
+              <div className="actioned-section">
+                <button className="actioned-toggle" onClick={() => setShowActioned(v => !v)}>
+                  {showActioned ? "▲ Hide actioned items" : `▼ ${actionedNotes.length} actioned item${actionedNotes.length !== 1 ? "s" : ""}`}
+                </button>
+                <AnimatePresence>
+                  {showActioned && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <motion.div variants={noteListVariants} initial="hidden" animate="show">
+                        <AnimatePresence mode="popLayout">
+                          {actionedNotes.map((note) => (
+                            <motion.div
+                              key={note.id}
+                              className="note-card actioned"
+                              variants={noteVariants}
+                              exit="exit"
+                              layout
+                            >
+                              <div className="note-card-header">
+                                <span className="note-author">{note.author}</span>
+                                <span className="note-date">{formatDate(note.created_at)}</span>
+                                <button className="note-undo" onClick={() => unactionNote(note.id)} title="Restore to active">↩</button>
+                                <button className="note-delete" onClick={() => deleteNote(note.id)}>✕</button>
+                              </div>
+                              <p className="note-message">{note.message}</p>
+                            </motion.div>
+                          ))}
+                        </AnimatePresence>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         )}
       </div>
