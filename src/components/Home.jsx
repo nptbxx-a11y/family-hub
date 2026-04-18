@@ -5,7 +5,10 @@ import coupleImg from "../assets/couple.png";
 
 const MET_DATE = new Date("2025-07-09");
 const YOUTUBE_ID = "tMDFv5m18Pw";
-const NMFC_LOGO = "https://upload.wikimedia.org/wikipedia/en/thumb/4/44/North_Melbourne_FC_logo.svg/200px-North_Melbourne_FC_logo.svg.png";
+
+// Squiggle hosts every team's logo indexed by their team ID
+const squiggleLogo = (id) =>
+  `https://squiggle.com.au/wp-content/themes/squiggle/assets/images/teamlogos/${id}.svg`;
 
 const containerVariants = {
   hidden: {},
@@ -38,7 +41,7 @@ function formatGameDate(dateStr) {
   const dayMonth = new Date(year, month - 1, day).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   const ampm = hour >= 12 ? "pm" : "am";
   const h12 = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
-  return `${weekday} ${dayMonth} · ${h12}:${String(minute).padStart(2, "0")}${ampm} AEST`;
+  return `${weekday} ${dayMonth}  ·  ${h12}:${String(minute).padStart(2, "0")}${ampm} AEST`;
 }
 
 export default function Home() {
@@ -56,7 +59,6 @@ export default function Home() {
       tag.src = "https://www.youtube.com/iframe_api";
       document.head.appendChild(tag);
     }
-
     window.onYouTubeIframeAPIReady = () => {
       playerRef.current = new window.YT.Player("yt-player", {
         videoId: YOUTUBE_ID,
@@ -64,7 +66,6 @@ export default function Home() {
         events: { onReady: () => setReady(true) },
       });
     };
-
     if (window.YT && window.YT.Player && !playerRef.current) {
       playerRef.current = new window.YT.Player("yt-player", {
         videoId: YOUTUBE_ID,
@@ -74,7 +75,7 @@ export default function Home() {
     }
   }, []);
 
-  // AFL next game — try current year then fall back to previous
+  // AFL next game — try current year then fall back to previous year
   useEffect(() => {
     const fetchNextGame = async () => {
       try {
@@ -87,8 +88,9 @@ export default function Home() {
           if (!res.ok) continue;
           const data = await res.json();
           if (data.games?.length > 0) {
+            // complete is 0–100 for in-progress/done, null/undefined for scheduled
             const upcoming = data.games
-              .filter(g => g.complete < 100)
+              .filter(g => g.complete !== 100)
               .sort((a, b) => new Date(a.date.replace(" ", "T")) - new Date(b.date.replace(" ", "T")));
             if (upcoming.length > 0) {
               setNextGame(upcoming[0]);
@@ -97,7 +99,7 @@ export default function Home() {
           }
         }
       } catch {
-        // network failure — widget shows "TBD"
+        // network failure — widget shows placeholder
       } finally {
         setAflLoading(false);
       }
@@ -117,7 +119,9 @@ export default function Home() {
   };
 
   const isHome = nextGame?.hteam === "North Melbourne";
-  const opponent = isHome ? nextGame?.ateam : nextGame?.hteam;
+  const opponent  = isHome ? nextGame?.ateam    : nextGame?.hteam;
+  const nmfcId    = isHome ? nextGame?.hteamid  : nextGame?.ateamid;
+  const oppId     = isHome ? nextGame?.ateamid  : nextGame?.hteamid;
 
   return (
     <motion.div
@@ -140,33 +144,6 @@ export default function Home() {
         <span className="days-label">days together ✨</span>
       </motion.div>
 
-      <motion.div className="afl-widget" variants={itemVariants}>
-        <img src={NMFC_LOGO} alt="North Melbourne" className="afl-logo" />
-        {aflLoading ? (
-          <div className="afl-info">
-            <span className="afl-round">North Melbourne</span>
-            <span className="afl-opponent afl-loading">Loading fixture…</span>
-          </div>
-        ) : nextGame ? (
-          <>
-            <div className="afl-info">
-              <span className="afl-round">{nextGame.roundname}</span>
-              <span className="afl-opponent">vs {opponent}</span>
-              <span className="afl-meta">{formatGameDate(nextGame.date)}</span>
-              <span className="afl-venue">{nextGame.venue}</span>
-            </div>
-            <span className={"afl-badge " + (isHome ? "afl-home" : "afl-away")}>
-              {isHome ? "Home" : "Away"}
-            </span>
-          </>
-        ) : (
-          <div className="afl-info">
-            <span className="afl-round">North Melbourne</span>
-            <span className="afl-opponent afl-loading">No fixture found</span>
-          </div>
-        )}
-      </motion.div>
-
       <motion.div className="music-bar" variants={itemVariants}>
         <span className="music-note" style={{ opacity: playing ? 1 : 0.4 }}>♪</span>
         <span className="music-title">Crazy Train — Ozzy Osbourne</span>
@@ -179,6 +156,53 @@ export default function Home() {
         >
           {playing ? "⏸" : "▶"}
         </motion.button>
+      </motion.div>
+
+      {/* AFL next match widget — always rendered, shows loading/placeholder states */}
+      <motion.div className="afl-widget" variants={itemVariants}>
+        <div className="afl-widget-header">
+          <span className="afl-next-label">⊙ Next Match</span>
+          {nextGame && <span className="afl-round-label">{nextGame.roundname}</span>}
+        </div>
+
+        {aflLoading ? (
+          <div className="afl-loading-row">
+            <span className="afl-loading-text">Loading fixture…</span>
+          </div>
+        ) : nextGame ? (
+          <>
+            <div className="afl-teams-row">
+              <div className="afl-team">
+                <img
+                  src={squiggleLogo(nmfcId)}
+                  alt="North Melbourne"
+                  className="afl-team-logo"
+                />
+                <span className="afl-team-name">North Melbourne</span>
+              </div>
+              <span className="afl-vs">V</span>
+              <div className="afl-team">
+                <img
+                  src={squiggleLogo(oppId)}
+                  alt={opponent}
+                  className="afl-team-logo"
+                />
+                <span className="afl-team-name">{opponent}</span>
+              </div>
+            </div>
+            <div className="afl-details-row">
+              <span className="afl-venue-text">{nextGame.venue}</span>
+              <span className="afl-date-text">{formatGameDate(nextGame.date)}</span>
+            </div>
+            <span className={"afl-home-away " + (isHome ? "afl-home" : "afl-away")}>
+              {isHome ? "🏟️ Home" : "✈️ Away"}
+            </span>
+          </>
+        ) : (
+          <div className="afl-loading-row">
+            <span className="afl-loading-text">No upcoming fixture found</span>
+          </div>
+        )}
       </motion.div>
 
       <div id="yt-player" className="youtube-hidden" />
