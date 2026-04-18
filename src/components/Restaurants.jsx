@@ -28,7 +28,7 @@ export default function Restaurants() {
       const { data } = await supabase
         .from("restaurants")
         .select("*")
-        .order("created_at", { ascending: true });
+        .order("name", { ascending: true });
       if (data) setPlaces(data);
     };
     fetchPlaces();
