@@ -246,6 +246,7 @@ body::after {
 .meal-title,
 .feedback-title,
 .todo-title,
+.restaurant-title,
 .home-title {
   font-family: 'DM Serif Display', serif;
   font-weight: 400;
@@ -258,6 +259,7 @@ body::after {
 .meal-title,
 .feedback-title,
 .todo-title,
+.restaurant-title,
 .notes-heading,
 .day-name,
 .cuisine-count,
