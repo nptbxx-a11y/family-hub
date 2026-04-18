@@ -11,6 +11,7 @@ const RecipeList = lazy(() => import("./components/RecipeList"));
 const MealPlan = lazy(() => import("./components/MealPlan"));
 const Feedback = lazy(() => import("./components/Feedback"));
 const TodoList = lazy(() => import("./components/TodoList"));
+const Restaurants = lazy(() => import("./components/Restaurants"));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -24,6 +25,7 @@ function AnimatedRoutes() {
           <Route path="/meals" element={<MealPlan />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/todos" element={<TodoList />} />
+          <Route path="/restaurants" element={<Restaurants />} />
         </Routes>
       </AnimatePresence>
     </Suspense>

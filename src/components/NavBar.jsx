@@ -37,6 +37,9 @@ export default function NavBar({ onLogout }) {
           <NavLink to="/todos" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             ✅ To Do
           </NavLink>
+          <NavLink to="/restaurants" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
+            🍴 Restaurants
+          </NavLink>
           <NavLink to="/feedback" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             📮 Feedback Box
           </NavLink>
