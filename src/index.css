@@ -70,6 +70,7 @@ body::before {
   pointer-events: none;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  will-change: opacity;
   animation: twinkle1 6s ease-in-out infinite alternate;
   background-image:
     radial-gradient(circle at 2% 4%,   rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px),
@@ -196,6 +197,7 @@ body::after {
   pointer-events: none;
   background-size: 100% 100%;
   background-repeat: no-repeat;
+  will-change: opacity;
   animation: twinkle2 4s ease-in-out 1s infinite alternate;
   background-image:
     radial-gradient(circle at 11% 6%,  rgba(255,255,255,0.95) 0px, rgba(255,255,255,0.70) 1.5px, rgba(255,255,255,0.12) 4px, transparent 7px),
@@ -330,4 +332,69 @@ body::after {
 
 .cuisine-tile {
   border-radius: 20px !important;
+}
+
+/* ── Mobile performance: strip expensive effects on small screens ── */
+@media (max-width: 768px) {
+
+  /* Replace ~130 animated radial-gradients with 15 static ones — huge paint win */
+  body::before {
+    animation: none;
+    opacity: 0.75;
+    background-image:
+      radial-gradient(circle at 8%  11%, rgba(255,255,255,0.60) 0px, rgba(255,255,255,0.60) 1px, transparent 1.5px),
+      radial-gradient(circle at 28% 13%, rgba(255,255,255,0.75) 0px, rgba(255,255,255,0.75) 1px, transparent 1.5px),
+      radial-gradient(circle at 63% 13%, rgba(255,255,255,0.60) 0px, rgba(255,255,255,0.60) 1px, transparent 1.5px),
+      radial-gradient(circle at 86% 29%, rgba(255,255,255,0.75) 0px, rgba(255,255,255,0.75) 1px, transparent 1.5px),
+      radial-gradient(circle at 22% 35%, rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px),
+      radial-gradient(circle at 75% 14%, rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px),
+      radial-gradient(circle at 44% 47%, rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px),
+      radial-gradient(circle at 9%  73%, rgba(255,255,255,0.60) 0px, rgba(255,255,255,0.60) 1px, transparent 1.5px),
+      radial-gradient(circle at 67% 68%, rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px),
+      radial-gradient(circle at 39% 68%, rgba(255,255,255,0.75) 0px, rgba(255,255,255,0.75) 1px, transparent 1.5px),
+      radial-gradient(circle at 86% 79%, rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px),
+      radial-gradient(circle at 12% 91%, rgba(255,255,255,0.60) 0px, rgba(255,255,255,0.60) 1px, transparent 1.5px),
+      radial-gradient(circle at 54% 92%, rgba(255,255,255,0.60) 0px, rgba(255,255,255,0.60) 1px, transparent 1.5px),
+      radial-gradient(circle at 30% 79%, rgba(255,255,255,0.60) 0px, rgba(255,255,255,0.60) 1px, transparent 1.5px),
+      radial-gradient(circle at 93% 48%, rgba(255,255,255,0.45) 0px, rgba(255,255,255,0.45) 1px, transparent 1.5px);
+  }
+
+  /* Replace 21 animated glowing stars with 7 static ones */
+  body::after {
+    animation: none;
+    opacity: 0.55;
+    background-image:
+      radial-gradient(circle at 11%  6%,  rgba(255,255,255,0.95) 0px, rgba(255,255,255,0.70) 1.5px, rgba(255,255,255,0.12) 4px, transparent 7px),
+      radial-gradient(circle at 67%  3%,  rgba(255,255,255,0.95) 0px, rgba(255,255,255,0.70) 1.5px, rgba(255,255,255,0.12) 4px, transparent 7px),
+      radial-gradient(circle at 33% 18%,  rgba(255,255,255,0.90) 0px, rgba(255,255,255,0.65) 1.5px, rgba(255,255,255,0.10) 4px, transparent 7px),
+      radial-gradient(circle at 89% 12%,  rgba(255,255,255,0.85) 0px, rgba(255,255,255,0.60) 1.5px, rgba(255,255,255,0.10) 4px, transparent 7px),
+      radial-gradient(circle at 45% 49%,  rgba(255,255,255,0.85) 0px, rgba(255,255,255,0.60) 1.5px, rgba(255,255,255,0.10) 4px, transparent 7px),
+      radial-gradient(circle at 78% 77%,  rgba(255,255,255,0.85) 0px, rgba(255,255,255,0.60) 1.5px, rgba(255,255,255,0.10) 4px, transparent 7px),
+      radial-gradient(circle at 22% 89%,  rgba(255,255,255,0.90) 0px, rgba(255,255,255,0.65) 1.5px, rgba(255,255,255,0.12) 4px, transparent 7px);
+  }
+
+  /* Remove aurora blurs — large fixed blur is expensive on mobile GPU */
+  .aurora::before,
+  .aurora::after {
+    filter: none;
+    opacity: 0.7;
+  }
+
+  /* Remove backdrop-filter blur on all glass cards — biggest iOS Safari win */
+  .grocery-container,
+  .recipe-container,
+  .meal-container,
+  .feedback-container,
+  .todo-container,
+  .home-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(12, 15, 48, 0.93) !important;
+  }
+
+  .music-bar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(12, 15, 48, 0.93);
+  }
 }
