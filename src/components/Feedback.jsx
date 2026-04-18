@@ -71,11 +71,15 @@ export default function Feedback() {
   };
 
   const actionNote = async (id) => {
-    await supabase.from("feedback").update({ actioned: true }).eq("id", id);
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, actioned: true } : n));
+    const { error } = await supabase.from("feedback").update({ actioned: true }).eq("id", id);
+    if (error) setNotes(prev => prev.map(n => n.id === id ? { ...n, actioned: false } : n));
   };
 
   const unactionNote = async (id) => {
-    await supabase.from("feedback").update({ actioned: false }).eq("id", id);
+    setNotes(prev => prev.map(n => n.id === id ? { ...n, actioned: false } : n));
+    const { error } = await supabase.from("feedback").update({ actioned: false }).eq("id", id);
+    if (error) setNotes(prev => prev.map(n => n.id === id ? { ...n, actioned: true } : n));
   };
 
   const formatDate = (ts) => {
