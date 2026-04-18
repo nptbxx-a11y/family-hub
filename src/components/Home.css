@@ -74,6 +74,9 @@
   font-size: 1.1rem;
   color: var(--green-dark);
   animation: pulse 1.5s ease-in-out infinite;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 @keyframes pulse {
@@ -98,7 +101,10 @@
   border: none;
   font-size: 1.1rem;
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 0;
+  width: 32px;
+  text-align: center;
+  flex-shrink: 0;
   border-radius: 6px;
   transition: background 0.2s;
 }
