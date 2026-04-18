@@ -6,10 +6,6 @@ import coupleImg from "../assets/couple.png";
 const MET_DATE = new Date("2025-07-09");
 const YOUTUBE_ID = "tMDFv5m18Pw";
 
-// Squiggle hosts every team's logo indexed by their team ID
-const squiggleLogo = (id) =>
-  `https://squiggle.com.au/wp-content/themes/squiggle/assets/images/teamlogos/${id}.svg`;
-
 const containerVariants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.18 } },
@@ -49,6 +45,7 @@ export default function Home() {
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
   const [nextGame, setNextGame] = useState(null);
+  const [teamLogos, setTeamLogos] = useState({});
   const [aflLoading, setAflLoading] = useState(true);
   const playerRef = useRef(null);
 
@@ -75,20 +72,32 @@ export default function Home() {
     }
   }, []);
 
-  // AFL next game — try current year then fall back to previous year
+  // AFL next game + team logos from Squiggle API
   useEffect(() => {
-    const fetchNextGame = async () => {
+    const fetchAFL = async () => {
       try {
         const year = new Date().getFullYear();
-        for (const y of [year, year - 1]) {
-          const res = await fetch(
-            `https://api.squiggle.com.au/?q=games;year=${y};team=North%20Melbourne`,
-            { headers: { "Accept": "application/json" } }
-          );
+
+        // Fetch teams (for logo URLs) and games in parallel
+        const [teamsRes, ...gameResponses] = await Promise.all([
+          fetch("https://api.squiggle.com.au/?q=teams", { headers: { "Accept": "application/json" } }),
+          fetch(`https://api.squiggle.com.au/?q=games;year=${year};team=North%20Melbourne`, { headers: { "Accept": "application/json" } }),
+          fetch(`https://api.squiggle.com.au/?q=games;year=${year - 1};team=North%20Melbourne`, { headers: { "Accept": "application/json" } }),
+        ]);
+
+        // Build id → logo URL map from teams response
+        if (teamsRes.ok) {
+          const teamsData = await teamsRes.json();
+          const map = {};
+          for (const t of (teamsData.teams || [])) map[t.id] = t.logo;
+          setTeamLogos(map);
+        }
+
+        // Find first upcoming game across both years
+        for (const res of gameResponses) {
           if (!res.ok) continue;
           const data = await res.json();
           if (data.games?.length > 0) {
-            // complete is 0–100 for in-progress/done, null/undefined for scheduled
             const upcoming = data.games
               .filter(g => g.complete !== 100)
               .sort((a, b) => new Date(a.date.replace(" ", "T")) - new Date(b.date.replace(" ", "T")));
@@ -104,7 +113,7 @@ export default function Home() {
         setAflLoading(false);
       }
     };
-    fetchNextGame();
+    fetchAFL();
   }, []);
 
   const togglePlay = () => {
@@ -174,7 +183,7 @@ export default function Home() {
             <div className="afl-teams-row">
               <div className="afl-team">
                 <img
-                  src={squiggleLogo(nmfcId)}
+                  src={teamLogos[nmfcId]}
                   alt="North Melbourne"
                   className="afl-team-logo"
                 />
@@ -183,7 +192,7 @@ export default function Home() {
               <span className="afl-vs">V</span>
               <div className="afl-team">
                 <img
-                  src={squiggleLogo(oppId)}
+                  src={teamLogos[oppId]}
                   alt={opponent}
                   className="afl-team-logo"
                 />
