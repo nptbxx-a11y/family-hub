@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
 import coupleImg from "../assets/couple.png";
+import nmfcLogo from "../assets/nmfc-logo.svg";
 
 const MET_DATE = new Date("2025-07-09");
 const YOUTUBE_ID = "tMDFv5m18Pw";
@@ -183,7 +184,7 @@ export default function Home() {
             <div className="afl-teams-row">
               <div className="afl-team">
                 <img
-                  src={teamLogos[nmfcId]}
+                  src={nmfcLogo}
                   alt="North Melbourne"
                   className="afl-team-logo"
                 />
