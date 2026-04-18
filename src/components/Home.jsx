@@ -46,6 +46,7 @@ export default function Home() {
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
   const [nextGame, setNextGame] = useState(null);
+  const [recentResult, setRecentResult] = useState(null);
   const [teamLogos, setTeamLogos] = useState({});
   const [aflLoading, setAflLoading] = useState(true);
   const playerRef = useRef(null);
@@ -97,20 +98,32 @@ export default function Home() {
           setTeamLogos(map);
         }
 
-        // Find first upcoming game across both years
+        // Collect all games then find next upcoming + most recent result
+        const allGames = [];
         for (const res of gameResponses) {
           if (!res.ok) continue;
           const data = await res.json();
-          if (data.games?.length > 0) {
-            const upcoming = data.games
-              .filter(g => g.complete !== 100)
-              .sort((a, b) => new Date(a.date.replace(" ", "T")) - new Date(b.date.replace(" ", "T")));
-            if (upcoming.length > 0) {
-              setNextGame(upcoming[0]);
-              break;
-            }
-          }
+          if (data.games?.length > 0) allGames.push(...data.games);
         }
+
+        const now = Date.now();
+        const MS_27H = 27 * 60 * 60 * 1000;
+
+        // Most recent completed game within 27 hours of kick-off
+        const lastCompleted = allGames
+          .filter(g => g.complete === 100 && g.date)
+          .sort((a, b) => new Date(b.date.replace(" ", "T")) - new Date(a.date.replace(" ", "T")))
+          .find(g => {
+            const kickOff = new Date(g.date.replace(" ", "T")).getTime();
+            return (now - kickOff) < MS_27H;
+          });
+        if (lastCompleted) setRecentResult(lastCompleted);
+
+        // Next upcoming game
+        const upcoming = allGames
+          .filter(g => g.complete !== 100 && g.date)
+          .sort((a, b) => new Date(a.date.replace(" ", "T")) - new Date(b.date.replace(" ", "T")));
+        if (upcoming.length > 0) setNextGame(upcoming[0]);
       } catch {
         // network failure — widget shows placeholder
       } finally {
@@ -131,10 +144,21 @@ export default function Home() {
     }
   };
 
-  const isHome = nextGame?.hteam === "North Melbourne";
-  const opponent  = isHome ? nextGame?.ateam    : nextGame?.hteam;
-  const nmfcId    = isHome ? nextGame?.hteamid  : nextGame?.ateamid;
-  const oppId     = isHome ? nextGame?.ateamid  : nextGame?.hteamid;
+  // Derive display fields for whichever game mode is active
+  const displayGame = recentResult ?? nextGame;
+  const isHome    = displayGame?.hteam === "North Melbourne";
+  const opponent  = isHome ? displayGame?.ateam   : displayGame?.hteam;
+  const oppId     = isHome ? displayGame?.ateamid : displayGame?.hteamid;
+
+  // Result mode helpers
+  const nmScore   = isHome ? displayGame?.hscore  : displayGame?.ascore;
+  const oppScore  = isHome ? displayGame?.ascore  : displayGame?.hscore;
+  const nmGoals   = isHome ? displayGame?.hgoals  : displayGame?.agoals;
+  const nmBehinds = isHome ? displayGame?.hbehinds: displayGame?.abehinds;
+  const oppGoals  = isHome ? displayGame?.agoals  : displayGame?.hgoals;
+  const oppBehinds= isHome ? displayGame?.abehinds: displayGame?.hbehinds;
+  const nmWon     = nmScore > oppScore;
+  const isDraw    = nmScore === oppScore;
 
   return (
     <motion.div
@@ -171,35 +195,49 @@ export default function Home() {
         </motion.button>
       </motion.div>
 
-      {/* AFL next match widget — always rendered, shows loading/placeholder states */}
+      {/* AFL widget — shows recent result for 24h after game, then next fixture */}
       <motion.div className="afl-widget" variants={itemVariants}>
         <div className="afl-widget-header">
-          <span className="afl-next-label">⊙ Next Match</span>
-          {nextGame && <span className="afl-round-label">{nextGame.roundname}</span>}
+          <span className="afl-next-label">{recentResult ? "⊙ Last Result" : "⊙ Next Match"}</span>
+          {displayGame && <span className="afl-round-label">{displayGame.roundname}</span>}
         </div>
 
         {aflLoading ? (
           <div className="afl-loading-row">
             <span className="afl-loading-text">Loading fixture…</span>
           </div>
-        ) : nextGame ? (
+        ) : recentResult ? (
           <>
             <div className="afl-teams-row">
               <div className="afl-team">
-                <img
-                  src={nmfcLogo}
-                  alt="North Melbourne"
-                  className="afl-team-logo"
-                />
+                <img src={nmfcLogo} alt="North Melbourne" className="afl-team-logo" />
+                <span className="afl-score-line">{nmGoals}.{nmBehinds} <span className="afl-score-total">({nmScore})</span></span>
                 <span className="afl-team-name">North Melbourne</span>
               </div>
               <span className="afl-vs">V</span>
               <div className="afl-team">
-                <img
-                  src={teamLogos[oppId]}
-                  alt={opponent}
-                  className="afl-team-logo"
-                />
+                <img src={teamLogos[oppId]} alt={opponent} className="afl-team-logo" />
+                <span className="afl-score-line">{oppGoals}.{oppBehinds} <span className="afl-score-total">({oppScore})</span></span>
+                <span className="afl-team-name">{opponent}</span>
+              </div>
+            </div>
+            <div className="afl-details-row">
+              <span className="afl-venue-text">{recentResult.venue}</span>
+            </div>
+            <span className={`afl-result-badge ${isDraw ? "afl-draw" : nmWon ? "afl-win" : "afl-loss"}`}>
+              {isDraw ? "Draw" : nmWon ? "Win 🎉" : "Loss"}
+            </span>
+          </>
+        ) : nextGame ? (
+          <>
+            <div className="afl-teams-row">
+              <div className="afl-team">
+                <img src={nmfcLogo} alt="North Melbourne" className="afl-team-logo" />
+                <span className="afl-team-name">North Melbourne</span>
+              </div>
+              <span className="afl-vs">V</span>
+              <div className="afl-team">
+                <img src={teamLogos[oppId]} alt={opponent} className="afl-team-logo" />
                 <span className="afl-team-name">{opponent}</span>
               </div>
             </div>
