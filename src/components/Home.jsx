@@ -90,7 +90,10 @@ export default function Home() {
         if (teamsRes.ok) {
           const teamsData = await teamsRes.json();
           const map = {};
-          for (const t of (teamsData.teams || [])) map[t.id] = t.logo;
+          for (const t of (teamsData.teams || [])) {
+            const logo = t.logo;
+            map[t.id] = logo?.startsWith("/") ? `https://squiggle.com.au${logo}` : logo;
+          }
           setTeamLogos(map);
         }
 
