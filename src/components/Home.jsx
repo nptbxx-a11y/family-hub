@@ -46,6 +46,7 @@ export default function Home() {
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
   const [nextGame, setNextGame] = useState(null);
+  const [aflLoading, setAflLoading] = useState(true);
   const playerRef = useRef(null);
 
   // YouTube player
@@ -73,22 +74,32 @@ export default function Home() {
     }
   }, []);
 
-  // AFL next game
+  // AFL next game — try current year then fall back to previous
   useEffect(() => {
     const fetchNextGame = async () => {
       try {
         const year = new Date().getFullYear();
-        const res = await fetch(
-          `https://api.squiggle.com.au/?q=games;year=${year};team=North%20Melbourne;incomplete=1`,
-          { headers: { "Accept": "application/json" } }
-        );
-        const data = await res.json();
-        if (data.games?.length > 0) {
-          const sorted = [...data.games].sort((a, b) => new Date(a.date) - new Date(b.date));
-          setNextGame(sorted[0]);
+        for (const y of [year, year - 1]) {
+          const res = await fetch(
+            `https://api.squiggle.com.au/?q=games;year=${y};team=North%20Melbourne`,
+            { headers: { "Accept": "application/json" } }
+          );
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data.games?.length > 0) {
+            const upcoming = data.games
+              .filter(g => g.complete < 100)
+              .sort((a, b) => new Date(a.date.replace(" ", "T")) - new Date(b.date.replace(" ", "T")));
+            if (upcoming.length > 0) {
+              setNextGame(upcoming[0]);
+              break;
+            }
+          }
         }
       } catch {
-        // silently fail — widget just won't show
+        // network failure — widget shows "TBD"
+      } finally {
+        setAflLoading(false);
       }
     };
     fetchNextGame();
@@ -129,20 +140,32 @@ export default function Home() {
         <span className="days-label">days together ✨</span>
       </motion.div>
 
-      {nextGame && (
-        <motion.div className="afl-widget" variants={itemVariants}>
-          <img src={NMFC_LOGO} alt="North Melbourne" className="afl-logo" />
+      <motion.div className="afl-widget" variants={itemVariants}>
+        <img src={NMFC_LOGO} alt="North Melbourne" className="afl-logo" />
+        {aflLoading ? (
           <div className="afl-info">
-            <span className="afl-round">{nextGame.roundname}</span>
-            <span className="afl-opponent">vs {opponent}</span>
-            <span className="afl-meta">{formatGameDate(nextGame.date)}</span>
-            <span className="afl-venue">{nextGame.venue}</span>
+            <span className="afl-round">North Melbourne</span>
+            <span className="afl-opponent afl-loading">Loading fixture…</span>
           </div>
-          <span className={"afl-badge " + (isHome ? "afl-home" : "afl-away")}>
-            {isHome ? "Home" : "Away"}
-          </span>
-        </motion.div>
-      )}
+        ) : nextGame ? (
+          <>
+            <div className="afl-info">
+              <span className="afl-round">{nextGame.roundname}</span>
+              <span className="afl-opponent">vs {opponent}</span>
+              <span className="afl-meta">{formatGameDate(nextGame.date)}</span>
+              <span className="afl-venue">{nextGame.venue}</span>
+            </div>
+            <span className={"afl-badge " + (isHome ? "afl-home" : "afl-away")}>
+              {isHome ? "Home" : "Away"}
+            </span>
+          </>
+        ) : (
+          <div className="afl-info">
+            <span className="afl-round">North Melbourne</span>
+            <span className="afl-opponent afl-loading">No fixture found</span>
+          </div>
+        )}
+      </motion.div>
 
       <motion.div className="music-bar" variants={itemVariants}>
         <span className="music-note" style={{ opacity: playing ? 1 : 0.4 }}>♪</span>
