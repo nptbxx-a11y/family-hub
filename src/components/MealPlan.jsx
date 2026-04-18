@@ -202,9 +202,24 @@ export default function MealPlan() {
           })}
         </motion.div>
 
-        {picking && (
-          <div className="picker-overlay" onClick={() => setPicking(null)}>
-            <div className="picker-modal" onClick={(e) => e.stopPropagation()}>
+        <AnimatePresence>
+          {picking && (
+          <motion.div
+            className="picker-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setPicking(null)}
+          >
+            <motion.div
+              className="picker-modal"
+              initial={{ y: "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-100%" }}
+              transition={{ type: "spring", stiffness: 340, damping: 32 }}
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="picker-header">
                 <span className="picker-title">Pick a meal for {labelFromKey(picking)}</span>
                 <button className="picker-close" onClick={() => setPicking(null)}>✕</button>
@@ -241,9 +256,10 @@ export default function MealPlan() {
                   <p className="picker-empty">No recipes yet — add some in the Recipes section first!</p>
                 )}
               </ul>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );
