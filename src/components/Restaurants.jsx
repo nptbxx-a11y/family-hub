@@ -136,7 +136,7 @@ export default function Restaurants() {
     >
       <div className="restaurant-container">
         <div className="restaurant-header">
-          <h1 className="restaurant-title">Restaurants</h1>
+          <h1 className="restaurant-title">Mangia Mangia 🤌</h1>
           <button
             className="restaurant-add-btn"
             onClick={() => setShowForm((v) => !v)}
