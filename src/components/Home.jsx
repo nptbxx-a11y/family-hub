@@ -7,6 +7,36 @@ import nmfcLogo from "../assets/nmfc-logo.svg";
 const MET_DATE = new Date("2025-07-09");
 const YOUTUBE_ID = "tMDFv5m18Pw";
 
+// ── UK seasonal / short-season calendar ──────────────────────────────────
+// Events are checked top-to-bottom — put specific short events ABOVE the base
+// seasons so they take priority. To add a new event, uncomment or add a line:
+//   { label: "Wimbledon",     icon: "🎾", from: [6, 30], to: [7, 13] }
+//   { label: "Christmas",     icon: "🎄", from: [12, 1],  to: [12, 25] }
+//   { label: "Easter",        icon: "🐣", from: [4, 18],  to: [4, 21] }
+// Months are 1-indexed. Ranges that wrap the new year (e.g. Winter) work fine.
+const CALENDAR_EVENTS = [
+  // ── Short-season events (add new ones here) ──────────────────────────
+  // { label: "Wimbledon",  icon: "🎾", from: [6, 30], to: [7, 13] },
+
+  // ── Base UK meteorological seasons ───────────────────────────────────
+  { label: "Spring", icon: "🌸", from: [3,  1], to: [5, 31], color: "#f9a8d4", bg: "rgba(249,168,212,0.12)", border: "rgba(249,168,212,0.25)" },
+  { label: "Summer", icon: "☀️", from: [6,  1], to: [8, 31], color: "#fde68a", bg: "rgba(253,230,138,0.12)", border: "rgba(253,230,138,0.28)" },
+  { label: "Autumn", icon: "🍂", from: [9,  1], to: [11,30], color: "#fb923c", bg: "rgba(251,146, 60,0.12)", border: "rgba(251,146, 60,0.28)" },
+  { label: "Winter", icon: "❄️", from: [12, 1], to: [2, 28], color: "#93c5fd", bg: "rgba(147,197,253,0.12)", border: "rgba(147,197,253,0.25)" },
+];
+
+function getCurrentEvent() {
+  const now = new Date();
+  const md  = (now.getMonth() + 1) * 100 + now.getDate();
+  for (const evt of CALENDAR_EVENTS) {
+    const fromMD = evt.from[0] * 100 + evt.from[1];
+    const toMD   = evt.to[0]   * 100 + evt.to[1];
+    const hit    = fromMD <= toMD ? (md >= fromMD && md <= toMD) : (md >= fromMD || md <= toMD);
+    if (hit) return evt;
+  }
+  return null;
+}
+
 const WORLD_CLOCKS = [
   { label: "London",    tz: "Europe/London" },
   { label: "Melbourne", tz: "Australia/Melbourne" },
@@ -252,6 +282,23 @@ export default function Home() {
         <h1 className="home-title">Br Br Family Hub</h1>
         <p className="home-subtitle">Welcome back, Ozzy & Tommy</p>
       </motion.div>
+
+      {(() => {
+        const evt = getCurrentEvent();
+        return evt ? (
+          <motion.div
+            className="season-widget"
+            variants={itemVariants}
+            style={{ background: evt.bg, borderColor: evt.border }}
+          >
+            <span className="season-icon">{evt.icon}</span>
+            <div className="season-text">
+              <span className="season-label" style={{ color: evt.color }}>{evt.label}</span>
+              <span className="season-sub">in the United Kingdom</span>
+            </div>
+          </motion.div>
+        ) : null;
+      })()}
 
       <motion.div className="days-widget" variants={itemVariants}>
         <span className="days-number">{days}</span>

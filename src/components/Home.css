@@ -121,6 +121,43 @@
   pointer-events: none;
 }
 
+.season-widget {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid;
+  border-radius: 14px;
+  padding: 10px 18px;
+  max-width: 420px;
+  width: 100%;
+}
+
+.season-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.season-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.season-label {
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.season-sub {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: rgba(220, 235, 255, 0.4);
+}
+
 .days-widget {
   display: flex;
   flex-direction: row;
