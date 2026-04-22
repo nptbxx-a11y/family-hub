@@ -5,6 +5,7 @@
 html {
   overflow-x: hidden;
   max-width: 100%;
+  padding-top: 60px; /* offset for fixed navbar */
 }
 
 :root {
