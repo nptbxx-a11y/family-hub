@@ -275,30 +275,31 @@ export default function Home() {
       animate="show"
       exit={{ opacity: 0, y: -10, transition: { duration: 0.25 } }}
     >
-      <motion.div className="home-card" variants={itemVariants}>
-        <div className="couple-icon">
-          <img src={coupleImg} alt="Ozzy and Tommy" className="couple-img" />
+      {/* Home card + hanging season tag as one unit */}
+      <motion.div className="home-card-wrap" variants={itemVariants}>
+        <div className="home-card">
+          <div className="couple-icon">
+            <img src={coupleImg} alt="Ozzy and Tommy" className="couple-img" />
+          </div>
+          <h1 className="home-title">Br Br Family Hub</h1>
+          <p className="home-subtitle">Welcome back, Ozzy & Tommy</p>
         </div>
-        <h1 className="home-title">Br Br Family Hub</h1>
-        <p className="home-subtitle">Welcome back, Ozzy & Tommy</p>
-      </motion.div>
-
-      {(() => {
-        const evt = getCurrentEvent();
-        return evt ? (
-          <motion.div
-            className="season-widget"
-            variants={itemVariants}
-            style={{ background: evt.bg, borderColor: evt.border }}
-          >
-            <span className="season-icon">{evt.icon}</span>
-            <div className="season-text">
-              <span className="season-label" style={{ color: evt.color }}>{evt.label}</span>
-              <span className="season-sub">in the United Kingdom</span>
+        {(() => {
+          const evt = getCurrentEvent();
+          return evt ? (
+            <div className="season-hanger">
+              <div className="season-hanger-string" />
+              <div
+                className="season-hanger-tag"
+                style={{ background: evt.bg, borderColor: evt.border, color: evt.color }}
+              >
+                <span className="season-hanger-icon">{evt.icon}</span>
+                <span className="season-hanger-label">{evt.label}</span>
+              </div>
             </div>
-          </motion.div>
-        ) : null;
-      })()}
+          ) : null;
+        })()}
+      </motion.div>
 
       <motion.div className="days-widget" variants={itemVariants}>
         <span className="days-number">{days}</span>
