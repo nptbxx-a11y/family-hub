@@ -47,8 +47,7 @@ function formatDayLabel(date) {
 
   const dayName = date.toLocaleDateString("en-GB", { weekday: "short" });
   const day = date.getDate();
-  const month = date.toLocaleDateString("en-GB", { month: "short" });
-  return `${dayName} ${day}${ordinalSuffix(day)} ${month}`;
+  return `${dayName} ${day}${ordinalSuffix(day)}`;
 }
 
 function labelFromKey(dateKey) {
