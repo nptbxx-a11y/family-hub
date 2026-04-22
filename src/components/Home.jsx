@@ -7,6 +7,83 @@ import nmfcLogo from "../assets/nmfc-logo.svg";
 const MET_DATE = new Date("2025-07-09");
 const YOUTUBE_ID = "tMDFv5m18Pw";
 
+const WORLD_CLOCKS = [
+  { label: "London",    tz: "Europe/London" },
+  { label: "Melbourne", tz: "Australia/Melbourne" },
+  { label: "Singapore", tz: "Asia/Singapore" },
+];
+
+function getTimeParts(now, tz) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: tz, hour: "numeric", minute: "numeric", second: "numeric", hour12: false,
+  }).formatToParts(now);
+  const get = (type) => parseInt(parts.find((p) => p.type === type)?.value ?? "0");
+  return { h: get("hour"), m: get("minute"), s: get("second") };
+}
+
+function ClockFace({ label, tz, now }) {
+  const { h, m, s } = getTimeParts(now, tz);
+  const secDeg  = s * 6;
+  const minDeg  = m * 6 + s * 0.1;
+  const hourDeg = (h % 12) * 30 + m * 0.5;
+  const digital = new Intl.DateTimeFormat("en-GB", {
+    timeZone: tz, hour: "2-digit", minute: "2-digit", hour12: false,
+  }).format(now);
+
+  const hand = (deg, len, width, color) => (
+    <line
+      x1="50" y1="50"
+      x2={50 + len * Math.sin((deg * Math.PI) / 180)}
+      y2={50 - len * Math.cos((deg * Math.PI) / 180)}
+      stroke={color} strokeWidth={width} strokeLinecap="round"
+    />
+  );
+
+  return (
+    <div className="clock-face">
+      <svg viewBox="0 0 100 100" className="clock-svg">
+        {/* Face */}
+        <circle cx="50" cy="50" r="47" fill="rgba(10,15,40,0.7)" stroke="rgba(180,200,255,0.18)" strokeWidth="1.5" />
+        {/* Hour ticks */}
+        {Array.from({ length: 12 }, (_, i) => {
+          const a = (i * 30 * Math.PI) / 180;
+          return (
+            <line key={i}
+              x1={50 + 38 * Math.sin(a)} y1={50 - 38 * Math.cos(a)}
+              x2={50 + 44 * Math.sin(a)} y2={50 - 44 * Math.cos(a)}
+              stroke="rgba(180,210,255,0.45)" strokeWidth={i % 3 === 0 ? 2.5 : 1.5} strokeLinecap="round"
+            />
+          );
+        })}
+        {/* Hands */}
+        {hand(hourDeg, 25, 4,   "rgba(255,255,255,0.95)")}
+        {hand(minDeg,  34, 2.5, "rgba(255,255,255,0.9)")}
+        {hand(secDeg,  37, 1.5, "#f97316")}
+        {/* Centre dot */}
+        <circle cx="50" cy="50" r="3.5" fill="#f97316" />
+        <circle cx="50" cy="50" r="1.5" fill="white" />
+      </svg>
+      <span className="clock-digital">{digital}</span>
+      <span className="clock-label">{label}</span>
+    </div>
+  );
+}
+
+function WorldClocks() {
+  const [now, setNow] = useState(new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="world-clocks-row">
+      {WORLD_CLOCKS.map(({ label, tz }) => (
+        <ClockFace key={tz} label={label} tz={tz} now={now} />
+      ))}
+    </div>
+  );
+}
+
 const containerVariants = {
   hidden: {},
   show: { transition: { staggerChildren: 0.18 } },
@@ -193,6 +270,10 @@ export default function Home() {
         >
           {playing ? "⏸" : "▶"}
         </motion.button>
+      </motion.div>
+
+      <motion.div className="world-clocks-widget" variants={itemVariants}>
+        <WorldClocks />
       </motion.div>
 
       {/* AFL widget — shows recent result for 24h after game, then next fixture */}
