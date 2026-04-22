@@ -218,8 +218,8 @@
 }
 
 .clock-svg {
-  width: 80px;
-  height: 80px;
+  width: 66px;
+  height: 66px;
   filter: drop-shadow(0 2px 10px rgba(100, 140, 255, 0.2));
 }
 
