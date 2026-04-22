@@ -34,13 +34,21 @@ function toDateKey(date) {
 }
 
 function formatDayLabel(date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  if (dateOnly.getTime() === today.getTime()) return "Tonight";
+  if (dateOnly.getTime() === tomorrow.getTime()) return "Tomorrow";
+
   const dayName = date.toLocaleDateString("en-GB", { weekday: "short" });
   const day = date.getDate();
-  if (day === 1) {
-    const month = date.toLocaleDateString("en-GB", { month: "short" });
-    return `${dayName} ${day}${ordinalSuffix(day)} ${month}`;
-  }
-  return `${dayName} ${day}${ordinalSuffix(day)}`;
+  const month = date.toLocaleDateString("en-GB", { month: "short" });
+  return `${dayName} ${day}${ordinalSuffix(day)} ${month}`;
 }
 
 function labelFromKey(dateKey) {
