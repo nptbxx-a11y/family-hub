@@ -188,11 +188,11 @@ export default function Home() {
       try {
         const year = new Date().getFullYear();
 
-        // Fetch teams (for logo URLs) and games in parallel
+        // Fetch teams (for logo URLs) and games in parallel via server-side proxy
         const [teamsRes, ...gameResponses] = await Promise.all([
-          fetch("https://api.squiggle.com.au/?q=teams", { headers: { "Accept": "application/json" } }),
-          fetch(`https://api.squiggle.com.au/?q=games;year=${year};team=12`, { headers: { "Accept": "application/json" } }),
-          fetch(`https://api.squiggle.com.au/?q=games;year=${year - 1};team=12`, { headers: { "Accept": "application/json" } }),
+          fetch("/api/afl?q=teams"),
+          fetch(`/api/afl?q=games;year=${year};team=12`),
+          fetch(`/api/afl?q=games;year=${year - 1};team=12`),
         ]);
 
         // Build id → logo URL map from teams response
