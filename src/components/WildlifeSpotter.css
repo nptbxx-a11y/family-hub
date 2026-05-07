@@ -235,7 +235,9 @@
   padding: 8px 10px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--brown);
+  color: #2d2417;
+  -webkit-appearance: none;
+  appearance: none;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -246,7 +248,7 @@
 .guy-item.ticked {
   background: #f0f7e6;
   border-color: var(--green-dark);
-  color: var(--green-dark);
+  color: #3a6e1a;
 }
 .guy-check {
   width: 18px;
