@@ -40,6 +40,9 @@ export default function NavBar({ onLogout }) {
           <NavLink to="/restaurants" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             🤌 Mangia Mangia
           </NavLink>
+          <NavLink to="/wildlife" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
+            🦆 Wildlife Spotter
+          </NavLink>
           <NavLink to="/feedback" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             📮 Feedback Box
           </NavLink>
