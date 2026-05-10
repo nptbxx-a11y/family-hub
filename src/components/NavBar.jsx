@@ -48,7 +48,7 @@ export default function NavBar({ onLogout }) {
             className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
             onClick={() => setOpen(false)}
           >
-            ⚔️ Battleships
+            ⚔️ All Aboard
           </NavLink>
           <NavLink to="/feedback" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             📮 Feedback Box
