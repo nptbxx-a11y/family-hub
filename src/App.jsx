@@ -13,6 +13,7 @@ const Feedback = lazy(() => import("./components/Feedback"));
 const TodoList = lazy(() => import("./components/TodoList"));
 const Restaurants = lazy(() => import("./components/Restaurants"));
 const WildlifeSpotter = lazy(() => import("./components/WildlifeSpotter"));
+const Battleships = lazy(() => import("./components/Battleships"));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -28,6 +29,7 @@ function AnimatedRoutes() {
           <Route path="/todos" element={<TodoList />} />
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/wildlife" element={<WildlifeSpotter />} />
+          <Route path="/battleships" element={<Battleships />} />
         </Routes>
       </AnimatePresence>
     </Suspense>
