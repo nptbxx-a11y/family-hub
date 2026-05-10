@@ -55,6 +55,22 @@ export default function Battleships() {
     return () => channel.unsubscribe();
   }, [game?.id]);
 
+  // Advance to playing when both players are ready (handles simultaneous-ready race condition)
+  useEffect(() => {
+    if (
+      !game?.id ||
+      game.status !== 'placing' ||
+      !game.ozzy_ready ||
+      !game.tommy_ready ||
+      game.created_by !== playerKey
+    ) return;
+    supabase
+      .from('battleships_games')
+      .update({ status: 'playing', current_turn: Math.random() < 0.5 ? 'ozzy' : 'tommy' })
+      .eq('id', game.id)
+      .eq('status', 'placing');
+  }, [game?.id, game?.status, game?.ozzy_ready, game?.tommy_ready, playerKey]);
+
   function handleSelectPlayer(key) {
     localStorage.setItem('battleships_player', key);
     setPlayerKey(key);
