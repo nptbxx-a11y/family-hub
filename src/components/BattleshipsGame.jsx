@@ -23,6 +23,7 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
       }
     }
     for (const shot of oppShots) {
+      if (shot.row < 0 || shot.row >= 10 || shot.col < 0 || shot.col >= 10) continue;
       cells[shot.row][shot.col] = {
         state: shot.hit ? 'hit' : 'miss',
         emoji: shot.hit ? '🥢' : '😤',
@@ -44,10 +45,16 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
       }
     }
     for (const shot of myShots) {
-      cells[shot.row][shot.col] = {
-        state: shot.hit ? 'hit' : 'miss',
-        emoji: shot.hit ? '🥢' : '😤',
-      };
+      if (shot.row < 0 || shot.row >= 10 || shot.col < 0 || shot.col >= 10) continue;
+      if (shot.hit && cells[shot.row][shot.col].state === 'ship') {
+        // sunk ship cell — keep emoji, just apply hit tint
+        cells[shot.row][shot.col].state = 'hit';
+      } else {
+        cells[shot.row][shot.col] = {
+          state: shot.hit ? 'hit' : 'miss',
+          emoji: shot.hit ? '🥢' : '😤',
+        };
+      }
     }
     return cells;
   }
