@@ -1,0 +1,240 @@
+/* src/components/Battleships.css */
+
+/* ── Page wrapper ── */
+.bs-page {
+  padding: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  font-family: 'Nunito', sans-serif;
+}
+.bs-page h2 {
+  color: var(--green-dark);
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* ── Grid ── */
+.bs-grid {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #e8e8e8;
+  border-radius: 10px;
+  padding: 8px;
+}
+.bs-grid-row {
+  display: flex;
+  gap: 3px;
+}
+.bs-cell-label {
+  width: 20px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #999;
+}
+.bs-cell {
+  width: 34px;
+  height: 34px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-sizing: border-box;
+  transition: background 0.12s, border-color 0.12s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.bs-cell--ship   { background: #dff0ff; border-color: #7ab8e0; }
+.bs-cell--hit    { background: #fff0f0; border-color: #e07a7a; }
+.bs-cell--miss   { background: #f0f0f0; border-color: #bbb; }
+.bs-cell--clickable { cursor: pointer; }
+.bs-cell--clickable:active { background: #e8f4ff; border-color: #7ab8e0; }
+
+/* ── Lobby ── */
+.bs-lobby {
+  text-align: center;
+  padding: 40px 0;
+}
+.bs-lobby p {
+  color: #888;
+  margin-bottom: 24px;
+}
+.bs-lobby-btn {
+  background: var(--green-dark);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 32px;
+  font-size: 18px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.bs-lobby-waiting {
+  color: #888;
+  font-size: 15px;
+}
+
+/* ── Player select ── */
+.bs-player-select {
+  text-align: center;
+  padding: 40px 0;
+}
+.bs-player-select p {
+  color: #888;
+  margin-bottom: 24px;
+  font-size: 15px;
+}
+.bs-player-btn {
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 32px;
+  font-size: 20px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* ── Placement ── */
+.bs-placement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.bs-placement-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+.bs-fleet-panel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.bs-fleet-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+  margin: 0 0 4px;
+}
+.bs-fleet-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.bs-fleet-item--selected { border-color: var(--green-dark); background: #f0fff0; }
+.bs-fleet-item--placed   { border-color: #7ab8e0; background: #dff0ff; cursor: default; }
+.bs-fleet-name { font-size: 13px; color: #444; flex: 1; }
+.bs-remove-btn {
+  background: none;
+  border: none;
+  color: #e07a7a;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+.bs-rotate-btn {
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.bs-ready-btn {
+  background: var(--green-dark);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 40px;
+  font-size: 18px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── Battle ── */
+.bs-game {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.bs-turn-indicator {
+  background: var(--green-dark);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+.bs-game-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.bs-section-label {
+  font-size: 13px;
+  color: #888;
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+/* ── Waiting message ── */
+.bs-waiting-msg {
+  text-align: center;
+  color: #888;
+  font-size: 15px;
+  padding: 40px 0;
+  line-height: 1.6;
+}
+
+/* ── Victory ── */
+.bs-victory {
+  text-align: center;
+  padding: 40px 0;
+}
+.bs-victory-emoji { font-size: 64px; margin-bottom: 12px; }
+.bs-victory h2 { font-size: 26px; margin-bottom: 8px; }
+.bs-victory p { color: #888; margin-bottom: 8px; }
+.bs-play-again-btn {
+  background: var(--green-dark);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 14px 32px;
+  font-size: 18px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+}
