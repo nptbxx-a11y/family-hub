@@ -27,8 +27,8 @@
   gap: 3px;
 }
 .bs-cell-label {
-  width: 20px;
-  height: 34px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,15 +36,15 @@
   color: #999;
 }
 .bs-cell {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   background: #fff;
   border: 2px solid #ccc;
   border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 16px;
   box-sizing: border-box;
   transition: background 0.12s, border-color 0.12s;
   user-select: none;
@@ -53,7 +53,7 @@
 .bs-cell--ship   { background: #dff0ff; border-color: #7ab8e0; }
 .bs-cell--hit    { background: #fff0f0; border-color: #e07a7a; }
 .bs-cell--miss   { background: #f0f0f0; border-color: #bbb; }
-.bs-cell--clickable { cursor: pointer; }
+.bs-cell--clickable { cursor: pointer; touch-action: manipulation; }
 .bs-cell--clickable:active { background: #e8f4ff; border-color: #7ab8e0; }
 
 /* ── Lobby ── */
@@ -77,6 +77,7 @@
   cursor: pointer;
   width: 100%;
   margin-bottom: 12px;
+  touch-action: manipulation;
 }
 .bs-lobby-waiting {
   color: #888;
@@ -98,6 +99,7 @@
   color: #fff;
   border: none;
   border-radius: 24px;
+  touch-action: manipulation;
   padding: 14px 32px;
   font-size: 20px;
   font-family: 'Nunito', sans-serif;
@@ -166,6 +168,7 @@
   font-weight: 700;
   cursor: pointer;
   align-self: flex-start;
+  touch-action: manipulation;
 }
 .bs-ready-btn {
   background: var(--green-dark);
@@ -177,6 +180,7 @@
   font-family: 'Nunito', sans-serif;
   font-weight: 700;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 /* ── Battle ── */
@@ -237,4 +241,5 @@
   font-weight: 700;
   cursor: pointer;
   margin-top: 20px;
+  touch-action: manipulation;
 }
