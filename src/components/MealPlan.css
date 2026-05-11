@@ -1,4 +1,4 @@
-.meal-container {
+﻿.meal-container {
   max-width: 600px;
   width: 100%;
   margin: 24px auto;
@@ -85,7 +85,7 @@
 .day-clear {
   background: none;
   border: none;
-  color: #c8b8a8;
+  color: #e0d4cc;
   cursor: pointer;
   font-size: 0.9rem;
   padding: 4px 6px;
@@ -106,7 +106,7 @@
   background: none;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #a0a0a0;
+  color: #c8c8c8;
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -221,7 +221,7 @@
 
 .picker-empty {
   text-align: center;
-  color: #a0a0a0;
+  color: #c8c8c8;
   padding: 24px;
 }
 

@@ -1,4 +1,4 @@
-.recipe-container {
+﻿.recipe-container {
   max-width: 600px;
   width: 100%;
   margin: 24px auto;
@@ -324,7 +324,7 @@
 }
 
 .empty-message {
-  color: #a0a0a0;
+  color: #c8c8c8;
   text-align: center;
   padding: 40px 0;
 }
@@ -468,6 +468,6 @@
 }
 
 .ingredient-name.deselected {
-  color: #a0a0a0;
+  color: #c8c8c8;
   text-decoration: line-through;
 }

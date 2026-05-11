@@ -1,4 +1,4 @@
-.grocery-container {
+﻿.grocery-container {
   max-width: 500px;
   width: 100%;
   margin: 24px auto;
@@ -162,13 +162,13 @@
 
 .item.checked .item-name {
   text-decoration: line-through;
-  color: #a0a0a0;
+  color: #c8c8c8;
 }
 
 .delete-button {
   background: none;
   border: none;
-  color: #c8b8a8;
+  color: #e0d4cc;
   font-size: 0.9rem;
   cursor: pointer;
   padding: 4px 6px;
@@ -186,6 +186,6 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: #a0a0a0;
+  color: #c8c8c8;
   margin: 20px 0 8px;
 }

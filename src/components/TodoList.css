@@ -1,4 +1,4 @@
-.todo-container {
+﻿.todo-container {
   max-width: 500px;
   width: 100%;
   margin: 24px auto;
@@ -177,7 +177,7 @@
 
 .todo-task-done {
   text-decoration: line-through;
-  color: rgba(220,228,255,0.35);
+  color: rgba(220,228,255,0.70);
 }
 
 .todo-badge {
@@ -206,7 +206,7 @@
 .todo-delete {
   background: none;
   border: none;
-  color: rgba(220,228,255,0.3);
+  color: rgba(220,228,255,0.65);
   font-size: 0.9rem;
   cursor: pointer;
   padding: 4px 6px;
@@ -224,13 +224,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(220,228,255,0.35);
+  color: rgba(220,228,255,0.70);
   margin: 20px 0 8px;
 }
 
 .todo-empty {
   text-align: center;
-  color: rgba(220,228,255,0.35);
+  color: rgba(220,228,255,0.70);
   font-size: 0.95rem;
   padding: 20px 0;
 }
