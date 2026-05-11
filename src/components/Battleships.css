@@ -243,3 +243,55 @@
   margin-top: 20px;
   touch-action: manipulation;
 }
+
+/* ── Shot confirmation ── */
+.bs-cell--pending { background: #fff8dc; border-color: #e8a020; border-width: 2px; }
+.bs-cell--pending.bs-cell--clickable:active { background: #fff0a0; }
+
+.bs-confirm-banner {
+  margin-top: 12px;
+  background: #fff8dc;
+  border: 2px solid #e8a020;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 700;
+  color: #555;
+  font-size: 15px;
+}
+.bs-confirm-buttons {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+.bs-confirm-btn {
+  background: var(--green-dark);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  flex: 1;
+  touch-action: manipulation;
+}
+.bs-cancel-btn {
+  background: #e07a7a;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  flex: 1;
+  touch-action: manipulation;
+}

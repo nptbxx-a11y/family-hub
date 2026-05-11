@@ -1,5 +1,8 @@
-// src/components/BattleshipsGame.jsx
+﻿// src/components/BattleshipsGame.jsx
+import { useState } from 'react';
 import BattleshipsGrid from './BattleshipsGrid';
+
+const COL_LABELS = ['A','B','C','D','E','F','G','H','I','J'];
 
 function emptyGrid() {
   return Array.from({ length: 10 }, () =>
@@ -8,6 +11,8 @@ function emptyGrid() {
 }
 
 export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }) {
+  const [pendingShot, setPendingShot] = useState(null);
+
   const myShips  = game[`${playerKey}_ships`]   || [];
   const oppShips = game[`${opponentKey}_ships`] || [];
   const myShots  = game[`${playerKey}_shots`]   || [];
@@ -47,7 +52,6 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
     for (const shot of myShots) {
       if (shot.row < 0 || shot.row >= 10 || shot.col < 0 || shot.col >= 10) continue;
       if (shot.hit && cells[shot.row][shot.col].state === 'ship') {
-        // sunk ship cell — keep emoji, just apply hit tint
         cells[shot.row][shot.col].state = 'hit';
       } else {
         cells[shot.row][shot.col] = {
@@ -62,10 +66,25 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
   function handleAttackCell(row, col) {
     if (!isMyTurn) return;
     if (myShots.some(s => s.row === row && s.col === col)) return;
+    if (pendingShot?.row === row && pendingShot?.col === col) {
+      setPendingShot(null);
+      return;
+    }
+    setPendingShot({ row, col });
+  }
+
+  function handleConfirmShot() {
+    if (!pendingShot) return;
+    const { row, col } = pendingShot;
     const hit = oppShips.some(ship =>
       ship.cells.some(c => c.row === row && c.col === col)
     );
+    setPendingShot(null);
     onShot(row, col, hit);
+  }
+
+  function handleCancelShot() {
+    setPendingShot(null);
   }
 
   return (
@@ -83,7 +102,17 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
           cells={buildAttackCells()}
           onCellClick={handleAttackCell}
           interactive={isMyTurn}
+          pendingCell={pendingShot}
         />
+        {pendingShot && (
+          <div className="bs-confirm-banner">
+            <span>Fire at {COL_LABELS[pendingShot.col]}{pendingShot.row + 1}? 🎯</span>
+            <div className="bs-confirm-buttons">
+              <button className="bs-confirm-btn" onClick={handleConfirmShot}>Strike! 🥢</button>
+              <button className="bs-cancel-btn" onClick={handleCancelShot}>Cancel</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
