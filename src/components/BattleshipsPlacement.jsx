@@ -1,4 +1,4 @@
-// src/components/BattleshipsPlacement.jsx
+﻿// src/components/BattleshipsPlacement.jsx
 import { useState } from 'react';
 import BattleshipsGrid from './BattleshipsGrid';
 
@@ -18,7 +18,7 @@ function emptyGrid(size) {
   );
 }
 
-export default function BattleshipsPlacement({ playerName, onReady, mode = 'regular' }) {
+export default function BattleshipsPlacement({ playerName, onReady, mode = 'regular', onExit }) {
   const gridSize    = mode === 'mini' ? 6 : 10;
   const activeFleet = mode === 'mini' ? MINI_FLEET : FLEET;
   const [placedShips, setPlacedShips] = useState([]);
@@ -106,9 +106,10 @@ export default function BattleshipsPlacement({ playerName, onReady, mode = 'regu
       </div>
       {allPlaced && (
         <button className="bs-ready-btn" onClick={() => onReady(placedShips)}>
-          Ready! 🍣
+          Ready!🍣
         </button>
       )}
+      {onExit && <button className="bs-exit-btn" onClick={onExit}>✕ Exit game</button>}
     </div>
   );
 }

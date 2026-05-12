@@ -10,7 +10,7 @@ function emptyGrid(size) {
   );
 }
 
-export default function BattleshipsGame({ game, playerKey, opponentKey, onShot, mode = 'regular' }) {
+export default function BattleshipsGame({ game, playerKey, opponentKey, onShot, mode = 'regular', onExit }) {
   const gridSize = mode === 'mini' ? 6 : 10;
   const [pendingShot, setPendingShot] = useState(null);
 
@@ -115,6 +115,7 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot, 
           </div>
         )}
       </div>
+      <button className="bs-exit-btn" onClick={onExit}>✕ Exit game</button>
     </div>
   );
 }
