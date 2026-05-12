@@ -135,6 +135,14 @@ export default function Battleships() {
     setGame(null);
   }
 
+  async function handleExit() {
+    await supabase
+      .from('battleships_games')
+      .update({ status: 'finished' })
+      .eq('id', game.id);
+    setGame(null);
+  }
+
   // ── Player selection (first time on this device) ──
   if (!playerKey) {
     return (
@@ -157,6 +165,18 @@ export default function Battleships() {
 
   // ── Victory ──
   if (game?.status === 'finished') {
+    if (!game.winner) {
+      return (
+        <div className="bs-page bs-victory">
+          <div className="bs-victory-emoji">🚪</div>
+          <h2>Game abandoned</h2>
+          <p>Someone left the game.</p>
+          <button className="bs-play-again-btn" onClick={handlePlayAgain}>
+            Back to Lobby 🍣
+          </button>
+        </div>
+      );
+    }
     const won = game.winner === playerKey;
     return (
       <div className="bs-page bs-victory">
@@ -179,6 +199,7 @@ export default function Battleships() {
         opponentKey={getOpponentKey(playerKey)}
         onShot={handleShot}
         mode={game.mode}
+        onExit={handleExit}
       />
     );
   }
@@ -194,13 +215,14 @@ export default function Battleships() {
             ? 'Both ready — battle starting! 🍣'
             : <><span>Fleet hidden ✅</span><br /><span>Waiting for {displayName(getOpponentKey(playerKey))} to place their fleet...</span></>}
         </p>
+        <button className="bs-exit-btn" onClick={handleExit}>✕ Exit game</button>
       </div>
     );
   }
 
   // ── Placement — place your ships ──
   if (game?.status === 'placing') {
-    return <BattleshipsPlacement playerName={playerKey} onReady={handleReady} mode={game.mode} />;
+    return <BattleshipsPlacement playerName={playerKey} onReady={handleReady} mode={game.mode} onExit={handleExit} />;
   }
 
   // ── Waiting lobby — you created the game ──
@@ -211,6 +233,7 @@ export default function Battleships() {
         <p className="bs-lobby-waiting">
           ⏳ Waiting for {displayName(getOpponentKey(playerKey))} to join...
         </p>
+        <button className="bs-exit-btn" onClick={handleExit}>✕ Exit game</button>
       </div>
     );
   }
