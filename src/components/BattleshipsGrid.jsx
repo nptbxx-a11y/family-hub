@@ -2,11 +2,12 @@
 const COL_LABELS = ['A','B','C','D','E','F','G','H','I','J'];
 
 export default function BattleshipsGrid({ cells, onCellClick, interactive = false, pendingCell = null }) {
+  const colCount = cells[0]?.length ?? 10;
   return (
     <div className="bs-grid">
       <div className="bs-grid-row bs-grid-header">
         <div className="bs-cell-label" />
-        {COL_LABELS.map(l => (
+        {COL_LABELS.slice(0, colCount).map(l => (
           <div key={l} className="bs-cell-label">{l}</div>
         ))}
       </div>
