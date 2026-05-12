@@ -10,19 +10,23 @@ const FLEET = [
   { name: 'Edamame',       emoji: '🫛', size: 1 },
 ];
 
-function emptyGrid() {
-  return Array.from({ length: 10 }, () =>
-    Array.from({ length: 10 }, () => ({ state: 'empty', emoji: null }))
+const MINI_FLEET = FLEET.filter(ship => ship.name !== 'Dragon Roll');
+
+function emptyGrid(size) {
+  return Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => ({ state: 'empty', emoji: null }))
   );
 }
 
-export default function BattleshipsPlacement({ playerName, onReady }) {
+export default function BattleshipsPlacement({ playerName, onReady, mode = 'regular' }) {
+  const gridSize    = mode === 'mini' ? 6 : 10;
+  const activeFleet = mode === 'mini' ? MINI_FLEET : FLEET;
   const [placedShips, setPlacedShips] = useState([]);
   const [selectedShip, setSelectedShip] = useState(null);
   const [orientation, setOrientation] = useState('h');
 
   function buildCells() {
-    const cells = emptyGrid();
+    const cells = emptyGrid(gridSize);
     for (const ship of placedShips) {
       for (const { row, col } of ship.cells) {
         cells[row][col] = { state: 'ship', emoji: ship.emoji };
@@ -37,7 +41,7 @@ export default function BattleshipsPlacement({ playerName, onReady }) {
     for (let i = 0; i < selectedShip.size; i++) {
       const r = orientation === 'h' ? row     : row + i;
       const c = orientation === 'h' ? col + i : col;
-      if (r >= 10 || c >= 10) return;
+      if (r >= gridSize || c >= gridSize) return;
       shipCells.push({ row: r, col: c });
     }
     const occupied = placedShips.flatMap(s => s.cells);
@@ -55,7 +59,7 @@ export default function BattleshipsPlacement({ playerName, onReady }) {
     setPlacedShips(prev => prev.filter(s => s.name !== name));
   }
 
-  const unplaced = FLEET.filter(f => !placedShips.some(p => p.name === f.name));
+  const unplaced  = activeFleet.filter(f => !placedShips.some(p => p.name === f.name));
   const allPlaced = unplaced.length === 0;
   const displayName = playerName === 'ozzy' ? 'Ozzy' : 'Tommy';
 
