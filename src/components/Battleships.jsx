@@ -76,10 +76,10 @@ export default function Battleships() {
     setPlayerKey(key);
   }
 
-  async function handleNewGame() {
+  async function handleNewGame(mode) {
     const { data } = await supabase
       .from('battleships_games')
-      .insert({ status: 'waiting', created_by: playerKey })
+      .insert({ status: 'waiting', created_by: playerKey, mode })
       .select()
       .single();
     setGame(data);
@@ -178,6 +178,7 @@ export default function Battleships() {
         playerKey={playerKey}
         opponentKey={getOpponentKey(playerKey)}
         onShot={handleShot}
+        mode={game.mode}
       />
     );
   }
@@ -199,7 +200,7 @@ export default function Battleships() {
 
   // ── Placement — place your ships ──
   if (game?.status === 'placing') {
-    return <BattleshipsPlacement playerName={playerKey} onReady={handleReady} />;
+    return <BattleshipsPlacement playerName={playerKey} onReady={handleReady} mode={game.mode} />;
   }
 
   // ── Waiting lobby — you created the game ──
@@ -232,9 +233,14 @@ export default function Battleships() {
     <div className="bs-page bs-lobby">
       <h2>⚔️ Sushi Battleships</h2>
       <p>A fishy battle awaits... 🍣</p>
-      <button className="bs-lobby-btn" onClick={handleNewGame}>
-        New Game 🍣
-      </button>
+      <div className="bs-mode-buttons">
+        <button className="bs-lobby-btn" onClick={() => handleNewGame('regular')}>
+          Full Game 🍣
+        </button>
+        <button className="bs-lobby-btn" onClick={() => handleNewGame('mini')}>
+          Mini 🍱
+        </button>
+      </div>
     </div>
   );
 }

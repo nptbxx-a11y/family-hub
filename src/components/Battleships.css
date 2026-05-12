@@ -295,3 +295,16 @@
   flex: 1;
   touch-action: manipulation;
 }
+
+/* Mode selection buttons */
+.bs-mode-buttons {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.bs-mode-buttons .bs-lobby-btn {
+  flex: 1;
+}
