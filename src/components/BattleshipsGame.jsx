@@ -4,13 +4,14 @@ import BattleshipsGrid from './BattleshipsGrid';
 
 const COL_LABELS = ['A','B','C','D','E','F','G','H','I','J'];
 
-function emptyGrid() {
-  return Array.from({ length: 10 }, () =>
-    Array.from({ length: 10 }, () => ({ state: 'empty', emoji: null }))
+function emptyGrid(size) {
+  return Array.from({ length: size }, () =>
+    Array.from({ length: size }, () => ({ state: 'empty', emoji: null }))
   );
 }
 
-export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }) {
+export default function BattleshipsGame({ game, playerKey, opponentKey, onShot, mode = 'regular' }) {
+  const gridSize = mode === 'mini' ? 6 : 10;
   const [pendingShot, setPendingShot] = useState(null);
 
   const myShips  = game[`${playerKey}_ships`]   || [];
@@ -21,14 +22,14 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
   const opponentName = opponentKey === 'ozzy' ? 'Ozzy' : 'Tommy';
 
   function buildMyFleetCells() {
-    const cells = emptyGrid();
+    const cells = emptyGrid(gridSize);
     for (const ship of myShips) {
       for (const { row, col } of ship.cells) {
         cells[row][col] = { state: 'ship', emoji: ship.emoji };
       }
     }
     for (const shot of oppShots) {
-      if (shot.row < 0 || shot.row >= 10 || shot.col < 0 || shot.col >= 10) continue;
+      if (shot.row < 0 || shot.row >= gridSize || shot.col < 0 || shot.col >= gridSize) continue;
       cells[shot.row][shot.col] = {
         state: shot.hit ? 'hit' : 'miss',
         emoji: shot.hit ? '🥢' : '😤',
@@ -38,7 +39,7 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
   }
 
   function buildAttackCells() {
-    const cells = emptyGrid();
+    const cells = emptyGrid(gridSize);
     for (const ship of oppShips) {
       const sunk = ship.cells.every(c =>
         myShots.some(s => s.row === c.row && s.col === c.col && s.hit)
@@ -50,7 +51,7 @@ export default function BattleshipsGame({ game, playerKey, opponentKey, onShot }
       }
     }
     for (const shot of myShots) {
-      if (shot.row < 0 || shot.row >= 10 || shot.col < 0 || shot.col >= 10) continue;
+      if (shot.row < 0 || shot.row >= gridSize || shot.col < 0 || shot.col >= gridSize) continue;
       if (shot.hit && cells[shot.row][shot.col].state === 'ship') {
         cells[shot.row][shot.col].state = 'hit';
       } else {
