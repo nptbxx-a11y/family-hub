@@ -308,3 +308,21 @@
 .bs-mode-buttons .bs-lobby-btn {
   flex: 1;
 }
+
+/* Exit game button */
+.bs-exit-btn {
+  display: block;
+  margin: 16px auto 0;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 0.85rem;
+  font-family: 'Nunito', sans-serif;
+  cursor: pointer;
+  padding: 8px 16px;
+  touch-action: manipulation;
+}
+
+.bs-exit-btn:hover {
+  color: #666;
+}
