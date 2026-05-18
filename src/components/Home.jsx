@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+﻿import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import "./Home.css";
 import coupleImg from "../assets/couple.png";
@@ -16,6 +16,7 @@ const YOUTUBE_ID = "tMDFv5m18Pw";
 // Months are 1-indexed. Ranges that wrap the new year (e.g. Winter) work fine.
 const CALENDAR_EVENTS = [
   // ── Short-season events (add new ones here) ──────────────────────────
+  { label: "Tommy in Singapore", icon: "🇸🇬", from: [5, 18], to: [5, 26], fromTime: [17, 30], color: "#ef4444", bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)" },
   // { label: "Wimbledon",  icon: "🎾", from: [6, 30], to: [7, 13] },
 
   // ── Base UK meteorological seasons ───────────────────────────────────
@@ -27,12 +28,22 @@ const CALENDAR_EVENTS = [
 
 function getCurrentEvent() {
   const now = new Date();
-  const md  = (now.getMonth() + 1) * 100 + now.getDate();
+  const ukParts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false,
+  }).formatToParts(now);
+  const getP = (type) => parseInt(ukParts.find(p => p.type === type)?.value ?? '0');
+  const ukMonth = getP('month'), ukDay = getP('day'), ukHour = getP('hour'), ukMin = getP('minute');
+  const md = ukMonth * 100 + ukDay;
   for (const evt of CALENDAR_EVENTS) {
     const fromMD = evt.from[0] * 100 + evt.from[1];
     const toMD   = evt.to[0]   * 100 + evt.to[1];
     const hit    = fromMD <= toMD ? (md >= fromMD && md <= toMD) : (md >= fromMD || md <= toMD);
-    if (hit) return evt;
+    if (!hit) continue;
+    if (evt.fromTime && md === fromMD) {
+      const [startH, startM] = evt.fromTime;
+      if (ukHour < startH || (ukHour === startH && ukMin < startM)) continue;
+    }
+    return evt;
   }
   return null;
 }
