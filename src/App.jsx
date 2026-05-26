@@ -14,6 +14,7 @@ const TodoList = lazy(() => import("./components/TodoList"));
 const Restaurants = lazy(() => import("./components/Restaurants"));
 const WildlifeSpotter = lazy(() => import("./components/WildlifeSpotter"));
 const Battleships = lazy(() => import("./components/Battleships"));
+const BigIdeas = lazy(() => import("./components/BigIdeas"));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -30,6 +31,7 @@ function AnimatedRoutes() {
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/wildlife" element={<WildlifeSpotter />} />
           <Route path="/battleships" element={<Battleships />} />
+          <Route path="/ideas" element={<BigIdeas />} />
         </Routes>
       </AnimatePresence>
     </Suspense>
