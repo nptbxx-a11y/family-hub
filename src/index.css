@@ -9,18 +9,34 @@ html {
 }
 
 :root {
+  /* ── Surfaces ── */
   --bg:        #060C1F;
   --surface:   rgba(12, 15, 48, 0.82);
   --card-item: rgba(255, 255, 255, 0.06);
   --input-bg:  rgba(255, 255, 255, 0.05);
-  --green-dark:  #D4785A;
-  --green-light: #E8A48C;
+
+  /* ── Accent (coral) ── */
+  --accent:      #D4785A;
+  --accent-soft: #E8A48C;
+
+  /* ── Text ── */
+  --text:       #F0F4FF;   /* primary text, near-white */
+  --text-light: #f5f0e8;   /* light text on dark chrome (navbar/sidebar) */
+
+  /* ── Other accents (names already accurate) ── */
   --yellow:  #FFD166;
   --purple:  #8b5cf6;
-  --cream:   #f5f0e8;
-  --brown:   #F0F4FF;
   --border:  rgba(140, 90, 255, 0.2);
   --white:   #ffffff;
+
+  /* ── Legacy aliases ──────────────────────────────────────────────
+     Existing component CSS references these older (misleading) names.
+     They now point at the semantic tokens above so nothing breaks.
+     Prefer the semantic names (--accent, --text, …) for any new code. */
+  --green-dark:  var(--accent);       /* was #D4785A — actually coral, not green */
+  --green-light: var(--accent-soft);
+  --brown:       var(--text);         /* was #F0F4FF — actually near-white, not brown */
+  --cream:       var(--text-light);
 }
 
 .aurora {
@@ -399,5 +415,19 @@ body::after {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: rgba(12, 15, 48, 0.93);
+  }
+}
+
+/* ── Respect users who ask for reduced motion ──
+   Calms the always-on ambient motion (twinkling stars, pulsing music note)
+   and makes transitions instant for anyone with "Reduce Motion" enabled. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
