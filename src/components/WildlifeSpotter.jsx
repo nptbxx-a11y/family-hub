@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import signPhoto from "../assets/victoria-park-sign.jpg";
@@ -45,9 +45,7 @@ export default function WildlifeSpotter() {
   const [sheetUnexpected, setSheetUnexpected] = useState("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => { fetchVisits(); }, [viewMonth]);
-
-  async function fetchVisits() {
+  const fetchVisits = useCallback(async () => {
     setLoading(true);
     const start = toDateStr(monthStart(viewMonth));
     const end = toDateStr(monthEnd(viewMonth));
@@ -59,7 +57,13 @@ export default function WildlifeSpotter() {
       .order("visit_date", { ascending: false });
     setVisits(data || []);
     setLoading(false);
-  }
+  }, [viewMonth]);
+
+  // Loads the selected month's visits (and toggles a loading flag) whenever the
+  // month changes — an intentional data fetch, not the cascading-render pattern
+  // the rule guards against. fetchVisits is reused by the save handler below.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { fetchVisits(); }, [fetchVisits]);
 
   const now = new Date();
   const isCurrentMonth =

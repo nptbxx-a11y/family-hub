@@ -13,6 +13,10 @@ export default function BigIdeas() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    const fetchIdeas = async () => {
+      const { data } = await supabase.from("ideas").select("*").order("created_at", { ascending: false });
+      if (data) setIdeas(data);
+    };
     fetchIdeas();
     const channel = supabase
       .channel("ideas-changes")
@@ -20,11 +24,6 @@ export default function BigIdeas() {
       .subscribe();
     return () => supabase.removeChannel(channel);
   }, []);
-
-  async function fetchIdeas() {
-    const { data } = await supabase.from("ideas").select("*").order("created_at", { ascending: false });
-    if (data) setIdeas(data);
-  }
 
   async function handleSubmit(e) {
     e.preventDefault();

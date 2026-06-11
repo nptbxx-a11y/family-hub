@@ -108,7 +108,11 @@ export default function GroceryList() {
 
   const unchecked = items
     .filter((item) => !item.checked)
-    .sort((a, b) => (a.priority === "urgent" ? -1 : 1));
+    .sort((a, b) => {
+      const aUrgent = a.priority === "urgent" ? 0 : 1;
+      const bUrgent = b.priority === "urgent" ? 0 : 1;
+      return aUrgent - bUrgent;
+    });
   const checked = items.filter((item) => item.checked);
 
   const renderItem = (item, isChecked) => (

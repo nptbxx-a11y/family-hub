@@ -69,7 +69,7 @@ export default function Battleships() {
       .update({ status: 'playing', current_turn: Math.random() < 0.5 ? 'ozzy' : 'tommy' })
       .eq('id', game.id)
       .eq('status', 'placing');
-  }, [game?.id, game?.status, game?.ozzy_ready, game?.tommy_ready, playerKey]);
+  }, [game?.id, game?.status, game?.ozzy_ready, game?.tommy_ready, game?.created_by, playerKey]);
 
   function handleSelectPlayer(key) {
     localStorage.setItem('battleships_player', key);

@@ -90,9 +90,9 @@ function extractIngredientsFromCaption(caption) {
     .map((l) => l.trim())
     .filter((l) => l.length > 0 && l.length < 120);
 
-  const QUANTITY_WORDS = /\b(\d+[\d\/\.\,]*\s*)?(tbsp|tsp|tablespoon|teaspoon|cup|cups|g|kg|ml|l|oz|lb|pinch|handful|clove|cloves|slice|slices|bunch|can|tin|pack|packet|large|medium|small|fresh|dried|chopped|diced|minced|grated)\b/i;
+  const QUANTITY_WORDS = /\b(\d+[\d/.,]*\s*)?(tbsp|tsp|tablespoon|teaspoon|cup|cups|g|kg|ml|l|oz|lb|pinch|handful|clove|cloves|slice|slices|bunch|can|tin|pack|packet|large|medium|small|fresh|dried|chopped|diced|minced|grated)\b/i;
   const STARTS_WITH_NUMBER = /^[\d¼½¾⅓⅔⅛]+/;
-  const STARTS_WITH_BULLET = /^[-•·*▪️◦➡️✅🔸🧂🫒🥩🥦🧅🧄🫙🧈🍋🍅🫑🥕🫛🌿🌶️🍄]/u;
+  const STARTS_WITH_BULLET = /^[-•·*▪◦➡✅🔸🧂🫒🥩🥦🧅🧄🫙🧈🍋🍅🫑🥕🫛🌿🌶🍄]/u;
   const HASHTAG_MENTION = /^[@#]/;
 
   const ingredientLines = lines.filter((l) => {
@@ -105,7 +105,7 @@ function extractIngredientsFromCaption(caption) {
 
   // Clean bullet characters from the start
   return ingredientLines
-    .map((l) => l.replace(/^[-•·*▪️◦➡️✅🔸]\s*/u, "").trim())
+    .map((l) => l.replace(/^[-•·*▪◦➡✅🔸]\s*/u, "").trim())
     .join("\n");
 }
 

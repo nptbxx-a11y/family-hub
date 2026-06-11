@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "../supabase";
 import "./MealPlan.css";
@@ -84,7 +84,9 @@ export default function MealPlan() {
   const [picking, setPicking] = useState(null); // dateKey string
   const [freeText, setFreeText] = useState("");
 
-  const upcomingDays = getUpcomingDays();
+  // Memoised so its identity is stable across renders — lets the data-fetch
+  // effect below depend on it without re-running (and refetching) every render.
+  const upcomingDays = useMemo(() => getUpcomingDays(), []);
 
   useEffect(() => {
     const keys = upcomingDays.map(toDateKey);
@@ -104,7 +106,7 @@ export default function MealPlan() {
       .subscribe();
 
     return () => supabase.removeChannel(channel);
-  }, []);
+  }, [upcomingDays]);
 
   const getMealForDay = (dateKey) => meals.find((m) => m.day_of_week === dateKey);
 
