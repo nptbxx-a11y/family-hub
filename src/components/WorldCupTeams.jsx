@@ -21,7 +21,7 @@ export default function WorldCupTeams({ data }) {
         const owned = teams.filter((t) => t.owner === user);
         const total = owned.reduce((s, t) => s + sweepstakesPoints(t.name, t.role, matches), 0);
         return (
-          <div key={user} className="wc-card">
+          <div key={user} className="wc-card wc-team-card">
             <div className="wc-team-head">
               <span className="wc-leader-name">{user}</span>
               <span className="wc-leader-total">{total}</span>

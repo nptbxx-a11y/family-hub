@@ -43,9 +43,12 @@ export default function WorldCup() {
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="wc-container">
-        <div className="wc-header">
-          <h1 className="wc-title">🏆 World Cup</h1>
-          <button className="wc-setup-btn" onClick={() => setShowSetup(true)} aria-label="Setup">⚙️</button>
+        <div className="wc-hero">
+          <button className="wc-hero-setup" onClick={() => setShowSetup(true)} aria-label="Setup">⚙️</button>
+          <div className="wc-hero-inner">
+            <h1 className="wc-hero-title"><span aria-hidden="true">🏆</span> World Cup</h1>
+            <p className="wc-hero-tag">Ozzy v Tommy · tips &amp; sweepstakes</p>
+          </div>
         </div>
 
         <div className="wc-tabs" role="tablist">

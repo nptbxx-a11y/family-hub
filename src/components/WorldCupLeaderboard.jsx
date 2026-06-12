@@ -26,15 +26,19 @@ export default function WorldCupLeaderboard({ data }) {
           ? `It's a tie on ${leader.total}!`
           : `${leader.user} leads with ${leader.total} 🏆`}
       </div>
-      {rows.map((r) => (
-        <div key={r.user} className="wc-card wc-leader-row">
-          <span className="wc-leader-name">{r.user}</span>
-          <span className="wc-leader-total">{r.total}</span>
-          <span className="wc-leader-breakdown">
-            tips {r.tipPts} · teams {r.sweepPts}
-          </span>
-        </div>
-      ))}
+      {rows.map((r, i) => {
+        const isLeading = i === 0 && r.total > 0 && !tied;
+        return (
+          <div key={r.user} className={"wc-card wc-leader-row" + (isLeading ? " leading" : "")}>
+            <span className="wc-leader-rank" aria-hidden="true">{i === 0 ? "🥇" : "🥈"}</span>
+            <span className="wc-leader-name">{r.user}</span>
+            <span className="wc-leader-total">{r.total}</span>
+            <span className="wc-leader-breakdown">
+              tips {r.tipPts} · teams {r.sweepPts}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
