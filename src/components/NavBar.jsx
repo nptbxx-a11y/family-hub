@@ -105,6 +105,9 @@ export default function NavBar({ onLogout }) {
           <NavLink to="/ideas" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             💡 Big Ideas
           </NavLink>
+          <NavLink to="/worldcup" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
+            🏆 World Cup
+          </NavLink>
           <NavLink to="/feedback" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             📮 Feedback Box
           </NavLink>

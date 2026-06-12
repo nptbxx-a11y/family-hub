@@ -1,0 +1,56 @@
+.wc-container { max-width: 640px; margin: 0 auto; padding: 1rem; }
+.wc-header { display: flex; align-items: center; justify-content: space-between; }
+.wc-title { color: var(--accent, var(--green-dark)); margin: 0; }
+.wc-setup-btn { background: none; border: none; font-size: 1.4rem; cursor: pointer; }
+
+.wc-tabs { display: flex; gap: .5rem; margin: 1rem 0; }
+.wc-tab {
+  flex: 1; padding: .6rem; border: 2px solid var(--border); border-radius: 12px;
+  background: var(--white); color: var(--text, var(--brown)); font-weight: 700; cursor: pointer;
+}
+.wc-tab.active { background: var(--accent, var(--green-dark)); color: var(--white); border-color: var(--accent, var(--green-dark)); }
+
+.wc-card { background: rgba(255,255,255,.9); border: 2px solid var(--border); border-radius: 14px; padding: 1rem; margin-bottom: .75rem; }
+.wc-empty { text-align: center; color: var(--text-light, var(--brown)); padding: 2rem 1rem; }
+
+.wc-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; z-index: 50; overflow-y: auto; }
+.wc-modal { background: var(--white); border-radius: 16px; padding: 1.25rem; width: 100%; max-width: 520px; }
+.wc-modal-head { display: flex; justify-content: space-between; align-items: center; }
+.wc-close { background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+.wc-setup-section { margin-top: 1rem; border-top: 1px solid var(--border); padding-top: .75rem; }
+.wc-form-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.wc-form-row input, .wc-form-row select { padding: .5rem; border: 1px solid var(--border); border-radius: 8px; }
+.wc-form-row button { padding: .5rem .8rem; border: none; border-radius: 8px; background: var(--accent, var(--green-dark)); color: var(--white); font-weight: 700; cursor: pointer; }
+.wc-check { display: flex; align-items: center; gap: .3rem; font-size: .9rem; }
+.wc-muted { color: var(--text-light, var(--brown)); font-size: .85rem; margin: .4rem 0 0; }
+
+.wc-match-top { display: flex; justify-content: space-between; font-size: .8rem; color: var(--text-light, var(--brown)); }
+.wc-score { font-weight: 800; color: var(--text, var(--brown)); }
+.wc-teams-row { display: flex; justify-content: center; gap: .6rem; font-weight: 800; margin: .4rem 0; }
+.wc-vs { color: var(--text-light, var(--brown)); font-weight: 600; }
+.wc-pick-row { display: flex; align-items: center; gap: .5rem; margin-top: .4rem; }
+.wc-pick-user { width: 3.5rem; font-weight: 700; }
+.wc-pick-btns { display: flex; gap: .3rem; flex: 1; }
+.wc-pick { flex: 1; padding: .35rem; border: 1px solid var(--border); border-radius: 8px; background: var(--white); cursor: pointer; }
+.wc-pick.chosen { background: var(--accent, var(--green-dark)); color: var(--white); border-color: var(--accent, var(--green-dark)); }
+.wc-pick:disabled { opacity: .6; cursor: default; }
+.wc-tick.ok { color: var(--green-dark); font-weight: 800; }
+.wc-tick.no { color: #b23; }
+.wc-enter-result { margin-top: .5rem; background: none; border: 1px dashed var(--border); border-radius: 8px; padding: .4rem; width: 100%; cursor: pointer; }
+.wc-result-entry { display: flex; gap: .4rem; margin-top: .5rem; align-items: center; }
+.wc-result-entry input { width: 3rem; padding: .4rem; border: 1px solid var(--border); border-radius: 8px; }
+.wc-result-entry button { padding: .4rem .6rem; border: none; border-radius: 8px; background: var(--accent, var(--green-dark)); color: var(--white); cursor: pointer; }
+
+.wc-leader-banner { text-align: center; font-weight: 800; color: var(--accent, var(--green-dark)); margin-bottom: .75rem; }
+.wc-leader-row { display: grid; grid-template-columns: 1fr auto; align-items: center; row-gap: .2rem; }
+.wc-leader-name { font-weight: 800; font-size: 1.1rem; }
+.wc-leader-total { font-weight: 800; font-size: 1.4rem; color: var(--accent, var(--green-dark)); }
+.wc-leader-breakdown { grid-column: 1 / -1; font-size: .8rem; color: var(--text-light, var(--brown)); }
+
+.wc-team-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+.wc-team-row { display: grid; grid-template-columns: 1fr auto; gap: .2rem .5rem; padding: .4rem 0; border-top: 1px solid var(--border); }
+.wc-team-name { font-weight: 700; }
+.wc-role { font-size: .8rem; }
+.wc-role-darkhorse { color: var(--purple); font-weight: 700; }
+.wc-team-pts { font-weight: 800; }
+.wc-team-status { grid-column: 1 / -1; font-size: .8rem; color: var(--text-light, var(--brown)); }
