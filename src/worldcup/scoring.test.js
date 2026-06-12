@@ -5,6 +5,10 @@ import {
   matchWinner,
   resultForTip,
   tipPoints,
+  groupMatchBonus,
+  reachedKnockouts,
+  sweepstakesPoints,
+  tipTotal,
 } from "./scoring.js";
 
 describe("outcomeFromScore", () => {
@@ -59,13 +63,6 @@ describe("tipPoints", () => {
   });
 });
 
-import {
-  groupMatchBonus,
-  reachedKnockouts,
-  sweepstakesPoints,
-  tipTotal,
-} from "./scoring.js";
-
 describe("groupMatchBonus", () => {
   const m = (o) => ({ stage: "group", status: "final", home_team: "AUS", away_team: "X", ...o });
   it("rewards a win and a draw", () => {
@@ -97,6 +94,15 @@ describe("sweepstakesPoints", () => {
   });
   it("doubles a dark horse's bonuses", () => {
     expect(sweepstakesPoints("AUS", "darkhorse", matches)).toBe(24);
+  });
+  it("stacks knockout-round-win and tournament-win on the final", () => {
+    const finalOnly = [
+      { stage: "final", status: "final", home_team: "CHAMP", away_team: "RUNNER", home_score: 2, away_score: 1 },
+    ];
+    // reachedKnockouts(5) + knockoutRoundWin(5) + winTournament(25) = 35
+    expect(sweepstakesPoints("CHAMP", "main", finalOnly)).toBe(35);
+    // dark horse doubles the whole total
+    expect(sweepstakesPoints("CHAMP", "darkhorse", finalOnly)).toBe(70);
   });
 });
 

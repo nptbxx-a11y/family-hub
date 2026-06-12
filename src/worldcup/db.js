@@ -2,12 +2,21 @@
 import { supabase } from "../supabase";
 
 export async function fetchAll() {
-  const [{ data: teams }, { data: matches }, { data: tips }] = await Promise.all([
+  const [teamsRes, matchesRes, tipsRes] = await Promise.all([
     supabase.from("wc_teams").select("*").order("name"),
     supabase.from("wc_matches").select("*").order("kickoff", { nullsFirst: false }),
     supabase.from("wc_tips").select("*"),
   ]);
-  return { teams: teams || [], matches: matches || [], tips: tips || [] };
+  // Returning empty arrays on failure matches the rest of the app's fetch
+  // pattern; we still surface the error to the console for debugging.
+  for (const res of [teamsRes, matchesRes, tipsRes]) {
+    if (res.error) console.warn("World Cup fetch error:", res.error.message);
+  }
+  return {
+    teams: teamsRes.data || [],
+    matches: matchesRes.data || [],
+    tips: tipsRes.data || [],
+  };
 }
 
 export async function upsertTip(matchId, userName, pick) {

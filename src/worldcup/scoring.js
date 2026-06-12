@@ -66,6 +66,9 @@ export function sweepstakesPoints(teamName, role, matches) {
       pts += SWEEP.knockoutRoundWin;
     }
   }
+  // Winning the final stacks: the final is itself a knockout round (so it earns
+  // knockoutRoundWin above) AND this tournament-win bonus. Intentional — lifting
+  // the cup is the jackpot (doubled again for a dark horse).
   const finalMatch = matches.find((m) => m.stage === "final" && m.status === "final");
   if (finalMatch && matchWinner(finalMatch) === teamName) pts += SWEEP.winTournament;
 
