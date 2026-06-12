@@ -58,3 +58,60 @@ describe("tipPoints", () => {
     expect(tipPoints("group", null, "home")).toBe(0);
   });
 });
+
+import {
+  groupMatchBonus,
+  reachedKnockouts,
+  sweepstakesPoints,
+  tipTotal,
+} from "./scoring.js";
+
+describe("groupMatchBonus", () => {
+  const m = (o) => ({ stage: "group", status: "final", home_team: "AUS", away_team: "X", ...o });
+  it("rewards a win and a draw", () => {
+    expect(groupMatchBonus("AUS", m({ home_score: 2, away_score: 0 }))).toBe(2);
+    expect(groupMatchBonus("AUS", m({ home_score: 1, away_score: 1 }))).toBe(1);
+  });
+  it("gives nothing for a loss or an unrelated match", () => {
+    expect(groupMatchBonus("AUS", m({ home_score: 0, away_score: 1 }))).toBe(0);
+    expect(groupMatchBonus("AUS", m({ home_team: "Y", home_score: 3, away_score: 0 }))).toBe(0);
+  });
+});
+
+describe("reachedKnockouts", () => {
+  it("is true when the team appears in any knockout fixture", () => {
+    const matches = [{ stage: "r32", home_team: "AUS", away_team: "Z" }];
+    expect(reachedKnockouts("AUS", matches)).toBe(true);
+    expect(reachedKnockouts("Q", matches)).toBe(false);
+  });
+});
+
+describe("sweepstakesPoints", () => {
+  // AUS: wins a group game (+2), reaches knockouts (+5), wins R32 (+5) = 12
+  const matches = [
+    { stage: "group", status: "final", home_team: "AUS", away_team: "X", home_score: 1, away_score: 0 },
+    { stage: "r32", status: "final", home_team: "AUS", away_team: "Z", home_score: 2, away_score: 1 },
+  ];
+  it("totals a main team's bonuses at single rate", () => {
+    expect(sweepstakesPoints("AUS", "main", matches)).toBe(12);
+  });
+  it("doubles a dark horse's bonuses", () => {
+    expect(sweepstakesPoints("AUS", "darkhorse", matches)).toBe(24);
+  });
+});
+
+describe("tipTotal", () => {
+  const matches = [
+    { id: "1", stage: "group", status: "final", home_team: "A", away_team: "B", home_score: 2, away_score: 0 },
+    { id: "2", stage: "final", status: "final", home_team: "A", away_team: "B", home_score: 1, away_score: 1, winner_team: "A" },
+  ];
+  const tips = [
+    { match_id: "1", user_name: "Ozzy", pick: "home" }, // +1
+    { match_id: "2", user_name: "Ozzy", pick: "home" }, // +13 (knockout winner = home)
+    { match_id: "1", user_name: "Tommy", pick: "draw" }, // +0
+  ];
+  it("sums a user's correct tips across stages", () => {
+    expect(tipTotal("Ozzy", tips, matches)).toBe(14);
+    expect(tipTotal("Tommy", tips, matches)).toBe(0);
+  });
+});
