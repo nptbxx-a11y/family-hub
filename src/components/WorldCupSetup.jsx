@@ -1,33 +1,11 @@
 import { useState } from "react";
-import { STAGES, STAGE_LABELS, MAIN_TEAMS, OWNERS } from "../worldcup/constants";
-import { addTeam, addMatch, setTeamOwner, clearOwners } from "../worldcup/db";
+import { MAIN_TEAMS, OWNERS } from "../worldcup/constants";
+import { setTeamOwner, clearOwners } from "../worldcup/db";
 import { drawDarkHorses } from "../worldcup/draw";
 
-export default function WorldCupSetup({ data, onClose }) {
+export default function WorldCupSetup({ data, onClose, onSync }) {
   const { teams } = data;
-  const [teamName, setTeamName] = useState("");
-  const [groupCode, setGroupCode] = useState("");
-  const [isFav, setIsFav] = useState(false);
-  const [match, setMatch] = useState({ stage: "group", home_team: "", away_team: "" });
   const [busy, setBusy] = useState(false);
-
-  async function handleAddTeam(e) {
-    e.preventDefault();
-    if (!teamName.trim()) return;
-    setBusy(true);
-    await addTeam({ name: teamName.trim(), group_code: groupCode.trim() || null, is_favourite: isFav });
-    setTeamName(""); setGroupCode(""); setIsFav(false);
-    setBusy(false);
-  }
-
-  async function handleAddMatch(e) {
-    e.preventDefault();
-    if (!match.home_team || !match.away_team) return;
-    setBusy(true);
-    await addMatch({ ...match, status: "scheduled" });
-    setMatch({ stage: match.stage, home_team: "", away_team: "" });
-    setBusy(false);
-  }
 
   async function assignMains() {
     setBusy(true);
@@ -57,7 +35,15 @@ export default function WorldCupSetup({ data, onClose }) {
     setBusy(false);
   }
 
-  const teamNames = teams.map((t) => t.name);
+  async function handleSync() {
+    setBusy(true);
+    try {
+      await onSync();
+    } catch (err) {
+      alert("Sync failed: " + err.message);
+    }
+    setBusy(false);
+  }
 
   return (
     <div className="wc-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -68,32 +54,11 @@ export default function WorldCupSetup({ data, onClose }) {
         </div>
 
         <section className="wc-setup-section">
-          <h3>Add a team</h3>
-          <form onSubmit={handleAddTeam} className="wc-form-row">
-            <input placeholder="Team name" value={teamName} onChange={(e) => setTeamName(e.target.value)} />
-            <input placeholder="Group" maxLength={2} value={groupCode} onChange={(e) => setGroupCode(e.target.value)} />
-            <label className="wc-check"><input type="checkbox" checked={isFav} onChange={(e) => setIsFav(e.target.checked)} /> Favourite</label>
-            <button disabled={busy}>Add</button>
-          </form>
-          <p className="wc-muted">{teams.length} teams added</p>
-        </section>
-
-        <section className="wc-setup-section">
-          <h3>Add a match</h3>
-          <form onSubmit={handleAddMatch} className="wc-form-row">
-            <select value={match.stage} onChange={(e) => setMatch((m) => ({ ...m, stage: e.target.value }))}>
-              {STAGES.map((s) => <option key={s} value={s}>{STAGE_LABELS[s]}</option>)}
-            </select>
-            <select value={match.home_team} onChange={(e) => setMatch((m) => ({ ...m, home_team: e.target.value }))}>
-              <option value="">Home…</option>
-              {teamNames.map((n) => <option key={n} value={n}>{n}</option>)}
-            </select>
-            <select value={match.away_team} onChange={(e) => setMatch((m) => ({ ...m, away_team: e.target.value }))}>
-              <option value="">Away…</option>
-              {teamNames.map((n) => <option key={n} value={n}>{n}</option>)}
-            </select>
-            <button disabled={busy || !match.home_team || !match.away_team}>Add</button>
-          </form>
+          <h3>Fixtures &amp; results</h3>
+          <p className="wc-muted">{teams.length} teams loaded. Fixtures and scores sync automatically; tap below to refresh now.</p>
+          <div className="wc-form-row">
+            <button disabled={busy} onClick={handleSync}>🔄 Sync now</button>
+          </div>
         </section>
 
         <section className="wc-setup-section">

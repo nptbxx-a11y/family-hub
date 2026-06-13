@@ -1,58 +1,56 @@
 import { useState } from "react";
 import { OWNERS, STAGE_LABELS } from "../worldcup/constants";
-import { upsertTip, saveResult } from "../worldcup/db";
-import { resultForTip } from "../worldcup/scoring";
+import { upsertTip } from "../worldcup/db";
+import { tipPointsForMatch } from "../worldcup/scoring";
+import { isPlaceholderTeam } from "../worldcup/feed";
 
-function pickOptions(stage) {
-  return stage === "group"
-    ? [["home", "Home"], ["draw", "Draw"], ["away", "Away"]]
-    : [["home", "Home"], ["away", "Away"]];
+function isLocked(m) {
+  if (m.status === "final") return true;
+  return m.kickoff ? new Date(m.kickoff) <= new Date() : false;
 }
 
 export default function WorldCupTip({ data }) {
   const { matches, tips } = data;
-  const [resultFor, setResultFor] = useState(null);
-  const [scores, setScores] = useState({ home: "", away: "", winner: "" });
+  // Local pending scores for knockout inputs, keyed `${matchId}:${user}`.
+  const [draftScores, setDraftScores] = useState({});
 
   const tipFor = (matchId, user) =>
-    tips.find((t) => t.match_id === matchId && t.user_name === user)?.pick;
+    tips.find((t) => t.match_id === matchId && t.user_name === user);
 
-  async function pick(match, user, value) {
-    await upsertTip(match.id, user, value);
+  async function pickOutcome(match, user, value) {
+    await upsertTip(match.id, user, { pick: value });
   }
 
-  async function submitResult(match) {
-    const home = parseInt(scores.home, 10);
-    const away = parseInt(scores.away, 10);
-    if (Number.isNaN(home) || Number.isNaN(away)) return;
-    const fields = { home_score: home, away_score: away, status: "final" };
-    if (match.stage !== "group" && home === away) {
-      if (!scores.winner) { alert("Pick who advanced (penalties)."); return; }
-      fields.winner_team = scores.winner;
-    }
-    await saveResult(match.id, fields);
-    setResultFor(null);
-    setScores({ home: "", away: "", winner: "" });
+  async function saveScore(match, user) {
+    const key = `${match.id}:${user}`;
+    const d = draftScores[key] || {};
+    const h = parseInt(d.home, 10);
+    const a = parseInt(d.away, 10);
+    if (Number.isNaN(h) || Number.isNaN(a)) return;
+    await upsertTip(match.id, user, { pred_home: h, pred_away: a });
   }
 
-  if (matches.length === 0) {
-    return <div className="wc-empty">No matches yet — add fixtures with the ⚙️ Setup button.</div>;
+  // Only matches with two real teams are tippable / shown.
+  const visible = matches.filter(
+    (m) => !isPlaceholderTeam(m.home_team) && !isPlaceholderTeam(m.away_team)
+  );
+
+  if (visible.length === 0) {
+    return <div className="wc-empty">No fixtures yet — tap 🔄 Refresh, or check back once the schedule loads.</div>;
   }
 
   return (
     <div className="wc-tip-list">
-      {matches.map((m) => {
+      {visible.map((m) => {
+        const locked = isLocked(m);
         const isFinal = m.status === "final";
-        const graded = isFinal ? resultForTip(m) : null;
+        const isGroup = m.stage === "group";
         return (
           <div key={m.id} className="wc-card wc-match">
             <div className="wc-match-top">
               <span className="wc-stage">{STAGE_LABELS[m.stage]}</span>
               {isFinal && (
-                <span className="wc-score">
-                  {m.home_score}–{m.away_score}
-                  {m.winner_team ? ` (${m.winner_team})` : ""}
-                </span>
+                <span className="wc-score">{m.home_score}–{m.away_score}{m.winner_team ? ` (${m.winner_team} pens)` : ""}</span>
               )}
             </div>
             <div className="wc-teams-row">
@@ -62,53 +60,59 @@ export default function WorldCupTip({ data }) {
             </div>
 
             {OWNERS.map((user) => {
-              const myPick = tipFor(m.id, user);
-              const correct = isFinal && myPick && myPick === graded;
+              const tip = tipFor(m.id, user);
+              const pts = isFinal ? tipPointsForMatch(m, tip) : null;
+              const key = `${m.id}:${user}`;
               return (
                 <div key={user} className="wc-pick-row">
                   <span className="wc-pick-user">{user}</span>
-                  <div className="wc-pick-btns">
-                    {pickOptions(m.stage).map(([val, label]) => (
-                      <button
-                        key={val}
-                        disabled={isFinal}
-                        className={"wc-pick" + (myPick === val ? " chosen" : "")}
-                        onClick={() => pick(m, user, val)}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                  {isFinal && myPick && (
-                    <span className={"wc-tick" + (correct ? " ok" : " no")}>{correct ? "✓" : "✗"}</span>
+
+                  {isGroup ? (
+                    <div className="wc-pick-btns">
+                      {[["home", "Home"], ["draw", "Draw"], ["away", "Away"]].map(([val, label]) => (
+                        <button
+                          key={val}
+                          disabled={locked}
+                          className={"wc-pick" + (tip?.pick === val ? " chosen" : "")}
+                          onClick={() => pickOutcome(m, user, val)}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="wc-score-entry">
+                      <input
+                        type="number" min="0" inputMode="numeric"
+                        aria-label={`${user} ${m.home_team} score`}
+                        disabled={locked}
+                        defaultValue={tip?.pred_home ?? ""}
+                        onChange={(e) => setDraftScores((s) => ({ ...s, [key]: { ...s[key], home: e.target.value } }))}
+                        onBlur={() => saveScore(m, user)}
+                      />
+                      <span className="wc-vs">–</span>
+                      <input
+                        type="number" min="0" inputMode="numeric"
+                        aria-label={`${user} ${m.away_team} score`}
+                        disabled={locked}
+                        defaultValue={tip?.pred_away ?? ""}
+                        onChange={(e) => setDraftScores((s) => ({ ...s, [key]: { ...s[key], away: e.target.value } }))}
+                        onBlur={() => saveScore(m, user)}
+                      />
+                      {!isFinal && tip && tip.pred_home != null && (
+                        <span className="wc-saved">saved {tip.pred_home}–{tip.pred_away}</span>
+                      )}
+                    </div>
+                  )}
+
+                  {isFinal && tip && (
+                    <span className={"wc-tick" + (pts > 0 ? " ok" : " no")}>
+                      {pts > 0 ? `+${pts}` : "✗"}
+                    </span>
                   )}
                 </div>
               );
             })}
-
-            {!isFinal && (
-              resultFor === m.id ? (
-                <div className="wc-result-entry">
-                  <input type="number" min="0" placeholder="H" value={scores.home}
-                    onChange={(e) => setScores((s) => ({ ...s, home: e.target.value }))} />
-                  <input type="number" min="0" placeholder="A" value={scores.away}
-                    onChange={(e) => setScores((s) => ({ ...s, away: e.target.value }))} />
-                  {m.stage !== "group" && scores.home !== "" && scores.home === scores.away && (
-                    <select value={scores.winner} onChange={(e) => setScores((s) => ({ ...s, winner: e.target.value }))}>
-                      <option value="">Won on pens…</option>
-                      <option value={m.home_team}>{m.home_team}</option>
-                      <option value={m.away_team}>{m.away_team}</option>
-                    </select>
-                  )}
-                  <button onClick={() => submitResult(m)}>Save</button>
-                  <button onClick={() => setResultFor(null)}>✕</button>
-                </div>
-              ) : (
-                <button className="wc-enter-result" onClick={() => { setResultFor(m.id); setScores({ home: "", away: "", winner: "" }); }}>
-                  Enter result
-                </button>
-              )
-            )}
           </div>
         );
       })}
