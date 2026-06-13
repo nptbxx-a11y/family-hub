@@ -1,5 +1,5 @@
 // src/worldcup/scoring.js
-import { TIP_POINTS, SWEEP, DARK_HORSE_MULTIPLIER } from "./constants.js";
+import { GROUP_TIP, KO_EXACT, KO_RESULT, SWEEP, DARK_HORSE_MULTIPLIER } from "./constants.js";
 
 // "home" | "away" | "draw" | null
 export function outcomeFromScore(homeScore, awayScore) {
@@ -17,24 +17,6 @@ export function matchWinner(match) {
   if (r === "home") return match.home_team;
   if (r === "away") return match.away_team;
   return null;
-}
-
-// The outcome a tip is graded against: groups use raw score; knockouts use
-// the decisive winner (penalties resolved), mapped back to home/away.
-export function resultForTip(match) {
-  if (!match || match.status !== "final") return null;
-  if (match.stage === "group") {
-    return outcomeFromScore(match.home_score, match.away_score);
-  }
-  const w = matchWinner(match);
-  if (!w) return outcomeFromScore(match.home_score, match.away_score);
-  return w === match.home_team ? "home" : "away";
-}
-
-// Points a single tip earns.
-export function tipPoints(stage, pick, result) {
-  if (!pick || !result || pick !== result) return 0;
-  return TIP_POINTS[stage] ?? 0;
 }
 
 // Bonus for an owned team in one finished GROUP match.
@@ -76,16 +58,40 @@ export function sweepstakesPoints(teamName, role, matches) {
   return pts * mult;
 }
 
-// Total tipping points for a user across all finished matches.
+// Group tip: 1 point for the correct outcome.
+export function groupTipPoints(pick, homeScore, awayScore) {
+  const r = outcomeFromScore(homeScore, awayScore);
+  if (!pick || !r) return 0;
+  return pick === r ? GROUP_TIP : 0;
+}
+
+// Knockout tip: 3 for exact score, 1 for the right result (graded on the FT
+// score — penalties are ignored), else 0.
+export function knockoutTipPoints(predHome, predAway, homeScore, awayScore) {
+  if (predHome == null || predAway == null || homeScore == null || awayScore == null) return 0;
+  if (predHome === homeScore && predAway === awayScore) return KO_EXACT;
+  const pr = outcomeFromScore(predHome, predAway);
+  const ar = outcomeFromScore(homeScore, awayScore);
+  return pr === ar ? KO_RESULT : 0;
+}
+
+// Points one tip earns for one match (0 unless the match is final).
+export function tipPointsForMatch(match, tip) {
+  if (!match || match.status !== "final" || !tip) return 0;
+  if (match.stage === "group") {
+    return groupTipPoints(tip.pick, match.home_score, match.away_score);
+  }
+  return knockoutTipPoints(tip.pred_home, tip.pred_away, match.home_score, match.away_score);
+}
+
+// Total tipping points for a user across all matches.
 export function tipTotal(userName, tips, matches) {
   const byId = {};
   for (const m of matches) byId[m.id] = m;
   let pts = 0;
   for (const t of tips) {
     if (t.user_name !== userName) continue;
-    const m = byId[t.match_id];
-    if (!m || m.status !== "final") continue;
-    pts += tipPoints(m.stage, t.pick, resultForTip(m));
+    pts += tipPointsForMatch(byId[t.match_id], t);
   }
   return pts;
 }

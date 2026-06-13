@@ -18,15 +18,14 @@ export const STAGE_LABELS = {
   final: "Final",
 };
 
-// Points for a CORRECT outcome tip, per stage (escalates in the knockouts).
-export const TIP_POINTS = {
-  group: 1,
-  r32: 2,
-  r16: 3,
-  qf: 5,
-  sf: 8,
-  final: 13,
-};
+// Tip scoring: group = simple outcome; knockout = exact-score prediction (flat).
+export const GROUP_TIP = 1;
+export const KO_EXACT = 3;
+export const KO_RESULT = 1;
+
+// Public data feed (keyless).
+export const FEED_URL =
+  "https://raw.githubusercontent.com/openfootball/worldcup.json/master/2026/worldcup.json";
 
 // Sweepstakes bonuses for an OWNED team.
 export const SWEEP = {

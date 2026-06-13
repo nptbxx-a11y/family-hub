@@ -19,23 +19,14 @@ export async function fetchAll() {
   };
 }
 
-export async function upsertTip(matchId, userName, pick) {
+// fields: { pick } for a group tip, or { pred_home, pred_away } for a knockout tip
+export async function upsertTip(matchId, userName, fields) {
   return supabase
     .from("wc_tips")
-    .upsert({ match_id: matchId, user_name: userName, pick }, { onConflict: "match_id,user_name" });
-}
-
-export async function saveResult(matchId, fields) {
-  // fields: { home_score, away_score, winner_team?, status: "final" }
-  return supabase.from("wc_matches").update(fields).eq("id", matchId);
-}
-
-export async function addTeam(team) {
-  return supabase.from("wc_teams").insert(team);
-}
-
-export async function addMatch(match) {
-  return supabase.from("wc_matches").insert(match);
+    .upsert(
+      { match_id: matchId, user_name: userName, ...fields },
+      { onConflict: "match_id,user_name" }
+    );
 }
 
 export async function setTeamOwner(id, owner, role) {

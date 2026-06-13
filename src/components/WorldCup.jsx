@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "../supabase";
 import { fetchAll } from "../worldcup/db";
+import { syncWorldCup } from "../worldcup/sync";
 import WorldCupTip from "./WorldCupTip";
 import WorldCupLeaderboard from "./WorldCupLeaderboard";
 import WorldCupTeams from "./WorldCupTeams";
@@ -24,7 +25,10 @@ export default function WorldCup() {
   }, []);
 
   useEffect(() => {
-    fetchAll().then(setData).catch(() => {});
+    // Refresh from the public feed on open, then load whatever's in the DB.
+    syncWorldCup()
+      .catch((e) => console.warn("World Cup sync failed:", e.message))
+      .finally(() => fetchAll().then(setData).catch(() => {}));
     const channel = supabase
       .channel("worldcup")
       .on("postgres_changes", { event: "*", schema: "public", table: "wc_teams" }, load)
@@ -69,7 +73,13 @@ export default function WorldCup() {
         {tab === "leaderboard" && <WorldCupLeaderboard data={data} />}
         {tab === "teams" && <WorldCupTeams data={data} />}
 
-        {showSetup && <WorldCupSetup data={data} onClose={() => setShowSetup(false)} />}
+        {showSetup && (
+          <WorldCupSetup
+            data={data}
+            onClose={() => setShowSetup(false)}
+            onSync={async () => { await syncWorldCup(); await load(); }}
+          />
+        )}
       </div>
     </motion.div>
   );

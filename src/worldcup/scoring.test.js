@@ -3,11 +3,12 @@ import { describe, it, expect } from "vitest";
 import {
   outcomeFromScore,
   matchWinner,
-  resultForTip,
-  tipPoints,
   groupMatchBonus,
   reachedKnockouts,
   sweepstakesPoints,
+  groupTipPoints,
+  knockoutTipPoints,
+  tipPointsForMatch,
   tipTotal,
 } from "./scoring.js";
 
@@ -36,30 +37,6 @@ describe("matchWinner", () => {
   });
   it("is null for an unfinished match", () => {
     expect(matchWinner({ ...base, status: "scheduled" })).toBe(null);
-  });
-});
-
-describe("resultForTip", () => {
-  it("group: raw outcome including draw", () => {
-    expect(
-      resultForTip({ stage: "group", status: "final", home_team: "A", away_team: "B", home_score: 1, away_score: 1 })
-    ).toBe("draw");
-  });
-  it("knockout: maps decisive winner to home/away", () => {
-    expect(
-      resultForTip({ stage: "qf", status: "final", home_team: "A", away_team: "B", home_score: 1, away_score: 1, winner_team: "A" })
-    ).toBe("home");
-  });
-});
-
-describe("tipPoints", () => {
-  it("awards stage points for a correct pick", () => {
-    expect(tipPoints("group", "home", "home")).toBe(1);
-    expect(tipPoints("final", "away", "away")).toBe(13);
-  });
-  it("awards nothing for a wrong or missing pick", () => {
-    expect(tipPoints("group", "home", "away")).toBe(0);
-    expect(tipPoints("group", null, "home")).toBe(0);
   });
 });
 
@@ -106,18 +83,53 @@ describe("sweepstakesPoints", () => {
   });
 });
 
+describe("groupTipPoints", () => {
+  it("1 point for the correct result, else 0", () => {
+    expect(groupTipPoints("home", 2, 0)).toBe(1);
+    expect(groupTipPoints("draw", 1, 1)).toBe(1);
+    expect(groupTipPoints("home", 0, 2)).toBe(0);
+    expect(groupTipPoints(null, 1, 0)).toBe(0);
+  });
+});
+
+describe("knockoutTipPoints", () => {
+  it("3 for exact, 1 for right result, 0 otherwise", () => {
+    expect(knockoutTipPoints(2, 1, 2, 1)).toBe(3);
+    expect(knockoutTipPoints(2, 1, 3, 0)).toBe(1);
+    expect(knockoutTipPoints(2, 1, 0, 1)).toBe(0);
+  });
+  it("grades a pens game on the level FT score", () => {
+    expect(knockoutTipPoints(1, 1, 1, 1)).toBe(3);
+    expect(knockoutTipPoints(2, 1, 1, 1)).toBe(0);
+  });
+  it("0 when a value is missing", () => {
+    expect(knockoutTipPoints(null, null, 1, 0)).toBe(0);
+  });
+});
+
+describe("tipPointsForMatch", () => {
+  it("dispatches group vs knockout and ignores unfinished matches", () => {
+    const grp = { stage: "group", status: "final", home_score: 2, away_score: 0 };
+    expect(tipPointsForMatch(grp, { pick: "home" })).toBe(1);
+    const ko = { stage: "qf", status: "final", home_score: 1, away_score: 1 };
+    expect(tipPointsForMatch(ko, { pred_home: 1, pred_away: 1 })).toBe(3);
+    const scheduled = { stage: "group", status: "scheduled" };
+    expect(tipPointsForMatch(scheduled, { pick: "home" })).toBe(0);
+  });
+});
+
 describe("tipTotal", () => {
   const matches = [
-    { id: "1", stage: "group", status: "final", home_team: "A", away_team: "B", home_score: 2, away_score: 0 },
-    { id: "2", stage: "final", status: "final", home_team: "A", away_team: "B", home_score: 1, away_score: 1, winner_team: "A" },
+    { id: "1", stage: "group", status: "final", home_score: 2, away_score: 0 },
+    { id: "2", stage: "final", status: "final", home_score: 1, away_score: 1 },
   ];
   const tips = [
-    { match_id: "1", user_name: "Ozzy", pick: "home" }, // +1
-    { match_id: "2", user_name: "Ozzy", pick: "home" }, // +13 (knockout winner = home)
-    { match_id: "1", user_name: "Tommy", pick: "draw" }, // +0
+    { match_id: "1", user_name: "Ozzy", pick: "home" },
+    { match_id: "2", user_name: "Ozzy", pred_home: 1, pred_away: 1 },
+    { match_id: "1", user_name: "Tommy", pick: "draw" },
   ];
-  it("sums a user's correct tips across stages", () => {
-    expect(tipTotal("Ozzy", tips, matches)).toBe(14);
+  it("sums group + knockout tips", () => {
+    expect(tipTotal("Ozzy", tips, matches)).toBe(4);
     expect(tipTotal("Tommy", tips, matches)).toBe(0);
   });
 });
