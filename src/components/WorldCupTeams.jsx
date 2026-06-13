@@ -1,5 +1,6 @@
 import { OWNERS } from "../worldcup/constants";
 import { sweepstakesPoints, reachedKnockouts, matchWinner } from "../worldcup/scoring";
+import { flagFor } from "../worldcup/flags";
 
 function teamStatus(name, matches) {
   if (reachedKnockouts(name, matches)) {
@@ -29,7 +30,7 @@ export default function WorldCupTeams({ data }) {
             {owned.length === 0 && <p className="wc-muted">No teams yet — run the draw in ⚙️ Setup.</p>}
             {owned.map((t) => (
               <div key={t.id} className="wc-team-row">
-                <span className="wc-team-name">{t.name}</span>
+                <span className="wc-team-name">{flagFor(t.name)} {t.name}</span>
                 <span className={"wc-role wc-role-" + t.role}>{t.role === "darkhorse" ? "🐎 dark horse ×2" : "⭐ main"}</span>
                 <span className="wc-team-pts">{sweepstakesPoints(t.name, t.role, matches)} pts</span>
                 <span className="wc-team-status">{teamStatus(t.name, matches)}</span>

@@ -95,8 +95,24 @@
 }
 .wc-vs { color: var(--text); opacity: 0.45; font-weight: 700; font-size: 0.82rem; }
 
-.wc-pick-row { display: flex; align-items: center; gap: 0.55rem; margin-top: 0.45rem; }
-.wc-pick-user { width: 3.4rem; font-weight: 800; color: var(--text); opacity: 0.85; font-size: 0.9rem; }
+.wc-date { font-size: 0.78rem; font-weight: 700; color: var(--text); opacity: 0.72; }
+.wc-final-score { font-size: 0.82rem; font-weight: 800; color: var(--yellow); margin: 0.1rem 0 0.2rem; }
+.wc-pick-row {
+  display: flex; flex-direction: column; gap: 0.4rem;
+  margin-top: 0.6rem; padding-top: 0.6rem; border-top: 1px solid var(--border);
+}
+.wc-pick-user { font-weight: 800; color: var(--text); opacity: 0.85; font-size: 0.95rem; }
+.wc-pick-col { display: flex; flex-direction: column; gap: 0.4rem; }
+.wc-pick-btns-col { display: flex; flex-direction: column; gap: 0.3rem; }
+.wc-lockin {
+  align-self: flex-start; min-height: 40px; padding: 0.4rem 0.9rem;
+  border: none; border-radius: 10px; background: var(--yellow); color: #1a1530;
+  font-family: inherit; font-weight: 800; cursor: pointer;
+}
+.wc-lockin:disabled { opacity: 0.4; cursor: default; }
+.wc-committed { font-weight: 800; color: var(--text); display: inline-flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; }
+.wc-lockicon { color: var(--yellow); }
+.wc-se-team { font-size: 1.15rem; }
 .wc-pick-btns { display: flex; gap: 0.35rem; flex: 1; }
 .wc-pick {
   flex: 1; min-height: 40px; padding: 0.4rem;
