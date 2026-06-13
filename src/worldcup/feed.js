@@ -5,7 +5,9 @@ import { FAVOURITES } from "./constants.js";
 // A team string like "1A", "2B", "W74", "L73" is a not-yet-decided placeholder.
 export function isPlaceholderTeam(name) {
   if (!name) return true;
-  return /^\d[A-L]$/.test(name) || /^[WL]\d+$/.test(name) || /^RU?\d/.test(name);
+  if (name.includes("/")) return true; // best-third-place slots, e.g. "3A/B/C/D/F"
+  if (/^\d/.test(name)) return true;    // group slots, e.g. "1A", "2B", "3C"
+  return /^[WL]\d+$/.test(name) || /^RU?\d/.test(name); // "W74", "L73"
 }
 
 // Map a feed round label (+ optional group) to our stage, or null to skip.

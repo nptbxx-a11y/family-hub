@@ -14,6 +14,7 @@ describe("isPlaceholderTeam", () => {
     expect(isPlaceholderTeam("2B")).toBe(true);
     expect(isPlaceholderTeam("W74")).toBe(true);
     expect(isPlaceholderTeam("L73")).toBe(true);
+    expect(isPlaceholderTeam("3A/B/C/D/F")).toBe(true);
     expect(isPlaceholderTeam(undefined)).toBe(true);
   });
   it("accepts real country names", () => {
