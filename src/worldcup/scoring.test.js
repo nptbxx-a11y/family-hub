@@ -10,6 +10,7 @@ import {
   knockoutTipPoints,
   tipPointsForMatch,
   tipTotal,
+  standings,
 } from "./scoring.js";
 
 describe("outcomeFromScore", () => {
@@ -131,5 +132,22 @@ describe("tipTotal", () => {
   it("sums group + knockout tips", () => {
     expect(tipTotal("Ozzy", tips, matches)).toBe(4);
     expect(tipTotal("Tommy", tips, matches)).toBe(0);
+  });
+});
+
+describe("standings", () => {
+  it("ranks owners by total with the leader first", () => {
+    const data = {
+      teams: [{ name: "Brazil", owner: "Ozzy", role: "main" }],
+      matches: [
+        { id: "1", stage: "group", status: "final", home_team: "Brazil", away_team: "X", home_score: 1, away_score: 0 },
+      ],
+      tips: [{ match_id: "1", user_name: "Ozzy", pick: "home" }],
+    };
+    const rows = standings(data);
+    expect(rows).toHaveLength(2);
+    expect(rows[0].user).toBe("Ozzy"); // tip +1, group win +2 = 3
+    expect(rows[0].total).toBe(3);
+    expect(rows[0].total).toBeGreaterThan(rows[1].total);
   });
 });

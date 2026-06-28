@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { supabase } from "../supabase";
 import { fetchAll } from "../worldcup/db";
 import { syncWorldCup } from "../worldcup/sync";
+import { phaseLabel } from "../worldcup/phase";
 import WorldCupTip from "./WorldCupTip";
 import WorldCupLeaderboard from "./WorldCupLeaderboard";
 import WorldCupTeams from "./WorldCupTeams";
@@ -51,7 +52,7 @@ export default function WorldCup() {
           <button className="wc-hero-setup" onClick={() => setShowSetup(true)} aria-label="Setup">⚙️</button>
           <div className="wc-hero-inner">
             <h1 className="wc-hero-title"><span aria-hidden="true">🏆</span> World Cup</h1>
-            <p className="wc-hero-tag">Ozzy v Tommy · tips &amp; sweepstakes</p>
+            <p className="wc-hero-tag">{phaseLabel(data.matches)}</p>
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 // src/worldcup/scoring.js
-import { GROUP_TIP, KO_EXACT, KO_RESULT, SWEEP, DARK_HORSE_MULTIPLIER } from "./constants.js";
+import { GROUP_TIP, KO_EXACT, KO_RESULT, SWEEP, DARK_HORSE_MULTIPLIER, OWNERS } from "./constants.js";
 
 // "home" | "away" | "draw" | null
 export function outcomeFromScore(homeScore, awayScore) {
@@ -94,4 +94,18 @@ export function tipTotal(userName, tips, matches) {
     pts += tipPointsForMatch(byId[t.match_id], t);
   }
   return pts;
+}
+
+// Per-owner totals (tips + sweepstakes), highest first. Shared by the
+// leaderboard tab and the tip-tab mini leaderboard.
+export function standings({ teams, matches, tips }) {
+  return OWNERS.map((user) => {
+    const tipPts = tipTotal(user, tips, matches);
+    const owned = teams.filter((t) => t.owner === user);
+    const sweepPts = owned.reduce(
+      (sum, t) => sum + sweepstakesPoints(t.name, t.role, matches),
+      0
+    );
+    return { user, tipPts, sweepPts, total: tipPts + sweepPts };
+  }).sort((a, b) => b.total - a.total);
 }

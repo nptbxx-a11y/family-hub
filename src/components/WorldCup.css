@@ -226,8 +226,58 @@
 .wc-score-entry input:disabled { opacity: 0.55; }
 .wc-saved { font-size: 0.72rem; color: var(--text); opacity: 0.55; }
 
+/* ── Mini leaderboard (Tip tab) ─────────────────────────────────────── */
+.wc-mini-lb { display: flex; gap: 8px; margin-bottom: 0.8rem; }
+.wc-mini-card {
+  flex: 1; display: flex; align-items: center; justify-content: space-between;
+  background: var(--card-item); border: 1px solid var(--border);
+  border-radius: 12px; padding: 0.5rem 0.8rem;
+}
+.wc-mini-card.leading { border-color: var(--yellow); box-shadow: inset 0 0 0 1px rgba(255, 209, 102, 0.25); }
+.wc-mini-name { font-weight: 800; font-size: 0.9rem; color: var(--text); }
+.wc-mini-total { font-weight: 900; font-size: 1.3rem; color: var(--yellow); font-variant-numeric: tabular-nums; }
+
+/* ── Bracket progress strip ─────────────────────────────────────────── */
+.wc-bracket {
+  display: flex; align-items: center; justify-content: space-between; gap: 2px;
+  margin-bottom: 0.8rem; padding: 0.5rem 0.7rem;
+  background: var(--card-item); border: 1px solid var(--border); border-radius: 12px;
+}
+.wc-bracket-seg { display: inline-flex; align-items: center; gap: 2px; }
+.wc-bracket-round { font-size: 0.72rem; font-weight: 800; color: var(--text); opacity: 0.5; padding: 0.15rem 0.1rem; }
+.wc-bracket-round.current { opacity: 1; color: var(--yellow); background: rgba(255, 209, 102, 0.15); padding: 0.2rem 0.5rem; border-radius: 999px; }
+.wc-bracket-arrow { font-size: 0.7rem; opacity: 0.35; }
+
+/* ── Filter ─────────────────────────────────────────────────────────── */
+.wc-filter {
+  display: flex; gap: 0.25rem; margin-bottom: 1rem; padding: 0.25rem;
+  background: var(--card-item); border: 1px solid var(--border); border-radius: 12px;
+}
+.wc-filter-btn {
+  flex: 1; min-height: 40px; border: none; border-radius: 9px; background: transparent;
+  color: var(--text); font-family: inherit; font-weight: 800; font-size: 0.82rem;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.wc-filter-btn.active { background: var(--accent); color: #fff; }
+
+/* ── Knockout accent + celebratory grading ──────────────────────────── */
+.wc-match.wc-ko { border-color: rgba(255, 209, 102, 0.35); }
+.wc-grade { margin-left: 0.4rem; font-weight: 800; font-size: 0.82rem; padding: 0.1rem 0.5rem; border-radius: 999px; }
+.wc-grade.hit { color: #6ee7a8; background: rgba(110, 231, 168, 0.13); border: 1px solid rgba(110, 231, 168, 0.4); }
+.wc-grade.miss { color: #ff8a8a; }
+
+/* ── Group-results collapse ─────────────────────────────────────────── */
+.wc-collapse { margin-top: 0.5rem; }
+.wc-collapse-bar {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 0.4rem;
+  background: var(--card-item); border: 1px dashed var(--border); border-radius: 12px;
+  padding: 0.7rem 0.9rem; color: var(--text); opacity: 0.85;
+  font-family: inherit; font-weight: 700; font-size: 0.88rem; cursor: pointer;
+}
+.wc-collapse-caret { opacity: 0.6; }
+
 /* ── Reduced motion ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .wc-tip-list > .wc-card, .wc-leader-row, .wc-team-card { animation: none; }
-  .wc-tab, .wc-pick, .wc-hero-setup { transition: none; }
+  .wc-tab, .wc-pick, .wc-hero-setup, .wc-filter-btn { transition: none; }
 }

@@ -1,19 +1,7 @@
-import { OWNERS } from "../worldcup/constants";
-import { tipTotal, sweepstakesPoints } from "../worldcup/scoring";
+import { standings } from "../worldcup/scoring";
 
 export default function WorldCupLeaderboard({ data }) {
-  const { teams, matches, tips } = data;
-
-  const rows = OWNERS.map((user) => {
-    const tipPts = tipTotal(user, tips, matches);
-    const owned = teams.filter((t) => t.owner === user);
-    const sweepPts = owned.reduce(
-      (sum, t) => sum + sweepstakesPoints(t.name, t.role, matches),
-      0
-    );
-    return { user, tipPts, sweepPts, total: tipPts + sweepPts };
-  }).sort((a, b) => b.total - a.total);
-
+  const rows = standings(data);
   const leader = rows[0];
   const tied = rows.length > 1 && rows[0].total === rows[1].total;
 
