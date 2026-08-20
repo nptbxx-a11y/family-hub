@@ -56,8 +56,7 @@ function getCurrentEvent() {
 const WORLD_CLOCKS = [
   { label: "London",    tz: "Europe/London" },
   { label: "Melbourne", tz: "Australia/Melbourne" },
-  { label: "Singapore", tz: "Asia/Singapore" },
-  { label: "Wyoming",   tz: "America/Denver" },
+  { label: "Singapore / China", tz: "Asia/Singapore" },
 ];
 
 function getTimeParts(now, tz) {
