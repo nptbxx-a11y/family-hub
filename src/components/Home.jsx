@@ -19,7 +19,8 @@ const CALENDAR_EVENTS = [
   // ── Short-season events (add new ones here) ──────────────────────────
   { label: "Tommy in Singapore", icon: "🇸🇬", from: [5, 18], to: [5, 26], fromTime: [17, 30], color: "#ef4444", bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)" },
   { label: "Tommy's Birthday Week", icon: "🎂", from: [8, 24], to: [8, 30], year: 2026, color: "#f0abfc", bg: "rgba(240,171,252,0.12)", border: "rgba(240,171,252,0.28)" },
-  { label: "China Trip 2026", icon: "🇨🇳", from: [10, 9], to: [10, 24], year: 2026, color: "#ef4444", bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)" },
+  { label: "China Trip 2026", icon: "🐉", from: [10, 9], to: [10, 24], year: 2026, color: "#ef4444", bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)" },
+  { label: "Australia 2026", icon: "🦘", from: [12, 11], to: [12, 23], year: 2026, color: "#facc15", bg: "rgba(250,204,21,0.12)", border: "rgba(74,222,128,0.35)" },
   // { label: "Wimbledon",  icon: "🎾", from: [6, 30], to: [7, 13] },
 
   // ── Base UK meteorological seasons ───────────────────────────────────
