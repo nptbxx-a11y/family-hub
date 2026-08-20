@@ -237,6 +237,7 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: rgba(160, 190, 255, 0.5);
+  text-align: center;
 }
 
 /* ── AFL next match widget ── */
