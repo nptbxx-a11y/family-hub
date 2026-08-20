@@ -6,6 +6,7 @@ import {
   parseKickoff,
   mapFeedMatch,
   extractTeams,
+  changedMatches,
 } from "./feed.js";
 
 describe("isPlaceholderTeam", () => {
@@ -79,6 +80,22 @@ describe("mapFeedMatch", () => {
       team1: "Brazil", team2: "France", score: { ft: [1, 1], p: [4, 2] },
     });
     expect(row.winner_team).toBe("Brazil");
+  });
+});
+
+describe("changedMatches", () => {
+  const base = { ext_key: "1", home_team: "A", away_team: "B", kickoff: "2026-06-11T19:00:00.000Z", home_score: null, away_score: null, winner_team: null, status: "scheduled" };
+  it("includes brand-new matches", () => {
+    expect(changedMatches([base], {})).toHaveLength(1);
+  });
+  it("skips unchanged matches even when the kickoff string is formatted differently", () => {
+    const existing = { "1": { ...base, kickoff: "2026-06-11T19:00:00+00:00" } };
+    expect(changedMatches([base], existing)).toHaveLength(0);
+  });
+  it("includes a match whose score/status changed", () => {
+    const existing = { "1": { ...base } };
+    const played = { ...base, home_score: 2, away_score: 0, status: "final" };
+    expect(changedMatches([played], existing)).toHaveLength(1);
   });
 });
 

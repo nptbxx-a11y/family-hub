@@ -26,10 +26,11 @@ export default function WorldCup() {
   }, []);
 
   useEffect(() => {
-    // Refresh from the public feed on open, then load whatever's in the DB.
+    // Show cached data instantly, then refresh from the feed in the background.
+    fetchAll().then(setData).catch(() => {});
     syncWorldCup()
-      .catch((e) => console.warn("World Cup sync failed:", e.message))
-      .finally(() => fetchAll().then(setData).catch(() => {}));
+      .then(() => fetchAll().then(setData))
+      .catch((e) => console.warn("World Cup sync failed:", e.message));
     const channel = supabase
       .channel("worldcup")
       .on("postgres_changes", { event: "*", schema: "public", table: "wc_teams" }, load)

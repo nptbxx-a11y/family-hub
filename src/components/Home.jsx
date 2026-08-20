@@ -4,7 +4,7 @@ import "./Home.css";
 import coupleImg from "../assets/couple.png";
 import nmfcLogo from "../assets/nmfc-logo.svg";
 
-const MET_DATE = new Date("2025-07-09");
+const MET_DATE = new Date(2025, 6, 9); // 9 July 2025, local midnight (matches how "today" is computed below)
 const YOUTUBE_ID = "tMDFv5m18Pw";
 
 // ── UK seasonal / short-season calendar ──────────────────────────────────
@@ -144,7 +144,7 @@ function getDaysTogether() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const diff = today - MET_DATE;
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
+  return Math.round(diff / (1000 * 60 * 60 * 24));
 }
 
 // Squiggle dates are Melbourne local time — display as-is labelled AEST

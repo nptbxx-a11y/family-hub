@@ -63,6 +63,21 @@ export function mapFeedMatch(m) {
   };
 }
 
+// Given mapped feed rows and the existing DB rows keyed by ext_key, return only
+// the rows that are new or whose result/schedule actually changed. Lets a
+// routine sync write nothing when nothing has moved.
+export function changedMatches(feedRows, existingByKey) {
+  const PLAIN = ["home_team", "away_team", "home_score", "away_score", "winner_team", "status"];
+  return feedRows.filter((r) => {
+    const ex = existingByKey[r.ext_key];
+    if (!ex) return true;
+    if (PLAIN.some((f) => (ex[f] ?? null) !== (r[f] ?? null))) return true;
+    const exK = ex.kickoff ? new Date(ex.kickoff).getTime() : null;
+    const rK = r.kickoff ? new Date(r.kickoff).getTime() : null;
+    return exK !== rK;
+  });
+}
+
 // Collect the unique real teams across all feed matches.
 export function extractTeams(matches) {
   const map = new Map();
