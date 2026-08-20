@@ -14,9 +14,12 @@ const YOUTUBE_ID = "tMDFv5m18Pw";
 //   { label: "Christmas",     icon: "🎄", from: [12, 1],  to: [12, 25] }
 //   { label: "Easter",        icon: "🐣", from: [4, 18],  to: [4, 21] }
 // Months are 1-indexed. Ranges that wrap the new year (e.g. Winter) work fine.
+// Add an optional `year: 2026` to make a one-off event fire only in that year.
 const CALENDAR_EVENTS = [
   // ── Short-season events (add new ones here) ──────────────────────────
   { label: "Tommy in Singapore", icon: "🇸🇬", from: [5, 18], to: [5, 26], fromTime: [17, 30], color: "#ef4444", bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)" },
+  { label: "Tommy's Birthday Week", icon: "🎂", from: [8, 24], to: [8, 30], year: 2026, color: "#f0abfc", bg: "rgba(240,171,252,0.12)", border: "rgba(240,171,252,0.28)" },
+  { label: "China Trip 2026", icon: "🇨🇳", from: [10, 9], to: [10, 24], year: 2026, color: "#ef4444", bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)" },
   // { label: "Wimbledon",  icon: "🎾", from: [6, 30], to: [7, 13] },
 
   // ── Base UK meteorological seasons ───────────────────────────────────
@@ -29,12 +32,13 @@ const CALENDAR_EVENTS = [
 function getCurrentEvent() {
   const now = new Date();
   const ukParts = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Europe/London', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false,
+    timeZone: 'Europe/London', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false,
   }).formatToParts(now);
   const getP = (type) => parseInt(ukParts.find(p => p.type === type)?.value ?? '0');
-  const ukMonth = getP('month'), ukDay = getP('day'), ukHour = getP('hour'), ukMin = getP('minute');
+  const ukYear = getP('year'), ukMonth = getP('month'), ukDay = getP('day'), ukHour = getP('hour'), ukMin = getP('minute');
   const md = ukMonth * 100 + ukDay;
   for (const evt of CALENDAR_EVENTS) {
+    if (evt.year && ukYear !== evt.year) continue; // one-off events fire only in their year
     const fromMD = evt.from[0] * 100 + evt.from[1];
     const toMD   = evt.to[0]   * 100 + evt.to[1];
     const hit    = fromMD <= toMD ? (md >= fromMD && md <= toMD) : (md >= fromMD || md <= toMD);
