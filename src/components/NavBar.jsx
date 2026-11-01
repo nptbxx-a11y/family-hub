@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import "./NavBar.css";
+
+// The Games link stays highlighted while you're inside any game.
+const GAME_PATHS = ["/games", "/battleships", "/mahjong"];
 
 export default function NavBar({ onLogout }) {
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef(null);
   const hamburgerRef = useRef(null);
+  const { pathname } = useLocation();
 
   // When the drawer is open: close on Escape, keep keyboard focus trapped
   // inside it, and restore focus to the hamburger when it closes.
@@ -96,11 +100,11 @@ export default function NavBar({ onLogout }) {
             🦆 Wildlife Spotter
           </NavLink>
           <NavLink
-            to="/battleships"
-            className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}
+            to="/games"
+            className={() => "sidebar-link" + (GAME_PATHS.includes(pathname) ? " active" : "")}
             onClick={() => setOpen(false)}
           >
-            ⚔️ All Aboard
+            🎮 Games
           </NavLink>
           <NavLink to="/ideas" className={({ isActive }) => "sidebar-link" + (isActive ? " active" : "")} onClick={() => setOpen(false)}>
             💡 Big Ideas
