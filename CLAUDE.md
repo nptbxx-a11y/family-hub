@@ -36,7 +36,17 @@ There are no tests configured.
 
 ## Supabase Tables
 
-All tables have RLS disabled. New tables must have RLS disabled manually after creation.
+**RLS is ENABLED on every table (family-only access).** Each table has one policy, "Family members only", for the `authenticated` role, gated by `public.is_family()` — which allow-lists the shared login's `auth.users` id. Anonymous requests (the public anon key) and any other account see nothing.
+
+**New tables must follow the same pattern**, or anyone holding the public anon key can read and write them:
+
+```sql
+alter table public.<name> enable row level security;
+create policy "Family members only" on public.<name> for all to authenticated
+  using ((select public.is_family())) with check ((select public.is_family()));
+```
+
+Realtime-backed tables also need `alter publication supabase_realtime add table public.<name>;`. To give another login access, add its user id to the array in `public.is_family()`.
 
 - `groceries` — `id`, `name`, `checked`, `created_at`, `priority` (text: "urgent" or "later", default "later")
 - `recipes` — `id`, `name`, `link`, `category`, `ingredients` (newline-separated text), `notes`, `created_at`
@@ -82,6 +92,8 @@ All tables have RLS disabled. New tables must have RLS disabled manually after c
 ## Vercel Serverless Function
 
 `api/parse-recipe.js` — fetches a recipe URL server-side and extracts ingredients from JSON-LD Recipe schema. Called from the recipe form as `/api/parse-recipe?url=...`.
+
+`api/keepalive.js` — run daily at 09:00 UTC by a Vercel Cron job (`crons` in `vercel.json`). Calls the `public.keepalive()` RPC so the free-tier Supabase project never auto-pauses after 7 days of inactivity. If the site ever stops loading data, first check the project isn't paused in the Supabase dashboard.
 
 `vercel.json` rewrite excludes `/api/` routes: `/((?!api/).*) → /index.html`
 
