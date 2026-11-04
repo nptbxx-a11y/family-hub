@@ -104,3 +104,33 @@ without it.
 
 Scores, leaderboards, daily challenges, database storage, multiplayer,
 traditional 4-player mahjong, extra layouts beyond Quick and Classic.
+
+---
+
+## Addendum (2026-11-04): no shading, deeper tiles, players + leaderboard
+
+**Approved changes:**
+
+- **No shading.** All tiles render the same; blocked tiles are no longer
+  darkened. Tapping a blocked tile does nothing except a short wiggle
+  (reduced-motion: no wiggle).
+- **15% more 3D.** Tile edge and drop-shadow offsets ×1.15; per-layer offset
+  `DEPTH` 0.1 → 0.115.
+- **Who's playing.** The board picker has an Ozzy / Tommy toggle, defaulting to
+  the device's existing `battleships_player` localStorage value (shared with
+  All Aboard). A game can't start until a player is chosen. The player shows in
+  the top bar.
+- **Scores (database).** On clearing a board, one row is written to
+  `mahjong_scores` (`player`, `mode`, `seconds`, `assisted`, `created_at`).
+  Family-only RLS policy (same as every table); realtime enabled. A game is
+  `assisted` if Hint or Shuffle was used (Undo does not count).
+- **Leaderboard.** On the picker, with Quick / Classic tabs (separately — times
+  aren't comparable). For each player: best time from **clean games only**, and
+  total wins (all cleared boards). Leader (fastest best) highlighted in gold; a
+  tie has no leader.
+- **Win screen** says one of: "New personal best!", "Time saved", "Hint/Shuffle
+  used — not on the leaderboard", or "Couldn't save your time" (save errors are
+  shown, never swallowed).
+
+**Pure logic** (`src/mahjong/leaderboard.js`, unit-tested): `summarize`,
+`leaderOf`, `isPersonalBest`, `formatTime`.
