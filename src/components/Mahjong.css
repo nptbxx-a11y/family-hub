@@ -1,0 +1,119 @@
+/* Mahjong Solitaire — ivory tiles on the dark aurora theme. */
+
+.mj-page { max-width: 900px; margin: 0 auto; padding: 8px 12px 24px; color: var(--text); }
+
+.mj-topbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.mj-title { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text); }
+.mj-mode {
+  margin-left: 6px; padding: 3px 8px; border-radius: 999px; vertical-align: middle;
+  font-size: 0.7rem; color: #c4b5fd; background: rgba(139, 92, 246, 0.18);
+}
+.mj-stats { font-size: 0.85rem; font-weight: 700; opacity: 0.85; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mj-tip { margin: 0 0 6px; font-size: 0.78rem; opacity: 0.7; }
+
+.mj-notice {
+  display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  margin: 6px 0; padding: 10px 12px; border-radius: 12px;
+  background: rgba(255, 209, 102, 0.12); border: 1px solid rgba(255, 209, 102, 0.45);
+  font-weight: 700; font-size: 0.88rem;
+}
+.mj-notice button {
+  min-height: 36px; padding: 6px 12px; border: none; border-radius: 9px;
+  background: var(--yellow); color: #1a1530; font-family: inherit; font-weight: 800; cursor: pointer;
+}
+
+/* Board */
+.mj-board-wrap { width: 100%; display: flex; justify-content: center; padding: 8px 0 14px; }
+.mj-board { position: relative; isolation: isolate; }
+
+.mj-tile {
+  position: absolute; padding: 0; border: none;
+  border-radius: calc(var(--tw) * 0.14);
+  background: linear-gradient(160deg, #fffaf0 0%, #f1e6cf 100%);
+  box-shadow:
+    calc(var(--tw) * 0.07) calc(var(--tw) * 0.09) 0 #b9a77e,
+    calc(var(--tw) * 0.1) calc(var(--tw) * 0.14) calc(var(--tw) * 0.2) rgba(0, 0, 0, 0.45);
+  display: flex; align-items: center; justify-content: center;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", serif;
+  font-weight: 700; line-height: 1; font-size: calc(var(--tw) * 0.56);
+  color: #1a1a1a; cursor: pointer; -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s, box-shadow 0.12s, filter 0.15s;
+}
+.mj-tile:disabled { cursor: default; opacity: 1; color: #1a1a1a; }
+.mj-tile.blocked { filter: brightness(0.62) saturate(0.8); }
+.mj-tile.selected {
+  transform: translateY(calc(var(--tw) * -0.1));
+  box-shadow: 0 0 0 3px #FFD166, 0 0 16px #FFD166, calc(var(--tw) * 0.07) calc(var(--tw) * 0.09) 0 #b9a77e;
+}
+.mj-tile.hinted {
+  box-shadow: 0 0 0 3px #6ee7a8, 0 0 14px #6ee7a8, calc(var(--tw) * 0.07) calc(var(--tw) * 0.09) 0 #b9a77e;
+  animation: mj-pulse 0.8s ease-in-out infinite alternate;
+}
+@keyframes mj-pulse { to { transform: translateY(calc(var(--tw) * -0.06)); } }
+
+/* Faces */
+.mj-face-svg { width: 74%; height: 74%; }
+.mj-char { display: flex; flex-direction: column; align-items: center; gap: 2%; }
+.mj-char-num { font-size: 0.72em; color: #1a1a1a; }
+.mj-char-wan { font-size: 0.78em; color: #c0392b; }
+.mj-wind { color: #1a1a1a; }
+.mj-red { color: #c0392b; font-size: 1.05em; }
+.mj-green { color: #2e8b57; font-size: 1.05em; }
+.mj-white { width: 56%; height: 68%; border: calc(var(--tw) * 0.07) solid #2f6fb5; border-radius: 3px; }
+.mj-emoji { font-size: 0.85em; font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; }
+
+/* Toolbar — sticks to the bottom so it stays reachable on the big board */
+.mj-toolbar {
+  position: sticky; bottom: 10px; z-index: 10;
+  display: flex; gap: 6px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.mj-toolbar button {
+  flex: 1; min-height: 44px; padding: 6px 2px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--card-item); color: var(--text);
+  font-family: inherit; font-weight: 800; font-size: 0.82rem; cursor: pointer;
+}
+.mj-toolbar button:disabled { opacity: 0.4; cursor: default; }
+
+/* Mode picker */
+.mj-picker { display: flex; flex-direction: column; gap: 12px; max-width: 520px; margin: 8px auto 0; }
+.mj-how { margin: 0; font-size: 0.9rem; line-height: 1.5; opacity: 0.8; }
+.mj-pick {
+  display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
+  color: var(--text); font-family: inherit; cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38); transition: transform 0.12s, border-color 0.12s;
+}
+.mj-pick:hover { border-color: var(--accent); }
+.mj-pick:active { transform: scale(0.98); }
+.mj-pick-name { font-size: 1.15rem; font-weight: 800; }
+.mj-pick-meta { font-size: 0.82rem; opacity: 0.75; }
+
+/* Win overlay (portalled to <body>) */
+.mj-win {
+  position: fixed; inset: 0; z-index: 2000; padding: 16px;
+  display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.6);
+}
+.mj-win-card {
+  width: 100%; max-width: 320px; padding: 24px 20px; text-align: center; color: var(--text);
+  background: var(--surface); border: 1px solid var(--yellow); border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+.mj-win-emoji { font-size: 2.2rem; }
+.mj-win-card h2 { margin: 8px 0 4px; color: var(--yellow); }
+.mj-win-card p { margin: 0 0 16px; opacity: 0.85; font-weight: 700; }
+.mj-win-actions { display: flex; gap: 8px; }
+.mj-win-actions button {
+  flex: 1; min-height: 44px; border: none; border-radius: 10px;
+  background: var(--accent); color: #fff; font-family: inherit; font-weight: 800; cursor: pointer;
+}
+.mj-win-actions button.secondary { background: var(--card-item); color: var(--text); border: 1px solid var(--border); }
+
+@media (orientation: landscape) { .mj-tip { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .mj-tile { transition: none; }
+  .mj-tile.hinted { animation: none; }
+}

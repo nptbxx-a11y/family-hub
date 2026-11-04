@@ -31,6 +31,9 @@ There are no tests configured.
 - `/recipes` — Recipe List
 - `/meals` — This Week's Meals
 - `/feedback` — Feedback Box
+- `/games` — Games page (a card per game)
+- `/battleships` — All Aboard (Battleships, 2 players)
+- `/mahjong` — Mahjong Solitaire (solo)
 
 **Navigation:** Hamburger menu (☰) opens a left-side drawer sidebar. The navbar brand is a heart (♥) that links home. No nav links in the top bar.
 
@@ -80,6 +83,14 @@ Realtime-backed tables also need `alter publication supabase_realtime add table 
 - Select author (Ozzy / Tommy), write note, post it
 - Scrolling ribbon ticker at top of page cycles through all posted notes
 - Notes listed below with author, date, delete button
+
+**Games (`GamesHub.jsx`):** the sidebar's single "🎮 Games" link opens a page of game cards. Each game shows a "← Games" bar (`GamesBackLink.jsx`, added in the route).
+
+**Mahjong Solitaire (`Mahjong.jsx`):**
+- Quick (72-tile pyramid) or Classic (144-tile Turtle); tap two matching free tiles to remove them
+- Rules live in `src/mahjong/` (tiles, layouts, engine) and are unit-tested; deals are guaranteed solvable
+- Hint, Shuffle (re-deals remaining tiles, still solvable), Undo, New
+- Game in progress saved to `localStorage` (`mahjong:v1`); no database
 
 **Homepage (`Home.jsx`):**
 - Couple illustration icon (src/assets/couple.png)

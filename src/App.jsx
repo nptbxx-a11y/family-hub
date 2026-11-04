@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { supabase } from "./supabase";
 import NavBar from "./components/NavBar";
 import Login from "./components/Login";
+import GamesBackLink from "./components/GamesBackLink";
 
 const Home = lazy(() => import("./components/Home"));
 const GroceryList = lazy(() => import("./components/GroceryList"));
@@ -16,6 +17,8 @@ const WildlifeSpotter = lazy(() => import("./components/WildlifeSpotter"));
 const Battleships = lazy(() => import("./components/Battleships"));
 const BigIdeas = lazy(() => import("./components/BigIdeas"));
 const WorldCup = lazy(() => import("./components/WorldCup"));
+const GamesHub = lazy(() => import("./components/GamesHub"));
+const Mahjong = lazy(() => import("./components/Mahjong"));
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -31,7 +34,9 @@ function AnimatedRoutes() {
           <Route path="/todos" element={<TodoList />} />
           <Route path="/restaurants" element={<Restaurants />} />
           <Route path="/wildlife" element={<WildlifeSpotter />} />
-          <Route path="/battleships" element={<Battleships />} />
+          <Route path="/games" element={<GamesHub />} />
+          <Route path="/battleships" element={<><GamesBackLink /><Battleships /></>} />
+          <Route path="/mahjong" element={<><GamesBackLink /><Mahjong /></>} />
           <Route path="/ideas" element={<BigIdeas />} />
           <Route path="/worldcup" element={<WorldCup />} />
         </Routes>
