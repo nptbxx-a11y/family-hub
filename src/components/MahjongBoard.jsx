@@ -5,7 +5,7 @@ import { isFree } from "../mahjong/engine";
 import { layoutBounds } from "../mahjong/layouts";
 
 const ASPECT = 1.33; // tile height ÷ width
-const DEPTH = 0.1;   // per-layer up-left offset, as a fraction of tile width
+const DEPTH = 0.115; // per-layer up-left offset, as a fraction of tile width
 const MIN_TILE = 14; // px
 const MAX_TILE = 64; // px — keeps tiles sensible on big screens
 

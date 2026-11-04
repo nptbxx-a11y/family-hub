@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { motion } from "framer-motion";
 import { FLOWER_EMOJI, SEASON_EMOJI, tileName } from "../mahjong/tiles";
 
@@ -84,20 +84,23 @@ function Face({ face }) {
   );
 }
 
+// Blocked tiles look the same as free ones; tapping one just wiggles it.
 function MahjongTile({ tile, left, top, width, height, zIndex, free, selected, hinted, onTap }) {
+  const [wiggling, setWiggling] = useState(false);
   const classes = ["mj-tile"];
-  if (!free) classes.push("blocked");
   if (selected) classes.push("selected");
   if (hinted) classes.push("hinted");
+  if (wiggling) classes.push("wiggle");
   return (
     <motion.button
       type="button"
       className={classes.join(" ")}
       style={{ left, top, width, height, zIndex }}
-      disabled={!free}
+      aria-disabled={!free}
       aria-pressed={selected}
-      aria-label={tileName(tile.face)}
-      onClick={() => onTap(tile)}
+      aria-label={free ? tileName(tile.face) : `${tileName(tile.face)} (not free yet)`}
+      onClick={() => (free ? onTap(tile) : setWiggling(true))}
+      onAnimationEnd={() => setWiggling(false)}
       initial={false}
       exit={{ opacity: 0, scale: 0.6, transition: { duration: 0.2 } }}
     >
