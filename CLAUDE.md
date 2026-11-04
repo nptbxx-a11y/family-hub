@@ -55,6 +55,7 @@ Realtime-backed tables also need `alter publication supabase_realtime add table 
 - `recipes` — `id`, `name`, `link`, `category`, `ingredients` (newline-separated text), `notes`, `created_at`
 - `meal_plan` — `id`, `recipe_id`, `recipe_name`, `day_of_week`, `created_at`
 - `feedback` — `id`, `message`, `author`, `created_at`
+- `mahjong_scores` — `id`, `player` ("ozzy" | "tommy"), `mode` ("quick" | "classic"), `seconds`, `assisted` (true if Hint/Shuffle used), `created_at`. One row per cleared board.
 
 ## Features
 
@@ -90,7 +91,10 @@ Realtime-backed tables also need `alter publication supabase_realtime add table 
 - Quick (72-tile pyramid) or Classic (144-tile Turtle); tap two matching free tiles to remove them
 - Rules live in `src/mahjong/` (tiles, layouts, engine) and are unit-tested; deals are guaranteed solvable
 - Hint, Shuffle (re-deals remaining tiles, still solvable), Undo, New
-- Game in progress saved to `localStorage` (`mahjong:v1`); no database
+- Blocked tiles are not shaded; tapping one just wiggles it
+- "Who's playing?" Ozzy/Tommy toggle (remembered via the `battleships_player` localStorage key, shared with All Aboard)
+- Cleared boards are saved to `mahjong_scores`; the 🏆 leaderboard (Quick/Classic tabs) shows each player's best time from **clean games only** (no Hint/Shuffle; Undo is fine) plus boards cleared. Logic in `src/mahjong/leaderboard.js` (unit-tested)
+- Game in progress saved to `localStorage` (`mahjong:v1`)
 
 **Homepage (`Home.jsx`):**
 - Couple illustration icon (src/assets/couple.png)
