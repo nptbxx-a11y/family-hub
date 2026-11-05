@@ -5,11 +5,12 @@ import { supabase } from "../supabase";
 import MahjongBoard from "./MahjongBoard";
 import MahjongLeaderboard from "./MahjongLeaderboard";
 import { canMatch, findHint, isFree, newGame, removePair, reshuffle } from "../mahjong/engine";
-import { LAYOUTS } from "../mahjong/layouts";
+import { DEFAULT_LAYOUT, LAYOUTS, randomLayout } from "../mahjong/layouts";
 import { PLAYERS, PLAYER_NAMES, formatTime, isPersonalBest } from "../mahjong/leaderboard";
 import "./Mahjong.css";
 
 const STORAGE_KEY = "mahjong:v1";
+const LAST_LAYOUTS_KEY = "mahjong:last-layouts"; // { quick, classic } — so a new game never repeats the last shape
 // Shared with All Aboard, so each phone already knows who it belongs to.
 const PLAYER_KEY = "battleships_player";
 const MODE_LABELS = { quick: "Quick", classic: "Classic" };
@@ -19,11 +20,29 @@ const MODE_LABELS = { quick: "Quick", classic: "Classic" };
 function loadGame() {
   try {
     const g = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const valid = g && LAYOUTS[g.mode] && Array.isArray(g.tiles) && Array.isArray(g.history)
+    const valid = g && DEFAULT_LAYOUT[g.mode] && Array.isArray(g.tiles) && Array.isArray(g.history)
       && Number.isFinite(g.elapsed);
-    return valid ? g : null;
+    if (!valid) return null;
+    // Games saved before layouts existed were always the original shape.
+    return LAYOUTS[g.layout] ? g : { ...g, layout: DEFAULT_LAYOUT[g.mode] };
   } catch {
     return null;
+  }
+}
+
+function loadLastLayouts() {
+  try {
+    return JSON.parse(localStorage.getItem(LAST_LAYOUTS_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function rememberLayout(mode, layout) {
+  try {
+    localStorage.setItem(LAST_LAYOUTS_KEY, JSON.stringify({ ...loadLastLayouts(), [mode]: layout }));
+  } catch {
+    // Not remembered — the next game might repeat this shape, which is fine.
   }
 }
 
@@ -52,7 +71,7 @@ function reducer(state, action) {
   switch (action.type) {
     case "start":
       return fresh({
-        mode: action.mode, player: action.player, tiles: action.tiles,
+        mode: action.mode, layout: action.layout, player: action.player, tiles: action.tiles,
         history: [], elapsed: 0, assisted: false, outcome: null,
       });
     case "menu":
@@ -126,11 +145,11 @@ function ModePicker({ player, onPlayer, onStart, scores, scoresError }) {
       </div>
       <button type="button" className="mj-pick" disabled={!player} onClick={() => onStart("quick")}>
         <span className="mj-pick-name">Quick</span>
-        <span className="mj-pick-meta">72 tiles · about 5 minutes · made for your phone</span>
+        <span className="mj-pick-meta">72 tiles · 5 random layouts · about 5 minutes</span>
       </button>
       <button type="button" className="mj-pick" disabled={!player} onClick={() => onStart("classic")}>
         <span className="mj-pick-name">Classic</span>
-        <span className="mj-pick-meta">144 tiles · the traditional Turtle · best turned sideways</span>
+        <span className="mj-pick-meta">144 tiles · 5 random layouts · best turned sideways</span>
       </button>
       <h2 className="mj-board-title">🏆 Leaderboard</h2>
       <MahjongLeaderboard scores={scores} error={scoresError} />
@@ -217,7 +236,11 @@ export default function Mahjong() {
     try { localStorage.setItem(PLAYER_KEY, p); } catch { /* fine — just not remembered */ }
   };
   const onTap = useCallback((tile) => dispatch({ type: "tap", tile }), []);
-  const start = (mode) => dispatch({ type: "start", mode, player, tiles: newGame(mode) });
+  const start = (mode) => {
+    const layout = randomLayout(mode, Math.random, loadLastLayouts()[mode]);
+    rememberLayout(mode, layout);
+    dispatch({ type: "start", mode, layout, player, tiles: newGame(layout) });
+  };
   const shuffleBoard = () => dispatch({ type: "shuffle", tiles: reshuffle(tiles) });
   const backToMenu = () => {
     if (playing && game.history.length && !window.confirm("Start a new game? This one will be lost.")) return;
@@ -247,12 +270,13 @@ export default function Mahjong() {
         ) : (
           <>
             <div className="mj-topbar">
-              <h1 className="mj-title">
-                🀄 Mahjong <span className="mj-mode">{MODE_LABELS[game.mode]}</span>
-                {name && <span className="mj-player">· {name}</span>}
-              </h1>
+              <h1 className="mj-title">🀄 Mahjong</h1>
               <span className="mj-stats">⏱ {formatTime(game.elapsed)} · {tiles.length} left</span>
             </div>
+            <p className="mj-sub">
+              <span className="mj-mode">{MODE_LABELS[game.mode]} · {LAYOUTS[game.layout].name}</span>
+              {name && <span className="mj-player">{name}</span>}
+            </p>
             {game.mode === "classic" && <p className="mj-tip">Tip: turn your phone sideways for bigger tiles.</p>}
             {notice ? (
               <div className="mj-notice" role="status">{notice}</div>
@@ -262,7 +286,7 @@ export default function Mahjong() {
                 <button type="button" onClick={shuffleBoard}>🔀 Shuffle</button>
               </div>
             ) : null}
-            <MahjongBoard mode={game.mode} tiles={tiles} selectedId={selectedId} hintIds={hintIds} onTap={onTap} />
+            <MahjongBoard layout={game.layout} tiles={tiles} selectedId={selectedId} hintIds={hintIds} onTap={onTap} />
             <div className="mj-toolbar">
               <button type="button" onClick={() => dispatch({ type: "hint" })} disabled={!playing || stuck}>💡 Hint</button>
               <button type="button" onClick={shuffleBoard} disabled={!playing}>🔀 Shuffle</button>
@@ -283,7 +307,7 @@ export default function Mahjong() {
           >
             <div className="mj-win-emoji" aria-hidden="true">🎉🀄🎉</div>
             <h2>Board cleared!</h2>
-            <p>{MODE_LABELS[game.mode]} · {formatTime(game.elapsed)}</p>
+            <p>{MODE_LABELS[game.mode]} · {LAYOUTS[game.layout].name} · {formatTime(game.elapsed)}</p>
             {result && <p className={"mj-win-result " + result.cls} role="status">{result.text}</p>}
             <div className="mj-win-actions">
               <button type="button" onClick={() => start(game.mode)} disabled={!player}>Play again</button>
