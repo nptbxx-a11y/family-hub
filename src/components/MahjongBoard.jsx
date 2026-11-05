@@ -11,10 +11,10 @@ const MAX_TILE = 64; // px — keeps tiles sensible on big screens
 
 // Fits the board to the available width. Higher layers sit slightly up and to
 // the left so the stack reads as 3D; the board's height scrolls with the page.
-export default function MahjongBoard({ mode, tiles, selectedId, hintIds, onTap }) {
+export default function MahjongBoard({ layout, tiles, selectedId, hintIds, onTap }) {
   const wrapRef = useRef(null);
   const [tw, setTw] = useState(40);
-  const { w, h, layers } = layoutBounds(mode);
+  const { w, h, layers } = layoutBounds(layout);
 
   useLayoutEffect(() => {
     const el = wrapRef.current;

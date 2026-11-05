@@ -2,6 +2,7 @@
 import { describe, it, expect } from "vitest";
 import { isFree, canMatch, findHint, newGame, reshuffle, removePair } from "./engine.js";
 import { matchKey } from "./tiles.js";
+import { LAYOUTS } from "./layouts.js";
 
 // Deterministic RNG (mulberry32) so tests are repeatable.
 function seeded(seed) {
@@ -71,12 +72,12 @@ describe("findHint", () => {
 });
 
 describe("newGame", () => {
-  for (const [mode, size] of [["quick", 72], ["classic", 144]]) {
-    it(`deals a full, solvable ${mode} board`, () => {
+  for (const [id, { name, positions }] of Object.entries(LAYOUTS)) {
+    it(`deals a full, solvable ${name} board`, () => {
       for (let seed = 1; seed <= 5; seed++) {
-        const tiles = newGame(mode, seeded(seed));
-        expect(tiles).toHaveLength(size);
-        expect(new Set(tiles.map((t) => t.id)).size).toBe(size);
+        const tiles = newGame(id, seeded(seed));
+        expect(tiles).toHaveLength(positions.length);
+        expect(new Set(tiles.map((t) => t.id)).size).toBe(positions.length);
         expect(solvesInOrder(tiles)).toBe(true);
       }
     });
@@ -86,7 +87,7 @@ describe("newGame", () => {
 describe("reshuffle", () => {
   it("re-deals the remaining tiles into a solvable board with the same faces", () => {
     const rng = seeded(42);
-    const remaining = newGame("quick", rng).slice(20); // first 10 moves played
+    const remaining = newGame("pyramid", rng).slice(20); // first 10 moves played
     const shuffled = reshuffle(remaining, rng);
     const ids = (ts) => ts.map((t) => t.id).sort((a, b) => a - b);
     const keys = (ts) => ts.map((t) => matchKey(t.face)).sort();

@@ -134,3 +134,22 @@ traditional 4-player mahjong, extra layouts beyond Quick and Classic.
 
 **Pure logic** (`src/mahjong/leaderboard.js`, unit-tested): `summarize`,
 `leaderOf`, `isPersonalBest`, `formatTime`.
+
+---
+
+## Addendum (2026-11-05): random layouts
+
+Approved: 4 new layouts per size (5 each), picked at random per game, never
+repeating the layout just played for that size.
+
+- **Quick (72):** Pyramid (original), Twin Towers, Staircase, Cross, Diamond.
+- **Classic (144):** Turtle (original), Ziggurat, Fortress, Butterfly, Mountains.
+
+Every layout must: have exactly 72/144 tiles; fit 8 (Quick) / 15 (Classic)
+tiles wide; have no same-layer overlap; have no floating tiles (every z>0 tile
+rests on one below); and deal solvable boards (enforced by tests).
+
+`LAYOUTS` is keyed by layout id (`{ mode, name, positions }`); the game stores
+its `layout` id (older saved games fall back to Pyramid/Turtle). The layout's
+name shows in the top bar. The last layout per size is remembered in
+localStorage (`mahjong:last-layouts`). The leaderboard stays per size.
