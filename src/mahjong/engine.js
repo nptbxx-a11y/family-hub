@@ -78,12 +78,12 @@ export function dealSolvable(positions, pairs, rng = Math.random) {
   return null;
 }
 
-// A fresh, solvable board for "quick" or "classic".
-export function newGame(mode, rng = Math.random) {
-  const positions = LAYOUTS[mode].map(([x, y, z], id) => ({ id, x, y, z }));
+// A fresh, solvable board for a layout id (see layouts.js).
+export function newGame(layoutId, rng = Math.random) {
+  const positions = LAYOUTS[layoutId].positions.map(([x, y, z], id) => ({ id, x, y, z }));
   const pairs = shuffle(allPairs(), rng).slice(0, positions.length / 2);
   const tiles = dealSolvable(positions, pairs, rng);
-  if (!tiles) throw new Error(`Could not deal a ${mode} board`);
+  if (!tiles) throw new Error(`Could not deal a ${layoutId} board`);
   return tiles;
 }
 
